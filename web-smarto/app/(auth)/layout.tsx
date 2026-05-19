@@ -12,8 +12,6 @@ export default function AuthLayout({
       <section className="relative z-10 flex min-h-screen items-center justify-center px-4 py-10 sm:px-6 lg:px-10">
         <div className="w-full max-w-xl">{children}</div>
       </section>
-
-      <Toaster richColors position="top-right" />
     </main>
   )
 }

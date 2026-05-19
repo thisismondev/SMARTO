@@ -18,10 +18,6 @@ export async function POST(request: Request) {
       return errorResponse("Semua field wajib diisi", 400)
     }
 
-    if (password !== confirmPassword) {
-      return errorResponse("Password dan konfirmasi password tidak cocok", 400)
-    }
-
     const existingUser = await findUserByUsernameOrEmail(email, username)
 
     if (existingUser) {
@@ -33,6 +29,14 @@ export async function POST(request: Request) {
         "Username harus 3-20 karakter dan hanya boleh huruf, angka, atau underscore",
         400
       )
+    }
+
+    if (password.length < 6) {
+      return errorResponse("Password minimal 6 karakter", 400)
+    }
+
+    if (password !== confirmPassword) {
+      return errorResponse("Password dan konfirmasi password tidak cocok", 400)
     }
 
     await createUser({

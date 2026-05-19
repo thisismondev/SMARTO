@@ -100,7 +100,7 @@ export async function findUsers(){
     FROM users u 
     JOIN user_role r ON u.role_id = r.id
     WHERE u.id != 1 AND u.status = 0
-    ORDER BY u.id ASC
+    ORDER BY u.role_id ASC, u.name ASC
     `
   )
 
@@ -113,7 +113,7 @@ export async function adminFindUsers(){
     SELECT u.id, u.name, u.username, u.email, u.password, u.role_id, r.role, u.status
     FROM users u 
     JOIN user_role r ON u.role_id = r.id
-    ORDER BY u.id ASC
+    ORDER BY u.role_id ASC, u.name ASC
     `
   )
 

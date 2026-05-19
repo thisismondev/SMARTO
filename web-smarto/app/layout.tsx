@@ -1,10 +1,14 @@
 import { Geist, Geist_Mono, Instrument_Sans } from "next/font/google"
 
+import { Toaster } from "@/components/ui/sonner"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
-const instrumentSans = Instrument_Sans({subsets:['latin'],variable:'--font-sans'})
+const instrumentSans = Instrument_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+})
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
@@ -20,10 +24,16 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", instrumentSans.variable)}
+      className={cn(
+        "antialiased",
+        fontMono.variable,
+        "font-sans",
+        instrumentSans.variable
+      )}
     >
       <body>
         <ThemeProvider>{children}</ThemeProvider>
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   )
