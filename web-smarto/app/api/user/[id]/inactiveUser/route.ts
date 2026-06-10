@@ -1,14 +1,9 @@
 import { getAuthUser } from "@/lib/auth"
 import { errorResponse, successResponse } from "@/lib/response"
 import { inactiveById } from "@/services/users.service"
+import { RouteParams } from "@/types/api"
 
-type Params = {
-  params: Promise<{
-    id: string
-  }>
-}
-
-export async function PATCH(request: Request, context: Params) {
+export async function PATCH(request: Request, { params }: { params: RouteParams }) {
   try {
     const user = await getAuthUser(request)
 
@@ -16,20 +11,16 @@ export async function PATCH(request: Request, context: Params) {
       return errorResponse("Unauthorized", 401)
     }
 
-    const { id } = await context.params
+    const { id } = await params
 
-    console.log("PARAM ID:", id)
+    console.log("PARAM:", id)
 
-    const userId = Number(id)
-
-    console.log("USER ID:", userId)
-
-    if (isNaN(userId)) {
+    if (isNaN(id)) {
       return errorResponse("Invalid user ID", 400)
     }
 
 
-    const result = await inactiveById(userId)
+    const result = await inactiveById(id)
 
     if (result.affectedRows === 0) {
       return errorResponse("User tidak ditemukan", 404)

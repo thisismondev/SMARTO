@@ -15,6 +15,7 @@ import {
   Moon,
   Sun,
   Loader2,
+  LandPlot
 } from "lucide-react"
 
 import {
@@ -78,6 +79,16 @@ const menuItems = [
     title: "Users",
     href: "/users",
     icon: Users,
+  },
+  {
+    title: "Kode Node",
+    href: "/kode-node",
+    icon: LandPlot,
+  },
+  {
+    title: "Manajemen Node",
+    href: "/nodes",
+    icon: LandPlot,
   },
   {
     title: "Analytics",
@@ -335,7 +346,7 @@ export default function DashboardLayout({
             </AlertDialog>
           </header>
 
-          <main className="min-h-screen flex-1 bg-background p-4 text-foreground md:p-6">
+          <main className="min-h-screen flex-1 bg-background p-4 text-foreground md:p-3">
             {children}
           </main>
         </SidebarInset>

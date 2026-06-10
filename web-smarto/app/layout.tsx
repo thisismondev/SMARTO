@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono, Instrument_Sans } from "next/font/google"
 
 import { Toaster } from "@/components/ui/sonner"
+import "leaflet/dist/leaflet.css"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"

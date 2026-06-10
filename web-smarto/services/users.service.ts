@@ -1,4 +1,4 @@
-import type { ResultSetHeader } from "mysql2"
+import type { ResultSetHeader, RowDataPacket } from "mysql2"
 import db from "@/lib/db"
 
 type User = {
@@ -11,6 +11,11 @@ type User = {
   role: string;
   status: number;
 };
+
+type Petani = {
+  id: number;
+  name: string;
+} & RowDataPacket
 
 export async function findByIdentifier(identifier: string) {
   const [rows] = await db.query(
@@ -118,6 +123,18 @@ export async function adminFindUsers(){
   )
 
   return result as User[]
+}
+
+export async function findUserPetani(){
+  const [result] = await db.query<Petani[]>(
+    `
+    SELECT id, name
+    FROM users
+    WHERE role_id = 3 AND status = 0
+    `
+  )
+
+  return result as Petani[]
 }
 
 export async function inactiveById(userId: number) {
