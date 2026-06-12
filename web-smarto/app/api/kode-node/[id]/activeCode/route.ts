@@ -1,6 +1,6 @@
 import { errorResponse, successResponse } from "@/lib/response"
 import { getAuthUser } from "@/lib/auth"
-import { activeNodeKode, findKodeNodeById } from "@/services/nodes.service"
+import { activeNodeKode, findKodeNodeById } from "@/services/kode-nodes.service"
 import { RouteParams } from "@/types/api"
 
 export async function PATCH(

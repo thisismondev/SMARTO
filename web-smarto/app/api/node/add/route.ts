@@ -1,8 +1,9 @@
 import {
   setUpNodeByCode,
   findNodeByKodeNodeId,
-  findByKodeNode,
+  
 } from "@/services/nodes.service"
+import {findByKodeNode} from "@/services/kode-nodes.service"
 import { getAuthUser } from "@/lib/auth"
 import { errorResponse, successResponse } from "@/lib/response"
 

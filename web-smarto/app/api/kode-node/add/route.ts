@@ -1,4 +1,4 @@
-import { createKodeNode, findByKodeNode } from "@/services/nodes.service"
+import { createKodeNode, findByKodeNode } from "@/services/kode-nodes.service"
 import { errorResponse, successResponse } from "@/lib/response"
 import { supabaseAdmin } from "@/lib/supabaseServer"
 import { getAuthUser } from "@/lib/auth"

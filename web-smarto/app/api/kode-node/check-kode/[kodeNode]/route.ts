@@ -1,6 +1,6 @@
 import { errorResponse, successResponse } from "@/lib/response"
 import { getAuthUser } from "@/lib/auth"
-import { checkingKodeNode } from "@/services/nodes.service"
+import { checkingKodeNode } from "@/services/kode-nodes.service"
 import { KodeNodeRouteParams } from "@/types/api"
 
 export async function GET(

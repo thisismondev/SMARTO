@@ -1,6 +1,6 @@
 import { errorResponse, successResponse } from "@/lib/response"
 import { getAuthUser } from "@/lib/auth"
-import { fetchKodeNodes } from "@/services/nodes.service"
+import { fetchKodeNodes } from "@/services/kode-nodes.service"
 
 export async function GET(request: Request) {
   try {
