@@ -272,7 +272,7 @@ export default function DashboardLayout({
 
                   <Separator orientation="vertical" className="h-4" />
 
-                  <Breadcrumb>
+                  {/* <Breadcrumb>
                     <BreadcrumbList>
                       <BreadcrumbItem className="hidden md:block">
                         <BreadcrumbLink href="/">Smarto</BreadcrumbLink>
@@ -284,7 +284,7 @@ export default function DashboardLayout({
                         <BreadcrumbPage>Dashboard</BreadcrumbPage>
                       </BreadcrumbItem>
                     </BreadcrumbList>
-                  </Breadcrumb>
+                  </Breadcrumb> */}
                 </div>
 
                 <div className="flex items-center gap-2">
