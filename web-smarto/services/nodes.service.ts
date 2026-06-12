@@ -12,6 +12,16 @@ type Node = {
   status: string
 } & RowDataPacket
 
+type RowNodeSensor = {
+  id: number
+  kode_node: string
+  name: string
+  latitude: string
+  longitude: string
+  status: string
+  kode_node_status: string
+} & RowDataPacket
+
 
 type CheckingNodeByKodeNodeRow = {
   id: number
@@ -26,21 +36,41 @@ type NodeKodeRow = {
   status: number
 } & RowDataPacket
 
+type NodeByUserRow = {
+  id: number
+  kode_node_id: number
+  kode_node: string
+  user_id: number
+} & RowDataPacket
+
 
 
 export async function findNodeByKodeNodeId(kodeNodeId: number) {
   const [rows] = await db.query<NodeKodeRow[]>(
     `
-    SELECT n.id, n.kode_node_id, n.user_id, kn.status
+    SELECT n.id, n.kode_node_id, n.user_id, n.status
     FROM nodes n
-    JOIN kode_node kn ON n.kode_node_id = kn.id
-    WHERE kode_node_id = ?
+    WHERE n.kode_node_id = ?
     LIMIT 1
     `,
     [kodeNodeId]
   )
 
   return rows[0] || null
+}
+
+export async function findNodeByUserId(userId: number) {
+  const [rows] = await db.query<NodeByUserRow[]>(
+    `
+    SELECT n.id, n.kode_node_id, kn.kode_node, n.user_id
+    FROM nodes n
+    JOIN kode_node kn ON n.kode_node_id = kn.id
+    WHERE n.user_id = ?
+    `,
+    [userId]
+  )
+
+  return rows
 }
 
 export async function findNodeById(nodeId: number) {
@@ -112,10 +142,6 @@ export async function releaseNodeUser(id: number) {
   return result
 }
 
-
-
-
-
 export async function updateNodeById(
   nodeId: number,
   data: {
@@ -147,4 +173,19 @@ export async function fetchNodes() {
         `
   )
   return result
+}
+
+export async function findNodesByUserAndKodeNode(userId: number, kodeNodeId: number ) {
+  const [result] = await db.query<RowNodeSensor[]>(
+    `
+        SELECT n.id, kn.kode_node, u.name,  n.latitude, n.longitude, n.interval_sec, n.status, kn.status as kode_node_status
+        FROM nodes n
+        JOIN users u ON n.user_id = u.id
+        JOIN kode_node kn ON kn.id = n.kode_node_id
+        WHERE n.user_id = ? AND n.kode_node_id = ?
+        LIMIT 1
+        `,
+    [userId, kodeNodeId]
+  )
+  return result[0] || null
 }

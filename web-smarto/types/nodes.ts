@@ -25,3 +25,21 @@ export type FormUserNode = {
   lat: string
   lng: string
 }
+
+export type SelectNode = {
+  id: number,
+  kode_node_id: number,
+  kode_node: string,
+  user_id: number,
+}
+
+export type NodeDetailSensorRow = {
+  id: number
+  kode_node: string
+  user_name: string
+  lat: string
+  lng: string
+  interval_sec: number
+  status: string
+  kode_node_status: string
+}

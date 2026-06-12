@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
     const existingNode = await findNodeByKodeNodeId(kodeNodeId)
 
-    if (existingNode && existingNode.status === 1)
+    if (existingNode && existingNode.status === 0)
       return errorResponse("Node ini sudah dimiliki oleh user lain", 404)
 
     const result = await setUpNodeByCode({
