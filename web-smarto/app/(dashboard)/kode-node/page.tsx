@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback} from "react"
+import { useState, useEffect, useCallback } from "react"
 import { toast } from "sonner"
 import { KodeNode } from "@/types/nodes"
 import { columnNodes } from "./columns"
@@ -30,7 +30,7 @@ export default function NodesPage() {
   const [error, setError] = useState("")
 
   // untuk kontrol dialog
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false) 
 
   const fetchNodes = useCallback(async () => {
     try {
@@ -153,11 +153,11 @@ export default function NodesPage() {
       }
 
       toast.success("Kode node berhasil diaktifkan")
-      setLoading(false)
 
       await fetchNodes()
     } catch (e: any) {
       toast.error(e.message || "Tidak bisa terhubung ke server")
+    } finally {
       setLoading(false)
     }
   }
@@ -187,12 +187,43 @@ export default function NodesPage() {
         return
       }
       toast.success("Kode node berhasil dinonaktifkan")
-      setLoading(false)
 
       await fetchNodes()
     } catch (e: any) {
       toast.error(e.message || "Tidak bisa terhubung ke server")
+    } finally {
       setLoading(false)
+    }
+  }
+
+  async function handelDelete(id: number) {
+    const token = localStorage.getItem("token")
+
+    if (!token) {
+      toast.error("Token tidak ditemukan. Silakan login ulang.")
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/kode-node/${id}/delete`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const result = await response.json()
+
+      if (!response.ok || !result.status) {
+        toast.error(result.message || "Gagal menghapus kode node")
+        return
+      }
+      toast.success("Kode node berhasil dihapus")
+
+      await fetchNodes()
+    } catch (error: any) {
+      toast.error(error.message || "Tidak bisa terhubung ke server")
     }
   }
 
@@ -259,8 +290,15 @@ export default function NodesPage() {
             <div className="overflow-auto">
               <DataTable
                 columns={columnNodes({
-                  active: handleActivate,
-                  inactive: handleInactivate,
+                  onActive: (id) => {
+                    handleActivate(id)
+                  },
+                  onInactive: (id) => {
+                    handleInactivate(id)
+                  },
+                  onDelete: (id) => {
+                    handelDelete(id)
+                  },
                   isAdmin: isAdmin,
                 })}
                 data={data}

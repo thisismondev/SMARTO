@@ -1,8 +1,14 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table"
-import { CircleCheck, CircleX } from "lucide-react"
+import { CircleCheck, CircleX, MoreHorizontal, Trash2 } from "lucide-react"
 
 export type KodeNodes = {
   id: number
@@ -12,14 +18,16 @@ export type KodeNodes = {
 }
 
 type ColumnNodesProps = {
-  active: (id: number) => void
-  inactive: (id: number) => void
+  onActive: (id: number) => void
+  onInactive: (id: number) => void
+  onDelete: (id: number) => void
   isAdmin: boolean
 }
 
 export function columnNodes({
-  active,
-  inactive,
+  onActive,
+  onInactive,
+  onDelete,
   isAdmin,
 }: ColumnNodesProps): ColumnDef<KodeNodes>[] {
   const columns: ColumnDef<KodeNodes>[] = [
@@ -44,35 +52,37 @@ export function columnNodes({
   if (isAdmin) {
     columns.push({
       id: "aksi",
-      header: "",
       cell: ({ row }) => {
         const node = row.original
-        const isActive = node.kn_status === "Aktif"
 
         return (
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon-xs"
-              aria-label="Aktifkan"
-              title="Aktifkan"
-              disabled={isActive}
-              onClick={() => active(node.id)}
-            >
-              <CircleCheck className="size-3.5" />
-            </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onActive(node.id)}>
+                <CircleCheck className="mr-2 h-4 w-4" />
+                Aktifkan
+              </DropdownMenuItem>
 
-            <Button
-              variant="destructive"
-              size="icon-xs"
-              aria-label="Nonaktifkan"
-              title="Nonaktifkan"
-              disabled={!isActive}
-              onClick={() => inactive(node.id)}
-            >
-              <CircleX className="size-3.5" />
-            </Button>
-          </div>
+              <DropdownMenuItem onClick={() => onInactive(node.id)}>
+                <CircleX className="mr-2 h-4 w-4" />
+                Nonaktifkan
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={() => onDelete(node.id)}
+                className="text-red-600 focus:text-red-600"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Hapus
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )
       },
     })
