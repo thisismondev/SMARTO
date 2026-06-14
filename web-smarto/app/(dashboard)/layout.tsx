@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import Link from "next/link" // 🌟 Tambahan untuk navigasi SPA tanpa reload
@@ -18,7 +18,8 @@ import {
   Loader2,
   Cpu, // Icon untuk Daftar Perangkat
   KeyRound, // Icon untuk Kode Aktivasi
-  Radio, // Icon untuk Realtime Pemantauan Sensor
+  Radio,
+  LucideIcon, // Icon untuk Realtime Pemantauan Sensor
 } from "lucide-react"
 
 import {
@@ -72,47 +73,6 @@ import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 
-// 🌟 Struktur Menu Baru yang Lebih Rapi dan Terorganisir
-const mainMenuItems = [
-  {
-    title: "Dashboard",
-    href: "/",
-    icon: Home,
-  },
-  {
-    title: "Pemantauan Sensor",
-    href: "/sensors/monitoring",
-    icon: Radio,
-  },
-  {
-    title: "Analytics",
-    href: "#",
-    icon: BarChart3,
-  },
-]
-
-const deviceMenuItems = [
-  {
-    title: "Daftar Perangkat",
-    href: "/nodes",
-    icon: Cpu,
-  },
-  {
-    title: "Kode Aktivasi",
-    href: "/kode-node",
-    icon: KeyRound,
-  },
-  {
-    title: "Manajemen User",
-    href: "/users",
-    icon: Users,
-  },
-  {
-    title: "Settings",
-    href: "#",
-    icon: Settings,
-  },
-]
 
 type UserData = {
   id: number
@@ -121,6 +81,108 @@ type UserData = {
   role_id: number
   role: string
 }
+
+type MenuItem = {
+  title: string
+  href: string
+  icon: LucideIcon
+  roles: Number[] // Array of role IDs that can access this menu item
+}
+
+type MenuGroup = {
+  label: string
+  items: MenuItem[]
+}
+
+// 🌟 Struktur Menu Baru yang Lebih Rapi dan Terorganisir
+const mainMenuItems: MenuItem[] = [
+  {
+    title: "Dashboard",
+    href: "/",
+    icon: Home,
+    roles: [1, 2],
+  },
+  {
+    title: "Pemantauan Sensor",
+    href: "/sensors/monitoring",
+    icon: Radio,
+    roles: [1, 2],
+  },
+  {
+    title: "Analytics",
+    href: "#",
+    icon: BarChart3,
+    roles: [1, 2],
+  },
+]
+
+const fuzzyMenuItems: MenuItem[] = [
+  {
+    title: "Kategori Sensor",
+    href: "#",
+    icon: Cpu,
+    roles: [1],
+  },
+  {
+    title: "Rule Base",
+    href: "#",
+    icon: KeyRound,
+    roles: [1],
+  },
+  {
+    title: "Hasil Fuzzy",
+    href: "#",
+    icon: BarChart3,
+    roles: [1],
+  },
+]
+const deviceMenuItems: MenuItem[] = [
+  {
+    title: "Daftar Perangkat",
+    href: "/nodes",
+    icon: Cpu,
+    roles: [1, 2],
+  },
+  {
+    title: "Kode Aktivasi",
+    href: "/kode-node",
+    icon: KeyRound,
+    roles: [1],
+  },
+]
+const userMenuItems: MenuItem[] = [
+  {
+    title: "Manajemen User",
+    href: "/users",
+    icon: Users,
+    roles: [1, 2],
+  },
+  {
+    title: "Settings",
+    href: "#",
+    icon: Settings,
+    roles: [1, 2],
+  },
+]
+
+const groupMenuItems: MenuGroup[] = [
+  {
+    label: "Menu Utama",
+    items: mainMenuItems,
+  },
+  {
+    label: "Fuzzy System",
+    items: fuzzyMenuItems,
+  },
+  {
+    label: "Manajemen Perangkat",
+    items: deviceMenuItems,
+  },
+  {
+    label: "Manajemen User",
+    items: userMenuItems,
+  },
+]
 
 function getInitials(name?: string) {
   if (!name) return "US"
@@ -150,12 +212,25 @@ export default function DashboardLayout({
 
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser))
+        setUser(JSON.parse(storedUser) as UserData)
       } catch {
         setUser(null)
       }
     }
   }, [])
+
+  const filteredMenuGroups = useMemo(() => {
+    const roleId = user?.role_id
+
+    if (!roleId) return []
+
+    return groupMenuItems
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) => item.roles.includes(roleId)),
+      }))
+      .filter((group) => group.items.length > 0)
+  }, [user])
 
   async function handleLogout() {
     setLogoutLoading(true)
@@ -204,75 +279,55 @@ export default function DashboardLayout({
     <AuthGuard>
       <SidebarProvider>
         <Sidebar>
-              <SidebarHeader>
-                <div className="border-b px-3 py-4">
-                  <h1 className="text-md font-bold tracking-wider text-primary">
-                    SMART INOKULASI
-                  </h1>
-                </div>
-              </SidebarHeader>
+          <SidebarHeader>
+            <div className="border-b px-3 py-4">
+              <h1 className="text-md font-bold tracking-wider text-primary">
+                SMART INOKULASI
+              </h1>
+            </div>
+          </SidebarHeader>
 
-              <SidebarContent className="space-y-4 pt-2">
-                {/* 🌟 GROUP 1: MENU UTAMA */}
-                <SidebarGroup>
-                  <SidebarGroupLabel>Menu Utama</SidebarGroupLabel>
-                  <SidebarGroupContent>
-                    <SidebarMenu>
-                      {mainMenuItems.map((item) => (
-                        <SidebarMenuItem key={item.title}>
-                          <SidebarMenuButton asChild>
-                            <Link
-                              href={item.href}
-                              className="flex items-center gap-3"
-                            >
-                              <item.icon className="h-4 w-4" />
-                              <span>{item.title}</span>
-                            </Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                </SidebarGroup>
+          <SidebarContent className="space-y-2 gap-0">
+            {filteredMenuGroups.map((group) => (
+              <SidebarGroup key={group.label}>
+                <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
 
-                {/* 🌟 GROUP 2: MANAJEMEN PERANGKAT & USER */}
-                <SidebarGroup>
-                  <SidebarGroupLabel>Manajemen Perangkat</SidebarGroupLabel>
-                  <SidebarGroupContent>
-                    <SidebarMenu>
-                      {deviceMenuItems.map((item) => (
-                        <SidebarMenuItem key={item.title}>
-                          <SidebarMenuButton asChild>
-                            <Link
-                              href={item.href}
-                              className="flex items-center gap-3"
-                            >
-                              <item.icon className="h-4 w-4" />
-                              <span>{item.title}</span>
-                            </Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                </SidebarGroup>
-              </SidebarContent>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {group.items.map((item) => (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton asChild>
+                          <Link
+                            href={item.href}
+                            className="flex items-center gap-3"
+                          >
+                            <item.icon className="h-4 w-4" />
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            ))}
+          </SidebarContent>
 
-              <SidebarFooter className="border-t">
-                <div className="px-3 py-3 text-xs font-medium text-muted-foreground">
-                  © 2026 Smarto
-                </div>
-              </SidebarFooter>
-            </Sidebar>
+          <SidebarFooter className="border-t">
+            <div className="px-3 py-3 text-xs font-medium text-muted-foreground">
+              © 2026 Smarto
+            </div>
+          </SidebarFooter>
+        </Sidebar>
 
         <SidebarInset>
-              <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b bg-background px-4">
-                <div className="flex items-center gap-2">
-                  <SidebarTrigger />
+          <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b bg-background px-4">
+            <div className="flex items-center gap-2">
+              <SidebarTrigger />
 
-                  <Separator orientation="vertical" className="h-4" />
+              <Separator orientation="vertical" className="h-4" />
 
-                  {/* <Breadcrumb>
+              {/* <Breadcrumb>
                     <BreadcrumbList>
                       <BreadcrumbItem className="hidden md:block">
                         <BreadcrumbLink href="/">Smarto</BreadcrumbLink>
@@ -285,113 +340,112 @@ export default function DashboardLayout({
                       </BreadcrumbItem>
                     </BreadcrumbList>
                   </Breadcrumb> */}
-                </div>
+            </div>
 
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    aria-label="Toggle theme"
-                    onClick={() =>
-                      setTheme(resolvedTheme === "dark" ? "light" : "dark")
-                    }
-                  >
-                    {resolvedTheme === "dark" ? (
-                      <Sun className="h-4 w-4" />
-                    ) : (
-                      <Moon className="h-4 w-4" />
-                    )}
-                  </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                aria-label="Toggle theme"
+                onClick={() =>
+                  setTheme(resolvedTheme === "dark" ? "light" : "dark")
+                }
+              >
+                {resolvedTheme === "dark" ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
+              </Button>
 
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="flex items-center gap-2 rounded-full transition outline-none hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                        <Avatar className="h-9 w-9">
-                          <AvatarImage src="" alt={user?.username || "User"} />
-                          <AvatarFallback>
-                            {getInitials(user?.username)}
-                          </AvatarFallback>
-                        </Avatar>
-                      </button>
-                    </DropdownMenuTrigger>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-2 rounded-full transition outline-none hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src="" alt={user?.username || "User"} />
+                      <AvatarFallback>
+                        {getInitials(user?.username)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </button>
+                </DropdownMenuTrigger>
 
-                    <DropdownMenuContent
-                      align="end"
-                      className="w-64 bg-popover text-popover-foreground"
-                    >
-                      <DropdownMenuLabel>
-                        <div className="flex min-w-0 flex-col space-y-1">
-                          <p className="truncate text-sm leading-none font-medium">
-                            {user?.username || "User"}
-                          </p>
-                          <p className="truncate text-xs leading-none text-muted-foreground">
-                            {user?.email || "user@smarto.id"}
-                          </p>
-                        </div>
-                      </DropdownMenuLabel>
-
-                      <DropdownMenuSeparator />
-
-                      <DropdownMenuItem className="cursor-pointer">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
-                      </DropdownMenuItem>
-
-                      <DropdownMenuSeparator />
-
-                      <DropdownMenuItem
-                        onSelect={(event) => {
-                          event.preventDefault()
-                          setOpenLogoutDialog(true)
-                        }}
-                        className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
-                      >
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>Logout</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-
-                <AlertDialog
-                  open={openLogoutDialog}
-                  onOpenChange={setOpenLogoutDialog}
+                <DropdownMenuContent
+                  align="end"
+                  className="w-64 bg-popover text-popover-foreground"
                 >
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Logout dari akun?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Kamu akan keluar dari dashboard Smarto. Untuk masuk
-                        kembali, kamu perlu login ulang menggunakan akun yang
-                        terdaftar.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
+                  <DropdownMenuLabel>
+                    <div className="flex min-w-0 flex-col space-y-1">
+                      <p className="truncate text-sm leading-none font-medium">
+                        {user?.username || "User"}
+                      </p>
+                      <p className="truncate text-xs leading-none text-muted-foreground">
+                        {user?.email || "user@smarto.id"}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
 
-                    <AlertDialogFooter>
-                      <AlertDialogCancel disabled={logoutLoading}>
-                        Batal
-                      </AlertDialogCancel>
+                  <DropdownMenuSeparator />
 
-                      <AlertDialogAction
-                        onClick={handleLogout}
-                        disabled={logoutLoading}
-                        className="text-destructive-foreground bg-destructive hover:bg-destructive/90"
-                      >
-                        {logoutLoading && (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        )}
-                        {logoutLoading ? "Logout..." : "Ya, logout"}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </header>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
 
-              <main className="min-h-screen flex-1 bg-background p-4 text-foreground md:p-6">
-                {children}
-              </main>
-            </SidebarInset>
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    onSelect={(event) => {
+                      event.preventDefault()
+                      setOpenLogoutDialog(true)
+                    }}
+                    className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            <AlertDialog
+              open={openLogoutDialog}
+              onOpenChange={setOpenLogoutDialog}
+            >
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Logout dari akun?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Kamu akan keluar dari dashboard Smarto. Untuk masuk kembali,
+                    kamu perlu login ulang menggunakan akun yang terdaftar.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={logoutLoading}>
+                    Batal
+                  </AlertDialogCancel>
+
+                  <AlertDialogAction
+                    onClick={handleLogout}
+                    disabled={logoutLoading}
+                    className="text-destructive-foreground bg-destructive hover:bg-destructive/90"
+                  >
+                    {logoutLoading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    {logoutLoading ? "Logout..." : "Ya, logout"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </header>
+
+          <main className="min-h-screen flex-1 bg-background p-4 text-foreground md:p-6">
+            {children}
+          </main>
+        </SidebarInset>
       </SidebarProvider>
     </AuthGuard>
   )
