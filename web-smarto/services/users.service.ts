@@ -104,7 +104,7 @@ export async function findUsers(){
     SELECT u.id, u.name, u.username, u.email, u.role_id, r.role, u.status
     FROM users u 
     JOIN user_role r ON u.role_id = r.id
-    WHERE u.id != 1 AND u.status = 0
+    WHERE u.role_id = 3 AND u.status = 0
     ORDER BY u.role_id ASC, u.name ASC
     `
   )

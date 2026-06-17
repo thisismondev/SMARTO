@@ -25,6 +25,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { toast } from "sonner"
+import { useUsers } from "../_hooks/use-users"
 
 type ApiResponse<T> = {
   status: boolean
@@ -46,203 +47,22 @@ type RegisterPayload = {
 }
 
 export default function UsersPage() {
-  const [data, setData] = useState<UserRow[]>([])
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [currentRoleId, setCurrentRoleId] = useState<number | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [registerForm, setRegisterForm] = useState<RegisterPayload>({
-    name: "",
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    roleId: 2,
-  })
+  const {
+    loading,
+    error,
+    isAdmin,
 
-  useEffect(() => {
-    const rawUser = localStorage.getItem("user")
+    data,
+    columns,
 
-    if (!rawUser) {
-      return
-    }
+    isRegisterOpen,
+    registerForm,
+    isSubmitting,
 
-    try {
-      const storedUser = JSON.parse(rawUser) as StoredUser
-      setIsAdmin(storedUser.role_id === 1)
-      setCurrentRoleId(storedUser.role_id)
-    } catch {
-      setIsAdmin(false)
-      setCurrentRoleId(null)
-    }
-  }, [])
-
-  const fetchUsers = useCallback(async () => {
-    setLoading(true)
-    setError("")
-
-    const token = localStorage.getItem("token")
-
-    if (!token) {
-      setError("Token tidak ditemukan. Silakan login ulang.")
-      setLoading(false)
-      return
-    }
-
-    try {
-      const response = await fetch("/api/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      const result = (await response.json()) as ApiResponse<UserRow[]>
-
-      if (!response.ok || !result.status) {
-        setError(result.message || "Gagal mengambil data pengguna")
-        setLoading(false)
-        return
-      }
-
-      setData(Array.isArray(result.data) ? result.data : [])
-    } catch {
-      setError("Tidak bisa terhubung ke server")
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    fetchUsers()
-  }, [fetchUsers])
-
-  const handleActivate = useCallback(
-    async (userId: number) => {
-      const token = localStorage.getItem("token")
-
-      if (!token) {
-        setError("Token tidak ditemukan. Silakan login ulang.")
-        return
-      }
-
-      try {
-        const response = await fetch(`/api/user/${userId}/activeUser`, {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-
-        const result = (await response.json()) as ApiResponse<unknown>
-
-        if (!response.ok || !result.status) {
-          setError(result.message || "Gagal mengaktifkan pengguna")
-          return
-        }
-
-        fetchUsers()
-      } catch {
-        setError("Tidak bisa terhubung ke server")
-      }
-    },
-    [fetchUsers]
-  )
-
-  const handleInactivate = useCallback(
-    async (userId: number) => {
-      const token = localStorage.getItem("token")
-
-      if (!token) {
-        setError("Token tidak ditemukan. Silakan login ulang.")
-        return
-      }
-
-      try {
-        const response = await fetch(`/api/user/${userId}/inactiveUser`, {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-
-        const result = (await response.json()) as ApiResponse<unknown>
-
-        if (!response.ok || !result.status) {
-          setError(result.message || "Gagal menonaktifkan pengguna")
-          return
-        }
-
-        fetchUsers()
-      } catch {
-        setError("Tidak bisa terhubung ke server")
-      }
-    },
-    [fetchUsers]
-  )
-
-  const columns = useMemo(
-    () =>
-      buildColumns({
-        isAdmin,
-        currentRoleId,
-        onActivate: handleActivate,
-        onInactivate: handleInactivate,
-      }),
-    [currentRoleId, handleActivate, handleInactivate, isAdmin]
-  )
-
-  const handleRegisterChange = (
-    field: keyof RegisterPayload,
-    value: string
-  ) => {
-    setRegisterForm((prev) => ({
-      ...prev,
-      [field]: field === "roleId" ? Number(value) : value,
-    }))
-  }
-
-  const handleRegisterSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
-    event.preventDefault()
-
-    setIsSubmitting(true)
-
-    try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(registerForm),
-      })
-
-      const result = (await response.json()) as ApiResponse<unknown>
-
-      if (!response.ok || !result.status) {
-        toast.error(result.message || "Gagal mendaftarkan pengguna")
-        return
-      }
-
-      toast.success(result.message || "Pengguna berhasil ditambahkan")
-      setRegisterForm({
-        name: "",
-        username: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        roleId: 2,
-      })
-      setIsRegisterOpen(false)
-      fetchUsers()
-    } catch {
-      toast.error("Tidak bisa terhubung ke server")
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+    setIsRegisterOpen,
+    handleRegisterChange,
+    handleRegisterSubmit,
+  } = useUsers()
 
   return (
     <div className="container mx-auto space-y-4 py-0">

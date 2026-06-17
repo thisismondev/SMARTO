@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { Droplet, Thermometer, Leaf, Search, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useSensorMonitoring } from "../_hooks/use-monitoring"
+import { useSensorMonitoring } from "../../_hooks/use-monitoring"
 
 export default function MonitoringPage() {
   const {
