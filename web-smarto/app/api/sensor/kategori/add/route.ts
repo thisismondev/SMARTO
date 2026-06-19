@@ -14,7 +14,12 @@ export async function POST(request: Request) {
 
     console.log("Received data:", { parameterId, namaKategori, minValue, maxValue })
 
-    if (!parameterId || !namaKategori || !minValue || !maxValue) {
+    if (!parameterId ||
+      !namaKategori ||
+      minValue === undefined ||
+      minValue === null ||
+      maxValue === undefined ||
+      maxValue === null) {
       return errorResponse("Semua field wajib diisi", 400)
     }
 

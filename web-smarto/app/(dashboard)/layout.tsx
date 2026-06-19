@@ -19,7 +19,8 @@ import {
   Cpu, // Icon untuk Daftar Perangkat
   KeyRound, // Icon untuk Kode Aktivasi
   Radio,
-  LucideIcon, // Icon untuk Realtime Pemantauan Sensor
+  LucideIcon,
+  SlidersHorizontal, // Icon untuk Realtime Pemantauan Sensor
 } from "lucide-react"
 
 import {
@@ -118,8 +119,14 @@ const mainMenuItems: MenuItem[] = [
 
 const fuzzyMenuItems: MenuItem[] = [
   {
+    title: "Parameter Sensor",
+    href: "/sensors/parameter-sensor",
+    icon: SlidersHorizontal,
+    roles: [1],
+  },
+  {
     title: "Kategori Sensor",
-    href: "#",
+    href: "/sensors/kategori-sensor",
     icon: Cpu,
     roles: [1],
   },
@@ -127,13 +134,13 @@ const fuzzyMenuItems: MenuItem[] = [
     title: "Rule Base",
     href: "#",
     icon: KeyRound,
-    roles: [1],
+    roles: [1, 2],
   },
   {
     title: "Hasil Fuzzy",
     href: "#",
     icon: BarChart3,
-    roles: [1],
+    roles: [1, 2],
   },
 ]
 const deviceMenuItems: MenuItem[] = [
@@ -147,7 +154,7 @@ const deviceMenuItems: MenuItem[] = [
     title: "Kode Aktivasi",
     href: "/kode-node",
     icon: KeyRound,
-    roles: [1],
+    roles: [1, 2],
   },
 ]
 const userMenuItems: MenuItem[] = [
@@ -287,7 +294,7 @@ export default function DashboardLayout({
             </div>
           </SidebarHeader>
 
-          <SidebarContent className="space-y-2 gap-0">
+          <SidebarContent className="gap-0 space-y-2">
             {filteredMenuGroups.map((group) => (
               <SidebarGroup key={group.label}>
                 <SidebarGroupLabel>{group.label}</SidebarGroupLabel>

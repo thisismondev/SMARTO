@@ -54,7 +54,7 @@ export async function updateParameterSensor(
 
 type SensorKategoriRow = {
   id: number
-  parameter_id: number
+  nama_parameter: string
   nama_kategori: string
   min_value: number
   max_value: number
