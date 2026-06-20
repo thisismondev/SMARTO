@@ -10,6 +10,12 @@ export async function PUT(
   try {
     const user = await getAuthUser(request)
     if (!user) return errorResponse("Unauthorized", 401)
+    if (user.roleId === 3) {
+      return errorResponse(
+        "Anda tidak memiliki izin untuk menambahkan rule base",
+        403
+      )
+    }
 
     const { id } = await params
 
@@ -20,7 +26,6 @@ export async function PUT(
 
     const body = await request.json()
     const {
-      kode_rule,
       ph_kategori_id,
       kelembapan_kategori_id,
       suhu_kategori_id,
@@ -29,7 +34,6 @@ export async function PUT(
     } = body
 
     const result = await updateRuleBase(id, {
-      kode_rule,
       ph_kategori_id,
       kelembapan_kategori_id,
       suhu_kategori_id,

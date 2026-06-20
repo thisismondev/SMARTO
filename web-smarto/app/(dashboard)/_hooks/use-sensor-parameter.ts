@@ -47,7 +47,7 @@ export function useSensorParameter() {
     () =>
       BuildColumns({
         onDelete: (id) => {
-          toast.info("Fitur edit belum tersedia", {
+          toast.info("Fitur hapus belum tersedia", {
             description: `Anda mencoba menghapus parameter dengan ID ${id}`,
           })
         },

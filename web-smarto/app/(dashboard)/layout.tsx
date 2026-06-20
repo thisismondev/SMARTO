@@ -132,7 +132,7 @@ const fuzzyMenuItems: MenuItem[] = [
   },
   {
     title: "Rule Base",
-    href: "#",
+    href: "/sensors/rule-base",
     icon: KeyRound,
     roles: [1, 2],
   },

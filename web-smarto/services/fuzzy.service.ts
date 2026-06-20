@@ -4,6 +4,10 @@ import db from "@/lib/db"
 type RuleBase = {
   id: number
   kode_rule: string
+  ph_kategori_id: number
+  kelembapan_kategori_id: number
+  suhu_kategori_id: number
+  nitrogen_kategori_id: number
   ph: string
   kelembapan: string
   suhu: string
@@ -22,6 +26,10 @@ export async function fetchRuleBase() {
         SELECT 
             rb.id,
             rb.kode_rule,
+            rb.ph_kategori_id,
+            rb.kelembapan_kategori_id,
+            rb.suhu_kategori_id,
+            rb.nitrogen_kategori_id,
             sk_ph.nama_kategori AS ph,
             sk_kel.nama_kategori AS kelembapan,
             sk_suhu.nama_kategori AS suhu,
@@ -32,7 +40,7 @@ export async function fetchRuleBase() {
         JOIN sensor_kategori sk_kel on sk_kel.id = rb.kelembapan_kategori_id
         JOIN sensor_kategori sk_suhu on sk_suhu.id = rb.suhu_kategori_id
         JOIN sensor_kategori sk_nit on sk_nit.id = rb.nitrogen_kategori_id
-        ORDER BY rb.kode_rule DESC
+        ORDER BY rb.kode_rule ASC
     `
   )
   return rows
@@ -66,7 +74,6 @@ export async function addRuleBaseDetail(
 export async function updateRuleBase(
   id: number,
   body: {
-    kode_rule: string
     ph_kategori_id: number
     kelembapan_kategori_id: number
     suhu_kategori_id: number
@@ -78,7 +85,6 @@ export async function updateRuleBase(
     `
         UPDATE rule_base
         SET 
-            kode_rule = ?,
             ph_kategori_id = ?,
             kelembapan_kategori_id = ?,
             suhu_kategori_id = ?,
@@ -87,7 +93,6 @@ export async function updateRuleBase(
         WHERE id = ?
         `,
     [
-      body.kode_rule,
       body.ph_kategori_id,
       body.kelembapan_kategori_id,
       body.suhu_kategori_id,
@@ -109,4 +114,17 @@ export async function checkRuleBase(id: number) {
     [id]
   )
   return rows
+}
+
+export async function findLastRuleBase() {
+  const [rows] = await db.query<RuleBaseRow[]>(
+    `
+    SELECT id, kode_rule
+    FROM rule_base
+    ORDER BY id DESC
+    LIMIT 1
+    `
+  )
+
+  return rows[0]
 }

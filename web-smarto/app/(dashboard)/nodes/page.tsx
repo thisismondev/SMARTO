@@ -104,7 +104,7 @@ export default function NodesPage() {
     <div className="space-y-2">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>User Node</CardTitle>
+          <CardTitle>Daftar Perangkat Node</CardTitle>
 
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
