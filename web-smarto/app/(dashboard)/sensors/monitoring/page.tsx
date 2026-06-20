@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { Droplet, Thermometer, Leaf, Search, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useSensorMonitoring } from "../../_hooks/use-monitoring"
+import PageLoading from "@/app/loading"
 
 export default function MonitoringPage() {
   const {
@@ -30,9 +31,14 @@ export default function MonitoringPage() {
     handleSearch,
     handleReset,
 
+    loading,
     error,
     skeleton,
   } = useSensorMonitoring()
+
+  if (loading) {
+    return <PageLoading />
+  }
 
   return (
     <div className="space-y-6">

@@ -18,6 +18,7 @@ import { NodeDetailSensorRow } from "@/types/nodes"
 import { supabase } from "@/lib/supabaseClient"
 
 export function useSensorMonitoring() {
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
   const [petani, setPetani] = useState<SelectPetani[]>([])
@@ -35,13 +36,14 @@ export function useSensorMonitoring() {
 
   const fetchPetani = useCallback(async () => {
     try {
-      //   setLoading(true)
+        setLoading(true)
       setError("")
 
       const token = localStorage.getItem("token")
 
       if (!token) {
         setError("Token tidak ditemukan. Silakan login kembali.")
+        setLoading(false)
         return
       }
 
@@ -55,6 +57,8 @@ export function useSensorMonitoring() {
       setPetani(petaniData)
     } catch (error: any) {
       setError(error.message || "Gagal mengambil data petani")
+    } finally {
+      setLoading(false)
     }
   }, [])
 
@@ -225,6 +229,7 @@ export function useSensorMonitoring() {
     selectedPetaniId,
     selectedNodeId,
 
+    loading,
     error,
     skeleton,
 

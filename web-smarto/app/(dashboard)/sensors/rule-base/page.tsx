@@ -22,6 +22,7 @@ import {
   SelectContent,
   SelectValue,
 } from "@/components/ui/select"
+import PageLoading from "@/app/loading"
 
 export default function RuleBasePage() {
   const {
@@ -52,11 +53,16 @@ export default function RuleBasePage() {
     handleEditFormChange,
     handleUpdateRuleBase,
   } = useRuleBase()
+
+  if (loading) {
+        return <PageLoading />
+      }
+
   return (
     <div className="space-y-2">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Rule Base</CardTitle>
+          <CardTitle>Rule Base Fuzzy</CardTitle>
 
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -164,16 +170,29 @@ export default function RuleBasePage() {
 
                   <Field>
                     <FieldLabel htmlFor="output">Output</FieldLabel>
-                    <Input
-                      id="output"
+                    <Select
                       value={form.output}
-                      onChange={(event) =>
-                        handleFormChange("output", event.target.value)
+                      onValueChange={(value) =>
+                        handleFormChange("output", value)
                       }
-                      placeholder="Contoh: Sedikit, Sedang, Banyak"
                       disabled={submitLoading}
-                      required
-                    />
+                    >
+                      <SelectTrigger id="output" className="w-full">
+                        <SelectValue placeholder="Pilih output" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        <SelectItem value="Sangat Rendah">
+                          Sangat Rendah
+                        </SelectItem>
+                        <SelectItem value="Rendah">Rendah</SelectItem>
+                        <SelectItem value="Sedang">Sedang</SelectItem>
+                        <SelectItem value="Tinggi">Tinggi</SelectItem>
+                        <SelectItem value="Sangat Tinggi">
+                          Sangat Tinggi
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                   </Field>
                 </FieldGroup>
 

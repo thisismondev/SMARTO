@@ -51,6 +51,7 @@ export function useRuleBase() {
     const token = localStorage.getItem("token")
     if (!token) {
       setError("Token tidak ditemukan. Silakan login kembali.")
+      setLoading(false)
       return
     }
 

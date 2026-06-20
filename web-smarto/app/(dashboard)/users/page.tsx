@@ -26,25 +26,7 @@ import {
 } from "@/components/ui/sheet"
 import { toast } from "sonner"
 import { useUsers } from "../_hooks/use-users"
-
-type ApiResponse<T> = {
-  status: boolean
-  message: string
-  data: T
-}
-
-type StoredUser = {
-  role_id: number
-}
-
-type RegisterPayload = {
-  name: string
-  username: string
-  email: string
-  password: string
-  confirmPassword: string
-  roleId: number
-}
+import PageLoading from "@/app/loading"
 
 export default function UsersPage() {
   const {
@@ -63,6 +45,10 @@ export default function UsersPage() {
     handleRegisterChange,
     handleRegisterSubmit,
   } = useUsers()
+
+  if (loading) {
+        return <PageLoading />
+      }
 
   return (
     <div className="container mx-auto space-y-4 py-0">

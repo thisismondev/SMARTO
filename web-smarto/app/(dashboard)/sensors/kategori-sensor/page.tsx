@@ -22,6 +22,7 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { DataTable } from "./data-table"
 import { useSensorKategori } from "../../_hooks/use-sensor-kategori"
+import PageLoading from "@/app/loading"
 
 export default function KategoriSensorPage() {
   const {
@@ -41,6 +42,10 @@ export default function KategoriSensorPage() {
     submitLoading,
     handleSubmitKategori,
   } = useSensorKategori()
+
+  if (loading) {
+      return <PageLoading />
+    }
 
   return (
     <div className="space-y-2">

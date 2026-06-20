@@ -115,8 +115,8 @@ export function useNodes() {
         label: item.label,
         lat: item.latitude,
         lng: item.longitude,
-        interval_sec: item.interval_sec,
-        status: item.status,
+        interval_sec: item.interval_sec || "-",
+        status: item.status === 1 ? "Tidak Aktif" : "Aktif",
       }))
 
       console.log("Fetched nodes:", nodeData)

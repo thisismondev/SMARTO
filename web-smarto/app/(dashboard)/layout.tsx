@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 import Link from "next/link" // 🌟 Tambahan untuk navigasi SPA tanpa reload
 
@@ -62,6 +62,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
+
+import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
@@ -73,7 +79,6 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-
 
 type UserData = {
   id: number
@@ -87,7 +92,7 @@ type MenuItem = {
   title: string
   href: string
   icon: LucideIcon
-  roles: Number[] // Array of role IDs that can access this menu item
+  roles: number[] // Array of role IDs that can access this menu item
 }
 
 type MenuGroup = {
@@ -214,6 +219,18 @@ export default function DashboardLayout({
   const [openLogoutDialog, setOpenLogoutDialog] = useState(false)
   const [logoutLoading, setLogoutLoading] = useState(false)
 
+  const breadcrumbMap: Record<string, string> = {
+    "/": "Dashboard",
+    "/sensors/monitoring": "Pemantauan Sensor",
+    "/sensors/parameter-sensor": "Parameter Sensor",
+    "/sensors/kategori-sensor": "Kategori Sensor",
+    "/sensors/rule-base": "Rule Base",
+    "/nodes": "Daftar Perangkat",
+    "/kode-node": "Kode Aktivasi",
+    "/users": "Manajemen User",
+    "/settings": "Settings",
+  }
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user")
 
@@ -282,6 +299,20 @@ export default function DashboardLayout({
     }
   }
 
+  const pathname = usePathname()
+
+  const currentPage = breadcrumbMap[pathname] || "Dashboard"
+
+  function isActiveMenu(href: string) {
+    if (href === "#") return false
+
+    if (href === "/") {
+      return pathname === "/"
+    }
+
+    return pathname === href || pathname.startsWith(`${href}/`)
+  }
+
   return (
     <AuthGuard>
       <SidebarProvider>
@@ -301,19 +332,27 @@ export default function DashboardLayout({
 
                 <SidebarGroupContent>
                   <SidebarMenu>
-                    {group.items.map((item) => (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton asChild>
-                          <Link
-                            href={item.href}
-                            className="flex items-center gap-3"
+                    {group.items.map((item) => {
+                      const active = isActiveMenu(item.href)
+
+                      return (
+                        <SidebarMenuItem key={item.title}>
+                          <SidebarMenuButton
+                            asChild
+                            isActive={active}
+                            className="data-[active=true]:bg-primary data-[active=true]:font-semibold data-[active=true]:text-primary-foreground"
                           >
-                            <item.icon className="h-4 w-4" />
-                            <span>{item.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    ))}
+                            <Link
+                              href={item.href}
+                              className="flex items-center gap-3"
+                            >
+                              <item.icon className="h-4 w-4" />
+                              <span>{item.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      )
+                    })}
                   </SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>
@@ -334,19 +373,21 @@ export default function DashboardLayout({
 
               <Separator orientation="vertical" className="h-4" />
 
-              {/* <Breadcrumb>
-                    <BreadcrumbList>
-                      <BreadcrumbItem className="hidden md:block">
-                        <BreadcrumbLink href="/">Smarto</BreadcrumbLink>
-                      </BreadcrumbItem>
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem className="hidden md:block">
+                    <BreadcrumbLink asChild>
+                      <Link href="/">Smarto</Link>
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
 
-                      <BreadcrumbSeparator className="hidden md:block" />
+                  <BreadcrumbSeparator className="hidden md:block" />
 
-                      <BreadcrumbItem>
-                        <BreadcrumbPage>Dashboard</BreadcrumbPage>
-                      </BreadcrumbItem>
-                    </BreadcrumbList>
-                  </Breadcrumb> */}
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>{currentPage}</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
             </div>
 
             <div className="flex items-center gap-2">
@@ -449,8 +490,8 @@ export default function DashboardLayout({
             </AlertDialog>
           </header>
 
-          <main className="min-h-screen flex-1 bg-background p-4 text-foreground md:p-6">
-            {children}
+          <main className="min-h-[calc(100vh-4rem)] w-full min-w-0 flex-1 overflow-x-hidden bg-background p-4 text-foreground md:p-6">
+            <div className="mx-auto w-full max-w-full min-w-0">{children}</div>
           </main>
         </SidebarInset>
       </SidebarProvider>

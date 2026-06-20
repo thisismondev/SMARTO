@@ -14,11 +14,13 @@ export function useSensorParameter() {
 
   const fetchParameter = useCallback(async () => {
     setError("")
+    setLoading(true)
 
     const token = localStorage.getItem("token")
 
     if (!token) {
       setError("Token tidak ditemukan. Silakan login kembali.")
+      setLoading(false)
       return
     }
 
@@ -36,6 +38,8 @@ export function useSensorParameter() {
     } catch (error: any) {
       setError("Gagal mengambil data parameter sensor.")
       console.error("Error fetching parameter sensor:", error)
+    } finally {
+      setLoading(false)
     }
   }, [])
 

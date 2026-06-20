@@ -83,7 +83,7 @@ export async function fetchKategoriSensor() {
         SELECT sk.id, sp.nama_parameter, sk.nama_kategori, sk.min_value, sk.max_value, sp.satuan
         FROM sensor_kategori sk
         JOIN sensor_parameter sp ON sk.parameter_id = sp.id
-        ORDER BY id ASC
+        ORDER BY sk.parameter_id ASC
     `
   )
   return rows

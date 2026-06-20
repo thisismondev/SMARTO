@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input"
 import { DataTable } from "./data-table"
 import { useSensorParameter } from "../../_hooks/use-sensor-parameter"
 import { toast } from "sonner"
+import PageLoading from "@/app/loading"
 
 export default function ParameterSensorPage() {
   const {
@@ -25,6 +26,11 @@ export default function ParameterSensorPage() {
     columns,
     parameter,
   } = useSensorParameter()
+
+  if (loading) {
+    return <PageLoading />
+  }
+  
   return (
     <div className="space-y-2">
       <Card>

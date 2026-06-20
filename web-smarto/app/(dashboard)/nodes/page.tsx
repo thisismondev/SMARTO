@@ -48,6 +48,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import PageLoading from "@/app/loading"
 
 export default function NodesPage() {
   const {
@@ -99,6 +100,10 @@ export default function NodesPage() {
     editLocationLoading,
     handleGetEditCurrentLocation,
   } = useNodes()
+
+  if (loading) {
+        return <PageLoading />
+      }
 
   return (
     <div className="space-y-2">

@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
 import { useKodeNode } from "../_hooks/use-kodeNode"
+import PageLoading from "@/app/loading"
 
 export default function KodeNodesPage() {
   const {
@@ -33,6 +34,10 @@ export default function KodeNodesPage() {
 
     handleGenerateKodeNode,
   } = useKodeNode()
+
+  if (loading) {
+        return <PageLoading />
+      }
 
   return (
     <div className="space-y-2">
