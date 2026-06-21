@@ -3,7 +3,6 @@
 import {
   findKodeNodes,
   generateKodeNode,
-  deleteKodeNode,
   kodeNodeActivate,
   kodeNodeInactivate,
 } from "../_lib/kode-node.api"
@@ -154,40 +153,15 @@ export function useKodeNode() {
     [fetchKodeNodes]
   )
 
-  const handleDelete = useCallback(
-    async (id: number) => {
-      const token = localStorage.getItem("token")
-
-      if (!token) {
-        toast.error("Token tidak ditemukan. Silakan login ulang.")
-        return
-      }
-
-      try {
-        const result = await deleteKodeNode(token, id)
-
-        toast.success(result.message || "Kode node berhasil dihapus")
-        await fetchKodeNodes()
-      } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "Gagal menghapus kode node"
-
-        toast.error(message)
-      }
-    },
-    [fetchKodeNodes]
+  const columns = useMemo(
+    () =>
+      columnNodes({
+        onActive: handleActivate,
+        onInactive: handleInactivate,
+        isAdmin,
+      }),
+    [handleActivate, handleInactivate, isAdmin]
   )
-
-    const columns = useMemo(
-      () =>
-        columnNodes({
-          onActive: handleActivate,
-          onInactive: handleInactivate,
-          onDelete: handleDelete,
-          isAdmin,
-        }),
-      [handleActivate, handleInactivate, handleDelete, isAdmin]
-    )
 
   return {
     data,
@@ -206,6 +180,5 @@ export function useKodeNode() {
     handleGenerateKodeNode,
     handleActivate,
     handleInactivate,
-    handleDelete,
   }
 }

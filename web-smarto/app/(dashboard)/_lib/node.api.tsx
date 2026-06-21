@@ -149,7 +149,7 @@ export async function updateNode(
 ) {
   try {
     const response = await fetch(`/api/node/${id}/update`, {
-      method: "PATCH",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,

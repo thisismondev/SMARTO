@@ -321,11 +321,11 @@ export default function NodesPage() {
       <AlertDialog open={useDialogOpen} onOpenChange={setUseDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Gunakan node ini?</AlertDialogTitle>
+            <AlertDialogTitle>Aktifkan node ini?</AlertDialogTitle>
             <AlertDialogDescription>
               Node dengan kode{" "}
               <span className="font-semibold">{selectedNode?.kode_node}</span>{" "}
-              akan diubah menjadi terpakai.
+              akan diaktifkan.
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -335,7 +335,7 @@ export default function NodesPage() {
               disabled={loading || !selectedNode}
               onClick={handleUseNode}
             >
-              Ya, Pakai
+              Ya, Aktifkan
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -344,11 +344,11 @@ export default function NodesPage() {
       <AlertDialog open={releaseDialogOpen} onOpenChange={setReleaseDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Lepas node ini?</AlertDialogTitle>
+            <AlertDialogTitle>Nonaktifkan node ini?</AlertDialogTitle>
             <AlertDialogDescription>
-              Kepemilikan node{" "}
+              Node{" "}
               <span className="font-semibold">{selectedNode?.kode_node}</span>{" "}
-              akan dilepas. Data node tetap tersimpan sebagai riwayat.
+              akan dinonaktifkan.
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -359,7 +359,7 @@ export default function NodesPage() {
               onClick={handleReleaseNode}
               className="bg-red-600 hover:bg-red-700"
             >
-              Ya, Lepas
+              Ya, Nonaktifkan
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

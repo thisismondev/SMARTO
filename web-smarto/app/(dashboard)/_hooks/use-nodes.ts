@@ -42,16 +42,6 @@ const initialEditForm: UpdateNodePayload = {
   lng: "",
 }
 
-function formatCoordinate(value: string | number) {
-  const numberValue = Number(value)
-
-  if (Number.isNaN(numberValue)) {
-    return ""
-  }
-
-  return numberValue.toFixed(6)
-}
-
 export function useNodes() {
   const [data, setData] = useState<Nodes[]>([])
   const [loading, setLoading] = useState(false)

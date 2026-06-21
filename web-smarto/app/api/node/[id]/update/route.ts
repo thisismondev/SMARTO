@@ -15,8 +15,6 @@ export async function PUT(
 
     const node = await findNodeById(id)
     if (!node) return errorResponse("Node tidak ditemukan", 404)
-    if (node.status === 1)
-      return errorResponse("Node ini sudah dilepaskan", 400)
 
     if (user.roleId === 3 && node.user_id !== user.id) {
       return errorResponse(

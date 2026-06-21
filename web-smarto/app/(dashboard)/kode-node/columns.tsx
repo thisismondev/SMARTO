@@ -19,14 +19,12 @@ export type KodeNodes = {
 type ColumnNodesProps = {
   onActive: (id: number) => void
   onInactive: (id: number) => void
-  onDelete: (id: number) => void
   isAdmin: boolean
 }
 
 export function columnNodes({
   onActive,
   onInactive,
-  onDelete,
   isAdmin,
 }: ColumnNodesProps): ColumnDef<KodeNodes>[] {
   const columns: ColumnDef<KodeNodes>[] = [
@@ -67,14 +65,6 @@ export function columnNodes({
               <DropdownMenuItem onClick={() => onInactive(node.id)}>
                 <CircleX className="mr-2 h-4 w-4" />
                 Nonaktifkan
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
-                onClick={() => onDelete(node.id)}
-                className="text-red-600 focus:text-red-600"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Hapus
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

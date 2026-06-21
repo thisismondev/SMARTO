@@ -81,7 +81,7 @@ export function columns({
 
               <DropdownMenuItem onClick={() => onUse(node)}>
                 <CheckCircle className="mr-2 h-4 w-4" />
-                Pakai
+                Aktifkan
               </DropdownMenuItem>
 
               <DropdownMenuItem
@@ -89,7 +89,7 @@ export function columns({
                 className="text-red-600 focus:text-red-600"
               >
                 <Unlink className="mr-2 h-4 w-4" />
-                Lepas
+                Nonaktifkan
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

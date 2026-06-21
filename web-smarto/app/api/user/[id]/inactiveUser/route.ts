@@ -1,6 +1,7 @@
 import { getAuthUser } from "@/lib/auth"
 import { errorResponse, successResponse } from "@/lib/response"
 import { inactiveById } from "@/services/users.service"
+import { deleteUserNode } from "@/services/nodes.service"
 import { RouteParams } from "@/types/api"
 
 export async function PATCH(request: Request, { params }: { params: RouteParams }) {
@@ -29,6 +30,8 @@ export async function PATCH(request: Request, { params }: { params: RouteParams 
     if (result.changedRows === 0) {
       return successResponse("User sudah nonaktif sebelumnya", null, 200)
     }
+
+    await deleteUserNode(id)
 
     return successResponse("User berhasil dinonaktifkan", null, 200)
   } catch (error: any) {

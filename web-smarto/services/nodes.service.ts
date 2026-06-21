@@ -142,6 +142,19 @@ export async function releaseNodeUser(id: number) {
   return result
 }
 
+export async function deleteUserNode(userId: number) {
+  const [result] = await db.query<ResultSetHeader>(
+    `
+    UPDATE nodes
+    SET user_id = NULL
+    WHERE user_id = ?
+    `,
+    [userId]
+  )
+
+  return result
+}
+
 export async function updateNodeById(
   nodeId: number,
   data: {
@@ -167,9 +180,9 @@ export async function fetchNodes() {
     `
         SELECT n.id, kn.kode_node, n.user_id, u.name, n.label, n.latitude, n.longitude, n.interval_sec, n.status
         FROM nodes n
-        JOIN users u ON n.user_id = u.id
         JOIN kode_node kn ON kn.id = n.kode_node_id
-        ORDER BY u.name ASC
+        LEFT JOIN users u ON n.user_id = u.id
+        ORDER BY kn.kode_node ASC 
         `
   )
   return result

@@ -46,30 +46,6 @@ export async function generateKodeNode(token: String) {
   }
 }
 
-export async function deleteKodeNode(token: String, id: number) {
-  try {
-    const response = await fetch(`/api/kode-node/${id}/delete`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-
-    const result = await response.json()
-
-    console.log("API Response for deleting kode-node:", result)
-
-    if (!response.ok || !result.status) {
-      throw new Error(result.message || "Gagal menghapus kode node")
-    }
-
-    return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal menghapus kode-node")
-  }
-}
-
 export async function kodeNodeActivate(token: String, id: number) {
   try {
     const response = await fetch(`/api/kode-node/${id}/activeCode`, {

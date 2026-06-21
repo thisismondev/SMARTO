@@ -9,13 +9,11 @@ export async function GET(
 ) {
   try {
     const user = await getAuthUser(request)
+    if (!user) return errorResponse("Unauthorized", 401)
 
     const { kodeNode } = await params
 
-    console.log("=== CHECK KODE NODE API MASUK ===")
     console.log("Kode node dari URL:", kodeNode)
-
-    if (!user) return errorResponse("Unauthorized", 401)
 
     const kodeNodeData = await checkingKodeNode(kodeNode)
 
@@ -25,12 +23,12 @@ export async function GET(
       return errorResponse("Kode node tidak ditemukan", 404)
     }
 
-    if (kodeNodeData.kn_status !== 0) {
+    if (kodeNodeData.kn_status === 1) {
       return errorResponse("Kode node tidak aktif", 400)
     }
 
-    if (kodeNodeData.n_status === 0) {
-      return errorResponse("Kode node sudah terpakai", 400)
+    if (kodeNodeData.n_status === 0 || kodeNodeData.n_status === 1) {
+      return errorResponse("Kode node sudah Tersedia", 400)
     }
 
     return successResponse("Kode node tersedia", { kodeNode }, 200)
