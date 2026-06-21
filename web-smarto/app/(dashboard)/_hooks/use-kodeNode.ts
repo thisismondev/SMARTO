@@ -59,8 +59,7 @@ export function useKodeNode() {
       const mappedData = result.data.map((node: any) => ({
         id: node.id,
         kode_node: node.kode_node,
-        kn_status: node.kn_status === 0 ? "Aktif" : "Tidak Aktif",
-        status: node.status === 0 ? "Ada" : "Belum",
+        status: node.status === 0 ? "Aktif" : "Tidak Aktif",
       }))
 
       setData(mappedData)

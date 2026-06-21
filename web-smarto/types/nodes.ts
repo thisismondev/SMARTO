@@ -13,7 +13,6 @@ export type Nodes = {
 export type KodeNode = {
   id: number
   kode_node: string
-  kn_status: string
   status: string
 }
 

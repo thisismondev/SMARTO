@@ -14,6 +14,8 @@ export async function GET(request: Request) {
 
     const nodes = await fetchKodeNodes()
 
+    console.log("kode node", nodes)
+
     return successResponse("Kode Node fetched successfully", nodes, 200)
   } catch (error: any) {
     return errorResponse("Terjadi kesalahan", 500, error.message)

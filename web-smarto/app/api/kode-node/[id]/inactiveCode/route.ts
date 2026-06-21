@@ -1,6 +1,9 @@
 import { errorResponse, successResponse } from "@/lib/response"
 import { getAuthUser } from "@/lib/auth"
-import { inactiveNodeKode, findKodeNodeById } from "@/services/kode-nodes.service"
+import {
+  inactiveNodeKode,
+  checkingKodeNodeById,
+} from "@/services/kode-nodes.service"
 import { RouteParams } from "@/types/api"
 
 export async function PATCH(
@@ -19,10 +22,19 @@ export async function PATCH(
         403
       )
 
-    const existingKode = await findKodeNodeById(id)
+    const existingKode = await checkingKodeNodeById(id)
+
+    console.log("existingKode", existingKode)
+    
     if (!existingKode) return errorResponse("Kode node tidak ditemukan", 404)
-    if (existingKode.status === 1)
+    if (existingKode.kn_status === 1)
       return errorResponse("Kode node ini sudah tidak aktif", 400)
+
+    if (existingKode.n_status === 0)
+      return errorResponse(
+        "Kode node ini tidak dapat diaktifkan karena node terkait sedang aktif",
+        400
+      )
 
     const result = await inactiveNodeKode(id)
 

@@ -14,9 +14,6 @@ type CheckKodeNodeRow = {
   n_status: number
 } & RowDataPacket
 
-
-
-
 export async function createKodeNode(kodeNode: string) {
   const [result] = await db.query<ResultSetHeader>(
     `INSERT INTO kode_node (kode_node) 
@@ -67,19 +64,6 @@ export async function checkingKodeNodeById(id: number){
   return rows[0] || null
 }
 
-export async function findKodeNodeById(kodeNodeId: number) {
-  const [rows] = await db.query<KodeNodeRow[]>(
-    `
-    SELECT id, kode_node, status
-    FROM kode_node
-    WHERE id = ?
-    LIMIT 1
-    `,
-    [kodeNodeId]
-  )
-  return rows[0] || null
-}
-
 export async function inactiveNodeKode(kodeNodeId: number) {
   const [result] = await db.query<ResultSetHeader>(
     `
@@ -116,12 +100,11 @@ export async function deleteNodeKode(id: number) {
 }
 
 export async function fetchKodeNodes() {
-  const [result] = await db.query<ResultSetHeader>(
+  const [result] = await db.query<KodeNodeRow[]>(
     `
-        SELECT kn.id, kn.kode_node, kn.status as kn_status, n.status
+        SELECT kn.id, kn.kode_node, kn.status
         FROM kode_node kn
-        LEFT JOIN nodes n ON n.kode_node_id = kn.id
-        ORDER BY kn.created_at DESC, n.status ASC;
+        ORDER BY kn.id DESC;
 
     `
   )

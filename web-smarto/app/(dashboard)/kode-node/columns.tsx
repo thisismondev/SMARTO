@@ -13,7 +13,6 @@ import { CircleCheck, CircleX, MoreHorizontal, Trash2 } from "lucide-react"
 export type KodeNodes = {
   id: number
   kode_node: string
-  kn_status: string
   status: string
 }
 
@@ -39,10 +38,6 @@ export function columnNodes({
     {
       accessorKey: "kode_node",
       header: "Kode Node",
-    },
-    {
-      accessorKey: "kn_status",
-      header: "KN Status",
     },
     {
       accessorKey: "status",

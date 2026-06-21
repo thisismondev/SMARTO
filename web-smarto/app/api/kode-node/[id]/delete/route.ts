@@ -24,8 +24,18 @@ export async function DELETE(
 
     const existingKode = await checkingKodeNodeById(id)
     if (!existingKode) return errorResponse("Kode node tidak ditemukan", 404)
-    if (existingKode.n_status === 0 || existingKode.kn_status === 0) {
-      return errorResponse("Kode node ini masih aktif / terpakai", 400)
+    if (existingKode.n_status === 0) {
+      return errorResponse(
+        "Kode node ini masih digunakan, nonaktifkan terlebih dahulu sebelum menghapus",
+        400
+      )
+    }
+
+    if (existingKode.kn_status === 0) {
+      return errorResponse(
+        "Kode node ini masih aktif, nonaktifkan terlebih dahulu sebelum menghapus",
+        400
+      )
     }
 
     const result = await deleteNodeKode(id)

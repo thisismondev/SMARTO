@@ -1,6 +1,9 @@
 import { errorResponse, successResponse } from "@/lib/response"
 import { getAuthUser } from "@/lib/auth"
-import { activeNodeKode, findKodeNodeById } from "@/services/kode-nodes.service"
+import {
+  activeNodeKode,
+  checkingKodeNodeById,
+} from "@/services/kode-nodes.service"
 import { RouteParams } from "@/types/api"
 
 export async function PATCH(
@@ -18,10 +21,13 @@ export async function PATCH(
         "Forbidden: Anda tidak memiliki akses untuk melakukan aksi ini",
         403
       )
-      
-    const existingKode = await findKodeNodeById(id)
+
+    const existingKode = await checkingKodeNodeById(id)
+
+    console.log("existingKode active", existingKode)
+
     if (!existingKode) return errorResponse("Kode node tidak ditemukan", 404)
-    if (existingKode.status === 0)
+    if (existingKode.kn_status === 0)
       return errorResponse("Kode node ini sudah aktif", 400)
 
     const result = await activeNodeKode(id)
