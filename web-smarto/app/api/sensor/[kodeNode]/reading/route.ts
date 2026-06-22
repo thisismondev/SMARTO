@@ -23,7 +23,7 @@ export async function PATCH(
     const body = await request.json()
     const { ph, kelembapan, suhu, nitrogen } = body
 
-    if (!ph || !kelembapan || !suhu || !nitrogen) {
+    if (ph === null || kelembapan === null || suhu === null || nitrogen === null) {
       return errorResponse("Semua parameter harus diisi", 400)
     }
 
