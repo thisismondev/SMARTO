@@ -13,7 +13,9 @@ export async function PATCH(
 
     const { id } = await params
 
-    const node = await findNodeById(id)
+    const idParams = Number(id)
+
+    const node = await findNodeById(idParams)
     if (!node) return errorResponse("Node tidak ditemukan", 404)
     if (node.status === 1) return errorResponse("Node ini sudah dilepaskan", 400)
 
@@ -21,7 +23,7 @@ export async function PATCH(
         return errorResponse("Anda tidak memiliki izin untuk melepaskan node ini", 403)
     }
 
-    const result = await releaseNodeUser(id)
+    const result = await releaseNodeUser(idParams)
 
     if (result.affectedRows === 0) {
       return errorResponse("Gagal melepaskan user node", 400)

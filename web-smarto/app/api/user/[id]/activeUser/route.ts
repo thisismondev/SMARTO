@@ -13,11 +13,13 @@ export async function PATCH(request: Request, { params }: { params: RouteParams 
 
     const { id } = await params
 
-    if (isNaN(id)) {
+    const idParams = Number(id)
+
+    if (isNaN(idParams)) {
       return errorResponse("ID user tidak valid", 400)
     }
 
-    const result = await activeById(id)
+    const result = await activeById(idParams)
 
     if (result.affectedRows === 0) {
       return errorResponse("User tidak ditemukan", 404)

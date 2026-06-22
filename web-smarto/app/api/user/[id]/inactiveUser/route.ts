@@ -14,14 +14,16 @@ export async function PATCH(request: Request, { params }: { params: RouteParams 
 
     const { id } = await params
 
-    console.log("PARAM:", id)
+    const idParams = Number(id)
 
-    if (isNaN(id)) {
+    console.log("PARAM:", idParams)
+
+    if (isNaN(idParams)) {
       return errorResponse("Invalid user ID", 400)
     }
 
 
-    const result = await inactiveById(id)
+    const result = await inactiveById(idParams)
 
     if (result.affectedRows === 0) {
       return errorResponse("User tidak ditemukan", 404)
@@ -31,7 +33,7 @@ export async function PATCH(request: Request, { params }: { params: RouteParams 
       return successResponse("User sudah nonaktif sebelumnya", null, 200)
     }
 
-    await deleteUserNode(id)
+    await deleteUserNode(idParams)
 
     return successResponse("User berhasil dinonaktifkan", null, 200)
   } catch (error: any) {

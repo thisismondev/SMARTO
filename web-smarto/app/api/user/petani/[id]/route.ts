@@ -16,7 +16,9 @@ export async function GET(
 
     const { id } = await params
 
-    const result = await findNodeByUserId(id)
+    const idParams = Number(id)
+
+    const result = await findNodeByUserId(idParams)
 
     if (!result) {
       return errorResponse("Node tidak ditemukan", 404)

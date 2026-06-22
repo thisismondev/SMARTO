@@ -22,7 +22,9 @@ export async function DELETE(
         403
       )
 
-    const existingKode = await checkingKodeNodeById(id)
+    const idParams = Number(id)
+
+    const existingKode = await checkingKodeNodeById(idParams)
     if (!existingKode) return errorResponse("Kode node tidak ditemukan", 404)
     if (existingKode.n_status === 0) {
       return errorResponse(
@@ -38,13 +40,13 @@ export async function DELETE(
       )
     }
 
-    const result = await deleteNodeKode(id)
+    const result = await deleteNodeKode(idParams)
 
     if (!result.affectedRows) {
       return errorResponse("Node tidak ditemukan", 404)
     }
 
-    return successResponse("Node berhasil dihapus", { id: id }, 200)
+    return successResponse("Node berhasil dihapus", { id: idParams }, 200)
   } catch (error: any) {
     return errorResponse("Gagal menghapus Kode Node", 500, error.message)
   }

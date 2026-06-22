@@ -19,7 +19,9 @@ export async function PUT(
 
     const { id } = await params
 
-    const existingRuleBase = await checkRuleBase(id)
+    const idParams = Number(id)
+
+    const existingRuleBase = await checkRuleBase(idParams)
     if (!existingRuleBase) {
       return errorResponse("Rule base tidak ditemukan", 404)
     }
@@ -33,7 +35,7 @@ export async function PUT(
       output,
     } = body
 
-    const result = await updateRuleBase(id, {
+    const result = await updateRuleBase(idParams, {
       ph_kategori_id,
       kelembapan_kategori_id,
       suhu_kategori_id,

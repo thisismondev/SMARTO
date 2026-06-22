@@ -13,7 +13,9 @@ export async function PUT(
 
     const { id } = await params
 
-    const node = await findNodeById(id)
+    const idParams = Number(id)
+
+    const node = await findNodeById(idParams)
     if (!node) return errorResponse("Node tidak ditemukan", 404)
 
     if (user.roleId === 3 && node.user_id !== user.id) {
@@ -26,7 +28,7 @@ export async function PUT(
     const body = await request.json()
     const { userId, label, lat, lng } = body
 
-    const result = await updateNodeById(id, {
+    const result = await updateNodeById(idParams, {
       userId: userId,
       label: label,
       lat: lat,

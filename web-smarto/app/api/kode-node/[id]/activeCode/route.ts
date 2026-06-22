@@ -22,7 +22,10 @@ export async function PATCH(
         403
       )
 
-    const existingKode = await checkingKodeNodeById(id)
+      const idParams = Number(id)
+    
+
+    const existingKode = await checkingKodeNodeById(idParams)
 
     console.log("existingKode active", existingKode)
 
@@ -30,13 +33,13 @@ export async function PATCH(
     if (existingKode.kn_status === 0)
       return errorResponse("Kode node ini sudah aktif", 400)
 
-    const result = await activeNodeKode(id)
+    const result = await activeNodeKode(idParams)
 
     if (!result.affectedRows) {
       return errorResponse("Node tidak ditemukan", 404)
     }
 
-    return successResponse("Node berhasil diaktifkan", { id: id }, 200)
+    return successResponse("Node berhasil diaktifkan", { id: idParams }, 200)
   } catch (error: any) {
     return errorResponse("Gagal mengaktifkan node", 500, error.message)
   }

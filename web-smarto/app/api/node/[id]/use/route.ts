@@ -17,7 +17,9 @@ export async function PATCH(
 
     const { id } = await params
 
-    const node = await findNodeById(id)
+    const idParams = Number(id)
+
+    const node = await findNodeById(idParams)
     if (!node) return errorResponse("Node tidak ditemukan", 404)
     if (node.status === 0) return errorResponse("Node ini sudah dipakai", 400)
 
@@ -34,7 +36,7 @@ export async function PATCH(
       )
     }
 
-    const result = await useNodeUser(id)
+    const result = await useNodeUser(idParams)
 
     if (result.affectedRows === 0) {
       return errorResponse("Gagal menggunakan node", 400)

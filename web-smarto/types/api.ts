@@ -1,4 +1,4 @@
-export type RouteParams = Promise<{ id: number }>;
+export type RouteParams = Promise<{ id: string }>;
 
 export type KodeNodeRouteParams = Promise<{ kodeNode: string }>;
 
