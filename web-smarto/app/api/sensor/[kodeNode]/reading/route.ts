@@ -23,8 +23,12 @@ export async function PATCH(
     const body = await request.json()
     const { ph, kelembapan, suhu, nitrogen } = body
 
+    if (!ph || !kelembapan || !suhu || !nitrogen) {
+      return errorResponse("Semua parameter harus diisi", 400)
+    }
+
     const { data, error } = await supabaseAdmin
-      .from("kode_node")
+      .from("sensor_readings")
       .update({
         ph: ph,
         kelembapan: kelembapan,
