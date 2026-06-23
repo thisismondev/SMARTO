@@ -338,18 +338,31 @@ export default function RuleBasePage() {
               </div>
 
               <Field>
-                <FieldLabel htmlFor="edit_output">Output</FieldLabel>
-                <Input
-                  id="edit_output"
-                  value={editForm.output}
-                  onChange={(event) =>
-                    handleEditFormChange("output", event.target.value)
-                  }
-                  placeholder="Contoh: Sedikit, Sedang, Banyak"
-                  disabled={editLoading}
-                  required
-                />
-              </Field>
+                    <FieldLabel htmlFor="edit_output">Output</FieldLabel>
+                    <Select
+                      value={editForm.output}
+                      onValueChange={(value) =>
+                        handleEditFormChange("output", value)
+                      }
+                      disabled={editLoading}
+                    >
+                      <SelectTrigger id="edit_output" className="w-full">
+                        <SelectValue placeholder="Pilih output" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        <SelectItem value="Sangat Rendah">
+                          Sangat Rendah
+                        </SelectItem>
+                        <SelectItem value="Rendah">Rendah</SelectItem>
+                        <SelectItem value="Sedang">Sedang</SelectItem>
+                        <SelectItem value="Tinggi">Tinggi</SelectItem>
+                        <SelectItem value="Sangat Tinggi">
+                          Sangat Tinggi
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </Field>
             </FieldGroup>
 
             <DialogFooter>

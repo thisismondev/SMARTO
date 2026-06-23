@@ -40,7 +40,7 @@ export async function fetchRuleBase() {
         JOIN sensor_kategori sk_kel on sk_kel.id = rb.kelembapan_kategori_id
         JOIN sensor_kategori sk_suhu on sk_suhu.id = rb.suhu_kategori_id
         JOIN sensor_kategori sk_nit on sk_nit.id = rb.nitrogen_kategori_id
-        ORDER BY rb.kode_rule ASC
+        ORDER BY LENGTH(rb.kode_rule) ASC, rb.kode_rule ASC 
     `
   )
   return rows
