@@ -31,6 +31,7 @@ class AuthController extends ChangeNotifier {
 
       await TokenStorage.saveUser(
         id: result.user.id,
+        name: result.user.name,
         username: result.user.username,
         email: result.user.email,
         roleId: result.user.roleId,
@@ -46,21 +47,6 @@ class AuthController extends ChangeNotifier {
       notifyListeners();
     }
   }
-
-  // Future<void> getProfile() async {
-  //   try {
-  //     loading = true;
-  //     error = null;
-  //     notifyListeners();
-
-  //     user = await AuthApi.getProfile();
-  //   } catch (e) {
-  //     error = e.toString().replaceAll('Exception: ', '');
-  //   } finally {
-  //     loading = false;
-  //     notifyListeners();
-  //   }
-  // }
 
   Future<void> logout() async {
     try {

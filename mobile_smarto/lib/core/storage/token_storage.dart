@@ -6,6 +6,7 @@ class TokenStorage {
   static const String _tokenKey = 'token';
 
   static const String _userIdKey = 'user_id';
+  static const String _nameKey = 'name';
   static const String _usernameKey = 'username';
   static const String _emailKey = 'email';
   static const String _roleIdKey = 'role_id';
@@ -41,6 +42,7 @@ class TokenStorage {
 
   static Future<void> saveUser({
     required int id,
+    required String name,
     required String username,
     required String email,
     required int roleId,
@@ -49,6 +51,11 @@ class TokenStorage {
     await _storage.write(
       key: _userIdKey,
       value: id.toString(),
+    );
+
+    await _storage.write(
+      key: _nameKey,
+      value: name,
     );
 
     await _storage.write(
@@ -80,6 +87,10 @@ class TokenStorage {
     return int.tryParse(value);
   }
 
+  static Future<String?> getName() async {
+    return await _storage.read(key: _nameKey);
+  }
+
   static Future<String?> getUsername() async {
     return await _storage.read(key: _usernameKey);
   }
@@ -107,6 +118,7 @@ class TokenStorage {
 
   static Future<void> removeUser() async {
     await _storage.delete(key: _userIdKey);
+    await _storage.delete(key: _nameKey);
     await _storage.delete(key: _usernameKey);
     await _storage.delete(key: _emailKey);
     await _storage.delete(key: _roleIdKey);
