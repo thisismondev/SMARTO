@@ -43,7 +43,17 @@ type NodeByUserRow = {
   user_id: number
 } & RowDataPacket
 
-
+type NodeByUser = {
+  id: number
+  kode_node_id: number
+  kode_node: string
+  user_id: number
+  name: string
+  label: string
+  latitude: string
+  longitude: string
+  status: number
+} & RowDataPacket
 
 export async function findNodeByKodeNodeId(kodeNodeId: number) {
   const [rows] = await db.query<NodeKodeRow[]>(
@@ -65,6 +75,21 @@ export async function findNodeByUserId(userId: number) {
     SELECT n.id, n.kode_node_id, kn.kode_node, n.user_id
     FROM nodes n
     JOIN kode_node kn ON n.kode_node_id = kn.id
+    WHERE n.user_id = ?
+    `,
+    [userId]
+  )
+
+  return rows
+}
+
+export async function findNodeUserById(userId: number) {
+  const [rows] = await db.query<NodeByUser[]>(
+    `
+    SELECT n.id, n.kode_node_id, kn.kode_node, n.user_id, u.name, n.label, n.latitude, n.longitude, n.status
+    FROM nodes n
+    JOIN kode_node kn ON n.kode_node_id = kn.id
+    JOIN users u ON n.user_id = u.id
     WHERE n.user_id = ?
     `,
     [userId]
@@ -188,7 +213,10 @@ export async function fetchNodes() {
   return result
 }
 
-export async function findNodesByUserAndKodeNode(userId: number, kodeNodeId: number ) {
+export async function findNodesByUserAndKodeNode(
+  userId: number,
+  kodeNodeId: number
+) {
   const [result] = await db.query<RowNodeSensor[]>(
     `
         SELECT n.id, kn.kode_node, u.name,  n.latitude, n.longitude, n.interval_sec, n.status, kn.status as kode_node_status
