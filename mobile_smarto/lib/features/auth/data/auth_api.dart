@@ -7,7 +7,7 @@ class AuthApi {
     required String password,
   }) async {
     final response = await ApiClient.post(
-      'api/mobile/auth/login',
+      '/api/mobile/auth/login',
       {
         'identifier': identifier,
         'password': password,
@@ -19,7 +19,7 @@ class AuthApi {
 
   static Future<void> logout() async {
     await ApiClient.post(
-      'api/auth/logout',
+      '/api/auth/logout',
       {},
     );
   }

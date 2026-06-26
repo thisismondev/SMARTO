@@ -29,6 +29,14 @@ class AuthController extends ChangeNotifier {
 
       await TokenStorage.saveToken(result.token);
 
+      await TokenStorage.saveUser(
+        id: result.user.id,
+        username: result.user.username,
+        email: result.user.email,
+        roleId: result.user.roleId,
+        role: result.user.role,
+      );
+
       return true;
     } catch (e) {
       error = e.toString().replaceAll('Exception: ', '');
