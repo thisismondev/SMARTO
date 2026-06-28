@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../home/controller/node_controller.dart';
 import '../../home/model/node_response_model.dart';
+import '../../home/model/sensor_reading_model.dart';
+
+
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -334,7 +337,7 @@ class _SensorGrid extends StatelessWidget {
     final sensors = [
       _SensorCardData(
         title: 'pH Tanah',
-        value: sensorData.ph.toStringAsFixed(1),
+        value: sensorData.ph.toString(),
         unit: 'pH',
         icon: Icons.science_outlined,
         color: const Color(0xFF2E7D32),
@@ -342,7 +345,7 @@ class _SensorGrid extends StatelessWidget {
       ),
       _SensorCardData(
         title: 'Kelembapan',
-        value: sensorData.kelembapan.toStringAsFixed(0),
+        value: sensorData.kelembapan.toString(),
         unit: '%',
         icon: Icons.water_drop_outlined,
         color: const Color(0xFF2E7D32),
@@ -350,7 +353,7 @@ class _SensorGrid extends StatelessWidget {
       ),
       _SensorCardData(
         title: 'Suhu',
-        value: sensorData.suhu.toStringAsFixed(0),
+        value: sensorData.suhu.toString(),
         unit: '°C',
         icon: Icons.thermostat_outlined,
         color: const Color(0xFFF9A825),
@@ -358,7 +361,7 @@ class _SensorGrid extends StatelessWidget {
       ),
       _SensorCardData(
         title: 'Nitrogen',
-        value: sensorData.nitrogen.toStringAsFixed(0),
+        value: sensorData.nitrogen.toString(),
         unit: 'mg/kg',
         icon: Icons.grass_outlined,
         color: const Color(0xFFC62828),

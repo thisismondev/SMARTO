@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../data/node_api.dart';
+import '../data/sensor_api.dart';
+import '../model/sensor_reading_model.dart';
 import '../model/node_response_model.dart';
 
 import '../../../core/storage/token_storage.dart';
@@ -17,6 +21,8 @@ class NodeController extends ChangeNotifier {
   SensorReadingModel? sensorData;
 
   String? farmer;
+
+  RealtimeChannel? _sensorChannel;
 
   Future<void> fetchLahan() async {
     final userId = await TokenStorage.getUserId();
@@ -51,11 +57,15 @@ class NodeController extends ChangeNotifier {
   Future<void> changeLahan(NodeResponseModel? lahan) async {
     selectedLahan = lahan;
     sensorData = null;
+    error = null;
     notifyListeners();
+
+    await _removeSensorChannel();
 
     if (lahan == null) return;
 
     await fetchSensorBySelectedNode();
+    subscribeSensorBySelectedNode();
   }
 
   Future<void> fetchSensorBySelectedNode() async {
@@ -66,46 +76,67 @@ class NodeController extends ChangeNotifier {
       error = null;
       notifyListeners();
 
-      await Future.delayed(const Duration(milliseconds: 500));
+      final sensor = await SensorApi.fetchLatestSensor(
+        kodeNodeId: selectedLahan!.kodeNodeId,
+      );
 
-      sensorData = _getDummySensorByNodeId(selectedLahan!.id);
+      print('Fetched latest sensor data: $sensor');
+
+      sensorData = sensor;
+
+      log(
+        'Sensor terbaru berhasil diambil untuk kodeNodeId: ${selectedLahan!.kodeNodeId}',
+        name: 'NodeController.fetchSensorBySelectedNode',
+      );
     } catch (e) {
       error = e.toString().replaceAll('Exception: ', '');
+
+      print(
+        'Error fetching sensor: $error - NodeController.fetchSensorBySelectedNode',
+      );
     } finally {
       loadingSensor = false;
       notifyListeners();
     }
   }
 
-  SensorReadingModel _getDummySensorByNodeId(int nodeId) {
-    switch (nodeId) {
-      case 3:
-        return const SensorReadingModel(
-          ph: 6.8,
-          kelembapan: 72,
-          suhu: 28,
-          nitrogen: 42,
-          updatedAt: '2 menit lalu',
-        );
+  void subscribeSensorBySelectedNode() {
+    if (selectedLahan == null) return;
 
-      case 4:
-        return const SensorReadingModel(
-          ph: 5.1,
-          kelembapan: 48,
-          suhu: 34,
-          nitrogen: 25,
-          updatedAt: '5 menit lalu',
-        );
+    _sensorChannel = SensorApi.subscribeSensor(
+      kodeNodeId: selectedLahan!.kodeNodeId,
+      onData: (sensor) {
+        sensorData = sensor;
+        notifyListeners();
 
-      default:
-        return const SensorReadingModel(
-          ph: 6.5,
-          kelembapan: 65,
-          suhu: 29,
-          nitrogen: 35,
-          updatedAt: 'Baru saja',
+        log(
+          'Realtime sensor update: pH=${sensor.ph}, suhu=${sensor.suhu}, kelembapan=${sensor.kelembapan}, nitrogen=${sensor.nitrogen}',
+          name: 'NodeController.subscribeSensorBySelectedNode',
         );
+      },
+    );
+  }
+
+  Future<void> _removeSensorChannel() async {
+    if (_sensorChannel != null) {
+      await SensorApi.removeChannel(_sensorChannel!);
+      _sensorChannel = null;
+
+      log(
+        'Sensor channel lama dihapus',
+        name: 'NodeController._removeSensorChannel',
+      );
     }
+  }
+
+  @override
+  void dispose() {
+    if (_sensorChannel != null) {
+      SensorApi.removeChannel(_sensorChannel!);
+      _sensorChannel = null;
+    }
+
+    super.dispose();
   }
 
   bool get hasLahan {
@@ -123,20 +154,4 @@ class NodeController extends ChangeNotifier {
 
     return 'Petani';
   }
-}
-
-class SensorReadingModel {
-  final double ph;
-  final double kelembapan;
-  final double suhu;
-  final double nitrogen;
-  final String updatedAt;
-
-  const SensorReadingModel({
-    required this.ph,
-    required this.kelembapan,
-    required this.suhu,
-    required this.nitrogen,
-    required this.updatedAt,
-  });
 }
