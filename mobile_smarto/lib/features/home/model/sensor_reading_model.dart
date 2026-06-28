@@ -5,7 +5,7 @@ class SensorReadingModel {
   final double kelembapan;
   final double suhu;
   final int nitrogen;
-  final String updatedAt;
+  final String? updatedAt;
 
   const SensorReadingModel({
     required this.id,
@@ -14,7 +14,7 @@ class SensorReadingModel {
     required this.kelembapan,
     required this.suhu,
     required this.nitrogen,
-    required this.updatedAt,
+    this.updatedAt,
   });
 
   factory SensorReadingModel.fromJson(Map<String, dynamic> json) {
@@ -25,7 +25,7 @@ class SensorReadingModel {
       kelembapan: _toDouble(json['kelembapan']),
       suhu: _toDouble(json['suhu']),
       nitrogen: json['nitrogen'],
-      updatedAt: json['updated_at']?.toString() ?? '-',
+      updatedAt: json['update_at']?.toString() ?? '-',
     );
   }
 
@@ -34,5 +34,19 @@ class SensorReadingModel {
     if (value is double) return value;
     if (value is int) return value.toDouble();
     return double.tryParse(value.toString()) ?? 0;
+  }
+
+  String get updatedAtText {
+    if (updatedAt == null || updatedAt!.isEmpty) return '-';
+
+    final dateTime = DateTime.tryParse(updatedAt!);
+    if (dateTime == null) return updatedAt!;
+
+    final localTime = dateTime.toLocal();
+
+    String twoDigit(int value) => value.toString().padLeft(2, '0');
+
+    return '${twoDigit(localTime.day)}/${twoDigit(localTime.month)}/${localTime.year} '
+        '${twoDigit(localTime.hour)}:${twoDigit(localTime.minute)}';
   }
 }

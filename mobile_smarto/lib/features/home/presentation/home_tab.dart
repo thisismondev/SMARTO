@@ -82,9 +82,34 @@ class _HomeTabState extends State<HomeTab> {
 
             const SizedBox(height: 20),
 
-            const Text(
-              'Sensor Monitor',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Sensor Monitor',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+
+                if (sensorData != null)
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.access_time,
+                        size: 15,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        sensorData.updatedAtText,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
             ),
 
             const SizedBox(height: 10),
