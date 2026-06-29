@@ -1,4 +1,4 @@
-import { startSensorHourlyCron } from "./sensorCron"
+import { startSensorHourlyCron } from "./lib/sensorCron"
 
 export async function register() {
   console.log("Instrumentation jalan...")
