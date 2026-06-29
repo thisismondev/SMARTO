@@ -9,6 +9,7 @@ type KodeNodeRow = {
 
 type CheckKodeNodeRow = {
   id: number
+  user_id: number
   kode_node: string
   kn_status: number
   n_status: number
@@ -39,9 +40,9 @@ export async function findByKodeNode(kodeNode: string) {
 export async function checkingKodeNode(kodeNode: string) {
   const [rows] = await db.query<CheckKodeNodeRow[]>(
     `
-    SELECT kn.id, kn.kode_node, kn.status as kn_status, n.status as n_status
+    SELECT kn.id, n.user_id, kn.kode_node, kn.status as kn_status, n.status as n_status
     FROM kode_node kn
-    LEFT JOIN nodes n ON kn.id = n.kode_node_id
+    JOIN nodes n ON kn.id = n.kode_node_id
     WHERE kn.kode_node = ?
     LIMIT 1
     `,
@@ -53,9 +54,9 @@ export async function checkingKodeNode(kodeNode: string) {
 export async function checkingKodeNodeById(id: number){
   const [rows] = await db.query<CheckKodeNodeRow[]>(
     `
-    SELECT kn.id, kn.kode_node, kn.status as kn_status, n.status as n_status
+    SELECT kn.id, n.user_id, kn.kode_node, kn.status as kn_status, n.status as n_status
     FROM kode_node kn
-    LEFT JOIN nodes n ON kn.id = n.kode_node_id
+    JOIN nodes n ON kn.id = n.kode_node_id
     WHERE kn.id = ?
     LIMIT 1
     `,

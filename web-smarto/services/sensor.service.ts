@@ -91,82 +91,52 @@ export async function fetchKategoriSensor() {
 
 // sensor buffer
 type SensorLogRow = {
-  id: number
   kode_node_id: number
-  ph: number
-  kelembapan: number
-  suhu: number
-  nitrogen: number
-  total_data: number
-  start_at: string
-  end_at: string
+  ph_avg: number
+  kelembapan_avg: number
+  suhu_avg: number
+  nitrogen_avg: number
 } & RowDataPacket
 
 export async function addSensorBuffer(
+  userId: number,
   kodeNodeId: number,
   ph: number,
   kelembapan: number,
   suhu: number,
-  nitrogen: number
+  nitrogen: number,
+  created_at: string
 ) {
   const [result] = await db.query<ResultSetHeader>(
     `
-        INSERT INTO sensor_buffer (kode_node_id, ph, kelembapan, suhu, nitrogen)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO sensor_buffer (user_id, kode_node_id, ph, kelembapan, suhu, nitrogen, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
       `,
-    [kodeNodeId, ph, kelembapan, suhu, nitrogen]
+    [userId, kodeNodeId, ph, kelembapan, suhu, nitrogen, created_at]
   )
   return result
 }
 
-// export async function processSensorBuffer(kodeNodeId: number) {
-//   const [result] = await db.query<ResultSetHeader>(
-//     `
-//     INSERT INTO sensor_log (
-//       kode_node_id,
-//       ph,
-//       kelembapan,
-//       suhu,
-//       nitrogen,
-//       total_data,
-//       start_at,
-//       end_at
-//     )
-//     SELECT
-//       kode_node_id,
-//       ROUND(AVG(ph), 2) AS ph,
-//       ROUND(AVG(kelembapan), 2) AS kelembapan,
-//       ROUND(AVG(suhu), 2) AS suhu,
-//       ROUND(AVG(nitrogen), 2) AS nitrogen,
-//       COUNT(id) AS total_data,
+export async function CheckingSensorBuffer(kodeNodeId: number) {
+  const [result] = await db.query<SensorLogRow[]>(
+    `SELECT 
+      kode_node_id,
+      AVG(ph) as ph_avg,
+      AVG(kelembapan) as kelembaban_avg,
+      AVG(suhu) as suhu_avg,
+      AVG(nitrogen) as nitrogen_avg
+    FROM sensor_buffer
+    WHERE kode_node_id = ?
+      AND created_at >= (SELECT MIN(created_at) FROM sensor_buffer)
+      AND created_at < (SELECT MIN(created_at) FROM sensor_buffer) + INTERVAL 1 HOUR
+    GROUP BY kode_node_id
+    LIMIT 1
+    `,
+    [kodeNodeId]
+  )
 
-//       TIMESTAMP(DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00')) AS start_at,
-//       DATE_ADD(
-//         TIMESTAMP(DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00')),
-//         INTERVAL 1 HOUR
-//       ) AS end_at
-
-//     FROM sensor_buffer
-//     WHERE kode_node_id = ?
-//       AND created_at < TIMESTAMP(DATE_FORMAT(NOW(), '%Y-%m-%d %H:00:00'))
-
-//     GROUP BY 
-//       kode_node_id,
-//       TIMESTAMP(DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00'))
-
-//     ON DUPLICATE KEY UPDATE
-//       ph = VALUES(ph),
-//       kelembapan = VALUES(kelembapan),
-//       suhu = VALUES(suhu),
-//       nitrogen = VALUES(nitrogen),
-//       total_data = VALUES(total_data),
-//       end_at = VALUES(end_at)
-//     `,
-//     [kodeNodeId]
-//   )
-
-//   return result
-// }
+  return result
+}
 
 // export async function deleteSensorBuffer(kodeNodeId: number) {
 //   const [result] = await db.query<ResultSetHeader>(

@@ -1,13 +1,9 @@
 import { errorResponse, successResponse } from "@/lib/response"
 import { supabaseAdmin } from "@/lib/supabaseServer"
 import { checkingKodeNode } from "@/services/kode-nodes.service"
-import {
-  addSensorBuffer,
-  processSensorBufferHourly,
-  // processSensorBuffer,
-  // deleteSensorBuffer,
-} from "@/services/sensor.service"
+import { addSensorBuffer } from "@/services/sensor.service"
 import { KodeNodeRouteParams } from "@/types/api"
+import { getMakassarDateTime } from "@/lib/date"
 
 export async function PATCH(
   request: Request,
@@ -28,6 +24,8 @@ export async function PATCH(
 
     const body = await request.json()
     const { ph, kelembapan, suhu, nitrogen } = body
+    const dateMakassar = getMakassarDateTime()
+    const userId = kodeNodeData.user_id ?? null
 
     if (
       ph === undefined ||
@@ -49,7 +47,7 @@ export async function PATCH(
         kelembapan: kelembapan,
         suhu: suhu,
         nitrogen: nitrogen,
-        update_at: new Date().toISOString(),
+        update_at: dateMakassar,
       })
       .eq("kode_node_id", kodeNodeData.id)
       .select()
@@ -64,26 +62,27 @@ export async function PATCH(
     }
 
     const buffer = await addSensorBuffer(
+      userId,
       kodeNodeData.id,
       ph,
       kelembapan,
       suhu,
-      nitrogen
+      nitrogen,
+      dateMakassar
     )
 
     if (buffer.affectedRows === 0) {
       return errorResponse("Gagal menambahkan data ke sensor buffer", 500)
     }
 
-    const processBuffer = await processSensorBufferHourly(kodeNodeData.id)
-
-    return successResponse("Data sensor berhasil diperbarui", {
-      realtime: data,
-      buffer: {
-        inserted: true,
+    return successResponse(
+      "Data sensor berhasil diperbarui",
+      {
+        realtime: data,
+        buffer: buffer,
       },
-      hourly_process: processBuffer,
-    })
+      200
+    )
   } catch (error: any) {
     console.error("Unexpected error:", error)
     return errorResponse("Terjadi kesalahan tidak terduga", 500)
