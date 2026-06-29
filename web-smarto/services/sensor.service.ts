@@ -1,6 +1,6 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2"
 import db from "@/lib/db"
-import { getMakassarDateTime, getMakassarPreviousHourRange } from "@/lib/date"
+import { getMakassarCurrentHourStart } from "@/lib/date"
 
 // Sensor Parameter
 type SensorParameterRow = {
@@ -91,13 +91,6 @@ export async function fetchKategoriSensor() {
 }
 
 // sensor buffer
-type SensorLogRow = {
-  kode_node_id: number
-  ph_avg: number
-  kelembapan_avg: number
-  suhu_avg: number
-  nitrogen_avg: number
-} & RowDataPacket
 
 export async function addSensorBuffer(
   userId: number,
@@ -118,35 +111,8 @@ export async function addSensorBuffer(
   return result
 }
 
-export async function CheckingSensorBuffer(kodeNodeId: number) {
-  const [result] = await db.query<SensorLogRow[]>(
-    `SELECT 
-      kode_node_id,
-      AVG(ph) as ph_avg,
-      AVG(kelembapan) as kelembaban_avg,
-      AVG(suhu) as suhu_avg,
-      AVG(nitrogen) as nitrogen_avg
-    FROM sensor_buffer
-    WHERE kode_node_id = ?
-      AND created_at >= (SELECT MIN(created_at) FROM sensor_buffer)
-      AND created_at < (SELECT MIN(created_at) FROM sensor_buffer) + INTERVAL 1 HOUR
-    GROUP BY kode_node_id
-    LIMIT 1
-    `,
-    [kodeNodeId]
-  )
-
-  return result
-}
-
-function getMakassarCurrentHourStart() {
-  const nowMakassar = getMakassarDateTime()
-  return nowMakassar.substring(0, 13) + ":00:00"
-}
-
 export async function processSensorBufferHourly() {
   const currentHourStart = getMakassarCurrentHourStart()
-  const createdAt = getMakassarDateTime()
 
   const connection = await db.getConnection()
 
@@ -163,8 +129,6 @@ export async function processSensorBufferHourly() {
         suhu,
         nitrogen,
         total_data,
-        start_at,
-        end_at,
         created_at
       )
       SELECT 
@@ -175,12 +139,12 @@ export async function processSensorBufferHourly() {
         ROUND(AVG(sb.suhu), 2) AS suhu,
         ROUND(AVG(sb.nitrogen), 0) AS nitrogen,
         COUNT(*) AS total_data,
-        DATE_FORMAT(sb.created_at, '%Y-%m-%d %H:00:00') AS start_at,
+
         DATE_ADD(
           DATE_FORMAT(sb.created_at, '%Y-%m-%d %H:00:00'),
           INTERVAL 1 HOUR
-        ) AS end_at,
-        ? AS created_at
+        ) AS created_at
+
       FROM sensor_buffer sb
       WHERE sb.created_at < ?
         AND sb.user_id IS NOT NULL
@@ -188,15 +152,15 @@ export async function processSensorBufferHourly() {
         sb.user_id,
         sb.kode_node_id,
         DATE_FORMAT(sb.created_at, '%Y-%m-%d %H:00:00')
+
       ON DUPLICATE KEY UPDATE
         ph = VALUES(ph),
         kelembapan = VALUES(kelembapan),
         suhu = VALUES(suhu),
         nitrogen = VALUES(nitrogen),
-        total_data = VALUES(total_data),
-        created_at = VALUES(created_at)
+        total_data = VALUES(total_data)
       `,
-      [createdAt, currentHourStart]
+      [currentHourStart]
     )
 
     const [deleteResult] = await connection.query<ResultSetHeader>(
@@ -210,7 +174,7 @@ export async function processSensorBufferHourly() {
     await connection.commit()
 
     return {
-      message: "Sensor buffer berhasil diproses",
+      message: "Sensor buffer berhasil dirata-ratakan ke sensor_log",
       currentHourStart,
       insertAffectedRows: insertResult.affectedRows,
       deletedRows: deleteResult.affectedRows,
