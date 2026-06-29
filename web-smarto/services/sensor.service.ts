@@ -216,7 +216,7 @@ export async function processSensorBufferHourly(kodeNodeId: number) {
         TIMESTAMP(DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00')) AS start_at,
         DATE_ADD(
           TIMESTAMP(DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00')),
-          INTERVAL 5 MINUTE
+          INTERVAL 1 HOUR
         ) AS end_at
 
       FROM sensor_buffer
