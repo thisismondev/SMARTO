@@ -1,5 +1,6 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2"
 import db from "@/lib/db"
+import { getMakassarDateTime, getMakassarPreviousHourRange } from "@/lib/date"
 
 // Sensor Parameter
 type SensorParameterRow = {
@@ -138,34 +139,50 @@ export async function CheckingSensorBuffer(kodeNodeId: number) {
   return result
 }
 
-// export async function deleteSensorBuffer(kodeNodeId: number) {
-//   const [result] = await db.query<ResultSetHeader>(
-//     `
-//       DELETE sb
-//       FROM sensor_buffer sb
-//       JOIN sensor_log sl
-//         ON sl.kode_node_id = sb.kode_node_id
-//         AND sb.created_at >= sl.start_at
-//         AND sb.created_at < sl.end_at
-//       WHERE sb.kode_node_id = ?
-//         AND sb.created_at < TIMESTAMP(DATE_FORMAT(NOW(), '%Y-%m-%d %H:00:00'))
-//       `,
-//     [kodeNodeId]
-//   )
+type CountRow = RowDataPacket & {
+  total_data: number
+}
 
-//   return result
-// }
+export async function processSensorBufferHourly() {
+  const { startAt, endAt } = getMakassarPreviousHourRange()
+  const createdAt = getMakassarDateTime()
 
-export async function processSensorBufferHourly(kodeNodeId: number) {
   const connection = await db.getConnection()
 
   try {
     await connection.beginTransaction()
 
-    // 1. Hitung rata-rata data buffer yang jamnya sudah selesai
+    // 1. Cek dulu apakah ada data buffer yang akan diproses
+    const [countRows] = await connection.query<CountRow[]>(
+      `
+      SELECT COUNT(*) AS total_data
+      FROM sensor_buffer
+      WHERE created_at >= ?
+        AND created_at < ?
+        AND user_id IS NOT NULL
+      `,
+      [startAt, endAt]
+    )
+
+    const totalData = countRows[0]?.total_data || 0
+
+    if (totalData === 0) {
+      await connection.commit()
+
+      return {
+        message: "Tidak ada data sensor buffer untuk diproses",
+        startAt,
+        endAt,
+        totalData: 0,
+        deletedRows: 0,
+      }
+    }
+
+    // 2. Insert / update hasil rata-rata ke sensor_log
     const [insertResult] = await connection.query<ResultSetHeader>(
       `
       INSERT INTO sensor_log (
+        user_id,
         kode_node_id,
         ph,
         kelembapan,
@@ -173,71 +190,61 @@ export async function processSensorBufferHourly(kodeNodeId: number) {
         nitrogen,
         total_data,
         start_at,
-        end_at
+        end_at,
+        created_at
       )
-      SELECT
-        kode_node_id,
-        ROUND(AVG(ph), 2) AS ph,
-        ROUND(AVG(kelembapan), 2) AS kelembapan,
-        ROUND(AVG(suhu), 2) AS suhu,
-        ROUND(AVG(nitrogen), 2) AS nitrogen,
-        COUNT(id) AS total_data,
-
-        TIMESTAMP(DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00')) AS start_at,
-        DATE_ADD(
-          TIMESTAMP(DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00')),
-          INTERVAL 1 HOUR
-        ) AS end_at
-
-      FROM sensor_buffer
-      WHERE kode_node_id = ?
-        AND created_at < TIMESTAMP(DATE_FORMAT(NOW(), '%Y-%m-%d %H:00:00'))
-
-      GROUP BY 
-        kode_node_id,
-        TIMESTAMP(DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00'))
-
+      SELECT 
+        sb.user_id,
+        sb.kode_node_id,
+        ROUND(AVG(sb.ph), 2) AS ph,
+        ROUND(AVG(sb.kelembapan), 2) AS kelembapan,
+        ROUND(AVG(sb.suhu), 2) AS suhu,
+        ROUND(AVG(sb.nitrogen), 0) AS nitrogen,
+        COUNT(*) AS total_data,
+        ? AS start_at,
+        ? AS end_at,
+        ? AS created_at
+      FROM sensor_buffer sb
+      WHERE sb.created_at >= ?
+        AND sb.created_at < ?
+        AND sb.user_id IS NOT NULL
+      GROUP BY sb.user_id, sb.kode_node_id
       ON DUPLICATE KEY UPDATE
         ph = VALUES(ph),
         kelembapan = VALUES(kelembapan),
         suhu = VALUES(suhu),
         nitrogen = VALUES(nitrogen),
         total_data = VALUES(total_data),
-        end_at = VALUES(end_at)
+        created_at = VALUES(created_at)
       `,
-      [kodeNodeId]
+      [startAt, endAt, createdAt, startAt, endAt]
     )
 
-    // 2. Hapus buffer yang sudah masuk ke sensor_log
+    // 3. Kalau insert/update berhasil, hapus data buffer pada range yang sudah diproses
     const [deleteResult] = await connection.query<ResultSetHeader>(
       `
-      DELETE sb
-      FROM sensor_buffer sb
-      JOIN sensor_log sl
-        ON sl.kode_node_id = sb.kode_node_id
-        AND sb.created_at >= sl.start_at
-        AND sb.created_at < sl.end_at
-      WHERE sb.kode_node_id = ?
-        AND sb.created_at < TIMESTAMP(DATE_FORMAT(NOW(), '%Y-%m-%d %H:00:00'))
+      DELETE FROM sensor_buffer
+      WHERE created_at >= ?
+        AND created_at < ?
+        AND user_id IS NOT NULL
       `,
-      [kodeNodeId]
+      [startAt, endAt]
     )
 
     await connection.commit()
 
     return {
-      status: true,
-      message: "Sensor buffer berhasil diproses",
-      insertedOrUpdatedRows: insertResult.affectedRows,
-      deletedBufferRows: deleteResult.affectedRows,
+      message: "Sensor buffer berhasil diproses dan dihapus",
+      startAt,
+      endAt,
+      totalData,
+      insertAffectedRows: insertResult.affectedRows,
+      deletedRows: deleteResult.affectedRows,
     }
-  } catch (error: any) {
+  } catch (error) {
     await connection.rollback()
-
-    return {
-      status: false,
-      message: error.message || "Gagal memproses sensor buffer",
-    }
+    console.error("Process sensor buffer hourly error:", error)
+    throw error
   } finally {
     connection.release()
   }
