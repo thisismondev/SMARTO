@@ -1,6 +1,7 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2"
 import db from "@/lib/db"
 import { getMakassarCurrentHourStart } from "@/lib/date"
+import { FilterType, PERIOD_CONFIG } from "@/types/sensor"
 
 // Sensor Parameter
 type SensorParameterRow = {
@@ -186,4 +187,32 @@ export async function processSensorBufferHourly() {
   } finally {
     connection.release()
   }
+}
+
+export async function getSensorLog(
+  userId: number,
+  kodeNodeId: number,
+  filterType: FilterType
+) {
+  
+  const config = PERIOD_CONFIG[filterType]
+  const [rows] = await db.query<RowDataPacket[]>(
+    `
+    SELECT
+      ${config.groupBy} AS periode,
+      ROUND(AVG(ph), 2)         AS avg_ph,
+      ROUND(AVG(kelembapan), 2) AS avg_kelembapan,
+      ROUND(AVG(suhu), 2)       AS avg_suhu,
+      ROUND(AVG(nitrogen), 0)   AS avg_nitrogen
+    FROM sensor_log
+    WHERE user_id = ?
+      AND kode_node_id = ?
+      AND created_at >= DATE_SUB(NOW(), ${config.interval})
+    GROUP BY periode
+    ORDER BY periode ASC
+    `,
+    [userId, kodeNodeId]
+  )
+
+  return rows
 }
