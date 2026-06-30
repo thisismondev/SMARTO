@@ -287,7 +287,7 @@ export default function MonitoringPage() {
       </section>
 
       {/* Chart Placeholder */}
-      <section>
+      {/* <section>
         <Card>
           <CardHeader>
             <CardTitle>Grafik Tren Realtime</CardTitle>
@@ -303,7 +303,7 @@ export default function MonitoringPage() {
             </div>
           </CardContent>
         </Card>
-      </section>
+      </section> */}
     </div>
   )
 }

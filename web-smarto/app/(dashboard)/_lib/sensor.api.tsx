@@ -1,3 +1,5 @@
+import { FilterType } from "@/types/sensor"
+
 export async function findFarmerUser(token: string) {
   try {
     const response = await fetch("/api/user/petani", {
@@ -121,7 +123,7 @@ export async function fetchKategoriSensor(token: string) {
     const result = await response.json()
 
     console.log("API Response for kategori sensor:", result)
-    
+
     if (!response.ok || !result.status) {
       throw new Error(result.message || "Gagal mengambil data kategori sensor")
     }
@@ -157,6 +159,35 @@ export async function createKategoriSensor(
 
   if (!response.ok || !result.status) {
     throw new Error(result.message || "Gagal menambahkan kategori sensor")
+  }
+
+  return result
+}
+
+export async function fetchSensorLogAnalytics(
+  token: string,
+  userId: number,
+  kodeNodeId: number,
+  periode: FilterType
+) {
+  const params = new URLSearchParams()
+
+  params.append("userId", userId.toString())
+  params.append("kodeNodeId", kodeNodeId.toString())
+  params.append("periode", periode)
+
+  const response = await fetch(`/api/sensor/statistics?${params.toString()}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  const result = await response.json()
+
+  if (!response.ok || !result.status) {
+    throw new Error(result.message || "Gagal mengambil statistik sensor log")
   }
 
   return result

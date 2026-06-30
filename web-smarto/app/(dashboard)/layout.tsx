@@ -116,7 +116,7 @@ const mainMenuItems: MenuItem[] = [
   },
   {
     title: "Analytics",
-    href: "#",
+    href: "/sensors/analytics",
     icon: BarChart3,
     roles: [1, 2],
   },
