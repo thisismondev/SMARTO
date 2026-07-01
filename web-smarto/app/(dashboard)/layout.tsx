@@ -171,7 +171,7 @@ const userMenuItems: MenuItem[] = [
   },
   {
     title: "Settings",
-    href: "#",
+    href: "/settings",
     icon: Settings,
     roles: [1, 2],
   },

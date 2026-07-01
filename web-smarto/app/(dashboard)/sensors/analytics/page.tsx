@@ -66,8 +66,8 @@ export default function SensorAnalyticsPage() {
           </CardHeader>
 
           <CardContent className="space-y-5">
-            <div className="grid gap-4 md:grid-cols-[260px_240px_auto_auto] md:items-end">
-              <div className="space-y-2">
+            <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:items-end">
+              <div className="space-y-2 md:w-64">
                 <label className="text-sm font-medium">Petani</label>
                 <Select
                   value={selectedPetaniId}
@@ -97,7 +97,7 @@ export default function SensorAnalyticsPage() {
                 </Select>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 md:w-60">
                 <label className="text-sm font-medium">Perangkat / Node</label>
                 <Select
                   value={selectedNodeId}
@@ -122,7 +122,11 @@ export default function SensorAnalyticsPage() {
                   </SelectContent>
                 </Select>
               </div>
-
+              <TimeFilter
+                value={filterType}
+                onChange={handleSelectFilter}
+                disabled={searchLoading}
+              />
               <Button
                 variant="default"
                 size="sm"
@@ -132,7 +136,6 @@ export default function SensorAnalyticsPage() {
                 title="Search"
               >
                 <Search className="mr-2 h-4 w-4" />
-                Cari
               </Button>
 
               <Button
@@ -144,15 +147,8 @@ export default function SensorAnalyticsPage() {
                 title="Reset Filter"
               >
                 <RotateCcw className="mr-2 h-4 w-4" />
-                Reset
               </Button>
             </div>
-
-            <TimeFilter
-              value={filterType}
-              onChange={handleSelectFilter}
-              disabled={searchLoading}
-            />
           </CardContent>
         </Card>
       </section>
