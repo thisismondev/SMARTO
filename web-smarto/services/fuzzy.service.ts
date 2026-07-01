@@ -128,3 +128,49 @@ export async function findLastRuleBase() {
 
   return rows[0]
 }
+
+// Variables
+export async function fetchFuzzyVariables() {
+  const [rows] = await db.query<RowDataPacket[]>(
+    `
+    SELECT id, name, unit, type, created_at 
+    FROM fuzzy_variables
+    ORDER BY id ASC
+  `
+  )
+
+  return rows
+}
+
+// Sets
+export async function fetchFuzzySets() {
+  const [rows] = await db.query<RowDataPacket[]>(
+    ` 
+        SELECT fs.id, fs.variable_id, fv.name, fs.set_name, fs.mf_type, fs.param_a, fs.param_b, fs.param_c, fs.param_d, fs.created_at
+        FROM fuzzy_sets fs
+        JOIN fuzzy_variables fv ON fs.variable_id = fv.id
+        ORDER BY fs.variable_id ASC
+    `
+  )
+  return rows
+}
+
+
+export async function createFuzzySets(
+  variableId: number,
+  setName: string,
+  mfType: string,
+  a: number,
+  b: number,
+  c: number,
+  d: number
+) {
+  const [result] = await db.query<ResultSetHeader>(
+    `
+        INSERT INTO fuzzy_sets (variable_id, set_name, mf_type, param_a, param_b, param_c, param_d)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `,
+    [variableId, setName, mfType, a, b, c, d]
+  )
+  return result
+}
