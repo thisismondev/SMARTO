@@ -1,18 +1,18 @@
 "use client"
 
 import { useCallback, useEffect, useState, useMemo } from "react"
-import { fetchParameterSensor, createParameterSensor } from "../_lib/sensor.api"
-import { ParameterSensor } from "@/types/ui/sensor"
+import { fetchFuzzyVariables } from "../_lib/fuzzy.api"
+import { FuzzyVariable } from "@/types/ui/fuzzy"
 import { toast } from "sonner"
-import { BuildColumns } from "../sensors/parameter-sensor/columns"
+import { BuildColumns } from "../fuzzy/variables/columns"
 
-export function useSensorParameter() {
+export function useFuzzyVariable() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const [parameter, setParameter] = useState<ParameterSensor[]>([])
+  const [variable, setVariable] = useState<FuzzyVariable[]>([])
 
-  const fetchParameter = useCallback(async () => {
+  const fetchVariable = useCallback(async () => {
     setError("")
     setLoading(true)
 
@@ -25,27 +25,29 @@ export function useSensorParameter() {
     }
 
     try {
-      const result = await fetchParameterSensor(token)
-      console.log("Fetched parameter sensor:", result)
+      const result = await fetchFuzzyVariables(token)
+      console.log("Fetched fuzzy variables:", result)
 
-      const parameterData: ParameterSensor[] = result.data.map((item: any) => ({
+      const VariableData: FuzzyVariable[] = result.data.map((item: any) => ({
         id: item.id,
-        nama_parameter: item.nama_parameter,
-        satuan: item.satuan,
+        name: item.name,
+        unit: item.unit,
+        type: item.type,
+        createdAt: item.created_at,
       }))
 
-      setParameter(parameterData)
+      setVariable(VariableData)
     } catch (error: any) {
-      setError("Gagal mengambil data parameter sensor.")
-      console.error("Error fetching parameter sensor:", error)
+      setError("Gagal mengambil data fuzzy variable.")
+      console.error("Error fetching fuzzy variables:", error)
     } finally {
       setLoading(false)
     }
   }, [])
 
   useEffect(() => {
-    fetchParameter()
-  }, [fetchParameter])
+    fetchVariable()
+  }, [fetchVariable])
 
   const columns = useMemo(
     () =>
@@ -69,8 +71,8 @@ export function useSensorParameter() {
     loading,
 
     columns,
-    parameter,
-
-    fetchParameter,
+    variable,
+    
+    fetchVariable,
   }
 }

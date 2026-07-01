@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { KategoriSensor } from "@/types/ui/sensor"
+import { FuzzySet } from "@/types/ui/fuzzy"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -22,7 +22,7 @@ type ColumnKategoriProps = {
 export function BuildColumns({
   onDelete,
   onEdit,
-}: ColumnKategoriProps): ColumnDef<KategoriSensor>[] {
+}: ColumnKategoriProps): ColumnDef<FuzzySet>[] {
   return [
     {
       id: "no",
@@ -30,24 +30,32 @@ export function BuildColumns({
       cell: ({ row }) => row.index + 1,
     },
     {
-      accessorKey: "parameter",
-      header: "Parameter",
+      accessorKey: "name",
+      header: "Variable",
     },
     {
-      accessorKey: "kategori",
-      header: "Kategori",
+      accessorKey: "setName",
+      header: "SetName",
     },
     {
-      accessorKey: "minValue",
-      header: "Min",
+      accessorKey: "mfType",
+      header: "MF Type",
     },
     {
-      accessorKey: "maxValue",
-      header: "Max",
+      accessorKey: "a",
+      header: "A",
     },
     {
-      accessorKey: "satuan",
-      header: "Satuan",
+      accessorKey: "b",
+      header: "B",
+    },
+    {
+      accessorKey: "c",
+      header: "C",
+    },
+    {
+      accessorKey: "d",
+      header: "D",
     },
     {
       id: "aksi",

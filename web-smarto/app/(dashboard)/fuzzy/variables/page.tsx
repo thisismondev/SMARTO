@@ -14,18 +14,18 @@ import { Button } from "@/components/ui/button"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { DataTable } from "./data-table"
-import { useSensorParameter } from "../../_hooks/use-sensor-parameter"
+import { useFuzzyVariable, } from "../../_hooks/use-fuzzy-variable"
 import { toast } from "sonner"
 import PageLoading from "@/app/loading"
 
-export default function ParameterSensorPage() {
+export default function fuzzyVariablePage() {
   const {
     error,
     loading,
 
     columns,
-    parameter,
-  } = useSensorParameter()
+    variable,
+  } = useFuzzyVariable()
 
   if (loading) {
     return <PageLoading />
@@ -116,7 +116,7 @@ export default function ParameterSensorPage() {
               {error}
             </div>
           )}
-          <DataTable columns={columns} data={parameter} />
+          <DataTable columns={columns} data={variable} />
         </CardContent>
       </Card>
     </div>

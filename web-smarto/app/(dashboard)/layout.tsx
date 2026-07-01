@@ -124,14 +124,14 @@ const mainMenuItems: MenuItem[] = [
 
 const fuzzyMenuItems: MenuItem[] = [
   {
-    title: "Parameter Sensor",
-    href: "/sensors/parameter-sensor",
+    title: "Variabel",
+    href: "/fuzzy/variables",
     icon: SlidersHorizontal,
     roles: [1],
   },
   {
-    title: "Kategori Sensor",
-    href: "/sensors/kategori-sensor",
+    title: "Matriks",
+    href: "/fuzzy/matriks",
     icon: Cpu,
     roles: [1],
   },

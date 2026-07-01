@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ParameterSensor } from "@/types/ui/sensor"
+import { FuzzyVariable } from "@/types/ui/fuzzy"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -22,7 +22,7 @@ type ColumnParameterProps = {
 export function BuildColumns({
   onDelete,
   onEdit,
-}: ColumnParameterProps): ColumnDef<ParameterSensor>[] {
+}: ColumnParameterProps): ColumnDef<FuzzyVariable>[] {
   return [
     {
       id: "no",
@@ -30,17 +30,21 @@ export function BuildColumns({
       cell: ({ row }) => row.index + 1,
     },
     {
-      accessorKey: "nama_parameter",
-      header: "Parameter",
+      accessorKey: "name",
+      header: "Variable",
     },
     {
-      accessorKey: "satuan",
-      header: "Satuan",
+      accessorKey: "unit",
+      header: "Unit",
+    },
+    {
+      accessorKey: "type",
+      header: "Type",
     },
     {
       id: "aksi",
       cell: ({ row }) => {
-        const node = row.original
+        const variable = row.original
 
         return (
           <DropdownMenu>
@@ -51,13 +55,13 @@ export function BuildColumns({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onEdit(node.id)}>
+              <DropdownMenuItem onClick={() => onEdit(variable.id)}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit
               </DropdownMenuItem>
 
               <DropdownMenuItem
-                onClick={() => onDelete(node.id)}
+                onClick={() => onDelete(variable.id)}
                 className="text-red-600 focus:text-red-600"
               >
                 <Unlink className="mr-2 h-4 w-4" />
