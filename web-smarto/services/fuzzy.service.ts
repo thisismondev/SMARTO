@@ -30,16 +30,16 @@ export async function fetchRuleBase() {
             rb.kelembapan_kategori_id,
             rb.suhu_kategori_id,
             rb.nitrogen_kategori_id,
-            sk_ph.nama_kategori AS ph,
-            sk_kel.nama_kategori AS kelembapan,
-            sk_suhu.nama_kategori AS suhu,
-            sk_nit.nama_kategori AS nitrogen,
+            fs_ph.set_name AS ph,
+            fs_kel.set_name AS kelembapan,
+            fs_suhu.set_name AS suhu,
+            fs_nit.set_name AS nitrogen,
             rb.output
         FROM rule_base rb
-        JOIN sensor_kategori sk_ph on sk_ph.id = rb.ph_kategori_id
-        JOIN sensor_kategori sk_kel on sk_kel.id = rb.kelembapan_kategori_id
-        JOIN sensor_kategori sk_suhu on sk_suhu.id = rb.suhu_kategori_id
-        JOIN sensor_kategori sk_nit on sk_nit.id = rb.nitrogen_kategori_id
+        JOIN fuzzy_sets fs_ph on fs_ph.id = rb.ph_kategori_id
+        JOIN fuzzy_sets fs_kel on fs_kel.id = rb.kelembapan_kategori_id
+        JOIN fuzzy_sets fs_suhu on fs_suhu.id = rb.suhu_kategori_id
+        JOIN fuzzy_sets fs_nit on fs_nit.id = rb.nitrogen_kategori_id
         ORDER BY LENGTH(rb.kode_rule) ASC, rb.kode_rule ASC 
     `
   )

@@ -6,9 +6,9 @@ import {
   fetchRuleBase,
   updateRuleBase,
 } from "../_lib/rule-base.api"
-import { fetchKategoriSensor } from "../_lib/sensor.api"
+import { fetchFuzzySets } from "../_lib/fuzzy.api"
 import { RuleBase } from "@/types/ui/fuzzy"
-import { KategoriSensor } from "@/types/ui/sensor"
+import { FuzzySet } from "@/types/ui/fuzzy"
 import { toast } from "sonner"
 import { BuildColumns } from "../sensors/rule-base/columns"
 
@@ -33,7 +33,7 @@ export function useRuleBase() {
   const [loading, setLoading] = useState(false)
 
   const [ruleBase, setRuleBase] = useState<RuleBase[]>([])
-  const [kategoriOptions, setKategoriOptions] = useState<KategoriSensor[]>([])
+  const [kategoriOptions, setKategoriOptions] = useState<FuzzySet[]>([])
 
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState<RuleBaseForm>(initialForm)
@@ -91,20 +91,24 @@ export function useRuleBase() {
     }
 
     try {
-      const result = await fetchKategoriSensor(token)
+      const result = await fetchFuzzySets(token)
 
-      const data = result.data.map((item: any) => ({
+      const setData: FuzzySet[] = result.data.map((item: any) => ({
         id: item.id,
-        parameter: item.nama_parameter,
-        kategori: item.nama_kategori,
-        minValue: item.min_value,
-        maxValue: item.max_value,
-        satuan: item.satuan,
+        variableId: item.variable_id,
+        name: item.name,
+        setName: item.set_name,
+        mfType: item.mf_type,
+        a: Number(item.a),
+        b: Number(item.b),
+        c: Number(item.c),
+        d: Number(item.d),
+        createdAt: item.created_at,
       }))
 
-      console.log("Hasil fetch kategori options:", data)
+      console.log("Hasil fetch kategori options:", setData)
 
-      setKategoriOptions(data)
+      setKategoriOptions(setData)
     } catch (error: any) {
       toast.error(error.message || "Gagal mengambil kategori sensor")
     }
@@ -116,19 +120,19 @@ export function useRuleBase() {
   }, [fetchData, KategoriOptionsData])
 
   const phOptions = kategoriOptions.filter(
-    (item) => item.parameter.toLowerCase() === "ph"
+    (item) => item.name.toLowerCase() === "ph"
   )
 
   const suhuOptions = kategoriOptions.filter(
-    (item) => item.parameter.toLowerCase() === "suhu"
+    (item) => item.name.toLowerCase() === "suhu"
   )
 
   const kelembapanOptions = kategoriOptions.filter(
-    (item) => item.parameter.toLowerCase() === "kelembapan"
+    (item) => item.name.toLowerCase() === "kelembapan"
   )
 
   const nitrogenOptions = kategoriOptions.filter(
-    (item) => item.parameter.toLowerCase() === "nitrogen"
+    (item) => item.name.toLowerCase() === "nitrogen"
   )
 
   const handleFormChange = (field: keyof RuleBaseForm, value: string) => {

@@ -94,7 +94,7 @@ export default function RuleBasePage() {
                         <SelectContent>
                           {phOptions.map((item) => (
                             <SelectItem key={item.id} value={String(item.id)}>
-                              {item.kategori}
+                              {item.setName}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -116,7 +116,7 @@ export default function RuleBasePage() {
                         <SelectContent>
                           {kelembapanOptions.map((item) => (
                             <SelectItem key={item.id} value={String(item.id)}>
-                              {item.kategori}
+                              {item.setName}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -138,7 +138,7 @@ export default function RuleBasePage() {
                         <SelectContent>
                           {suhuOptions.map((item) => (
                             <SelectItem key={item.id} value={String(item.id)}>
-                              {item.kategori}
+                              {item.setName}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -160,7 +160,7 @@ export default function RuleBasePage() {
                         <SelectContent>
                           {nitrogenOptions.map((item) => (
                             <SelectItem key={item.id} value={String(item.id)}>
-                              {item.kategori}
+                              {item.setName}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -258,7 +258,7 @@ export default function RuleBasePage() {
                     <SelectContent>
                       {phOptions.map((item) => (
                         <SelectItem key={item.id} value={String(item.id)}>
-                          {item.kategori}
+                          {item.setName}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -283,7 +283,7 @@ export default function RuleBasePage() {
                     <SelectContent>
                       {kelembapanOptions.map((item) => (
                         <SelectItem key={item.id} value={String(item.id)}>
-                          {item.kategori}
+                          {item.setName}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -306,7 +306,7 @@ export default function RuleBasePage() {
                     <SelectContent>
                       {suhuOptions.map((item) => (
                         <SelectItem key={item.id} value={String(item.id)}>
-                          {item.kategori}
+                          {item.setName}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -329,7 +329,7 @@ export default function RuleBasePage() {
                     <SelectContent>
                       {nitrogenOptions.map((item) => (
                         <SelectItem key={item.id} value={String(item.id)}>
-                          {item.kategori}
+                          {item.setName}
                         </SelectItem>
                       ))}
                     </SelectContent>

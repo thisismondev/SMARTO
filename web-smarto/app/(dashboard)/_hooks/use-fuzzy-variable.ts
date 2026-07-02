@@ -54,12 +54,12 @@ export function useFuzzyVariable() {
       BuildColumns({
         onDelete: (id) => {
           toast.info("Fitur hapus belum tersedia", {
-            description: `Anda mencoba menghapus parameter dengan ID ${id}`,
+            description: `Anda mencoba menghapus variabledengan ID ${id}`,
           })
         },
         onEdit: (id) => {
           toast.info("Fitur edit belum tersedia", {
-            description: `Anda mencoba mengedit parameter dengan ID ${id}`,
+            description: `Anda mencoba mengedit variable dengan ID ${id}`,
           })
         }
       }),

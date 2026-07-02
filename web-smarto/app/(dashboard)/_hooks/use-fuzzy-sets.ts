@@ -174,12 +174,12 @@ export function useFuzzySets() {
       BuildColumns({
         onDelete: (id) => {
           toast.info("Fitur hapus belum tersedia", {
-            description: `Anda mencoba menghapus kategori dengan ID ${id}`,
+            description: `Anda mencoba menghapus Matriks dengan ID ${id}`,
           })
         },
         onEdit: (id) => {
           toast.info("Fitur edit belum tersedia", {
-            description: `Anda mencoba mengedit kategori dengan ID ${id}`,
+            description: `Anda mencoba mengedit Matriks dengan ID ${id}`,
           })
         },
       }),
