@@ -2,8 +2,21 @@ import { NextResponse } from "next/server"
 import { fetchFuzzySets, fetchRuleBase } from "@/services/fuzzy.service"
 import { trapmf, trimf } from "@/lib/fuzzyHelpers"
 import { errorResponse, successResponse } from "@/lib/response"
-import { FuzzySet } from "@/types/ui/fuzzy"
+import { MfType } from "@/types/ui/fuzzy"
+import { getAuthUser } from "@/lib/auth"
 
+export type FuzzySet = {
+  id: number
+  variable_id: number
+  name: string
+  set_name: string
+  mf_type: MfType
+  param_a: number
+  param_b: number
+  param_c: number
+  param_d: number
+  createdAt: string
+}
 
 type RuleBase = {
   id: number
@@ -34,12 +47,12 @@ function roundNumber(value: number, digit = 2) {
 }
 
 function getMembershipValue(set: FuzzySet, x: number) {
-  if (set.mfType === "trapmf") {
-    return trapmf(x, set.a, set.b, set.c, set.d)
+  if (set.mf_type === "trapmf") {
+    return trapmf(x, set.param_a, set.param_b, set.param_c, set.param_d)
   }
 
-  if (set.mfType === "trimf") {
-    return trimf(x, set.a, set.b, set.d)
+  if (set.mf_type === "trimf") {
+    return trimf(x, set.param_a, set.param_b, set.param_c)
   }
 
   return 0
@@ -86,8 +99,8 @@ function defuzzifyCOG(
   let numerator = 0
   let denominator = 0
 
-  const minX = Math.min(...outputSets.map((set) => set.a))
-  const maxX = Math.max(...outputSets.map((set) => set.d))
+  const minX = Math.min(...outputSets.map((set) => set.param_a))
+  const maxX = Math.max(...outputSets.map((set) => set.param_d))
 
   const totalStep = Math.floor((maxX - minX) / step)
 
@@ -97,7 +110,7 @@ function defuzzifyCOG(
     let aggregatedMu = 0
 
     outputSets.forEach((set) => {
-      const alpha = aggregatedOutput[set.setName] || 0
+      const alpha = aggregatedOutput[set.set_name] || 0
 
       if (alpha <= 0) return
 
@@ -133,7 +146,7 @@ function getFinalCategoryByCrispDose(
 
     if (mu > highestMu) {
       highestMu = mu
-      finalCategory = set.setName
+      finalCategory = set.set_name
     }
   })
 
@@ -155,7 +168,7 @@ function buildMembershipResponse(
       const mu = muMap[set.id] || 0
 
       return {
-        label: `μ ${getVariableLabel(set.variableId)}[${set.setName}]`,
+        label: `μ ${getVariableLabel(set.variable_id)}[${set.set_name}]`,
         value: roundNumber(mu),
       }
     })
@@ -171,6 +184,11 @@ async function runFuzzyEngine(
   const allSets = (await fetchFuzzySets()) as FuzzySet[]
   const allRules = (await fetchRuleBase()) as RuleBase[]
 
+  //   console.log("=== DATA FUZZY SETS ===")
+  //   console.log(allSets)
+  //   console.log("=== DATA RULE BASE ===")
+  //   console.log(allRules)
+
   const input = {
     ph,
     kelembapan,
@@ -179,18 +197,18 @@ async function runFuzzyEngine(
   }
 
   const inputSets = allSets.filter(
-    (set) => set.variableId !== VARIABLE_ID.OUTPUT_DOSIS
+    (set) => set.variable_id !== VARIABLE_ID.OUTPUT_DOSIS
   )
 
   const outputSets = allSets.filter(
-    (set) => set.variableId === VARIABLE_ID.OUTPUT_DOSIS
+    (set) => set.variable_id === VARIABLE_ID.OUTPUT_DOSIS
   )
 
   // 1. FUZZIFIKASI
   const muMap: Record<number, number> = {}
 
   inputSets.forEach((set) => {
-    const x = getInputValueByVariableId(set.variableId, input)
+    const x = getInputValueByVariableId(set.variable_id, input)
 
     if (x === null) return
 
@@ -301,7 +319,7 @@ async function runFuzzyEngine(
       volume: {
         label: "Volume Pompa",
         value: `${pumpVolume} mL per hektar`,
-        Durasi: "Perlu disesuaikan dengan kapasitas pompa dan luas area",
+        durasi: "Perlu disesuaikan dengan kapasitas pompa dan luas area",
       },
     },
   }
@@ -309,6 +327,9 @@ async function runFuzzyEngine(
 
 export async function POST(request: Request) {
   try {
+    const user = await getAuthUser(request)
+    if (!user) return errorResponse("Unauthorized", 401)
+
     const body = await request.json()
     const { ph, kelembapan, suhu, nitrogen } = body
 
@@ -331,6 +352,9 @@ export async function POST(request: Request) {
 
     // Eksekusi kalkulasi fuzzy berdasarkan data sensor
     const result = await runFuzzyEngine(ph, kelembapan, suhu, nitrogen)
+
+    console.log("=== HASIL FUZZY ENGINE ===")
+    console.log(result)
 
     // Kirimkan respon balik ke ESP32 / Perangkat IoT Anda
     return successResponse("Fuzzy engine executed successfully", result, 200)

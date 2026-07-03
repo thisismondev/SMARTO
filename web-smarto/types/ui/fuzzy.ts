@@ -1,4 +1,4 @@
-type MfType = "trapmf" | "trimf"
+export type MfType = "trapmf" | "trimf"
 
 export type RuleBase = {
   id: number
@@ -36,3 +36,5 @@ export type FuzzySet = {
   d: number
   createdAt: string
 }
+
+
