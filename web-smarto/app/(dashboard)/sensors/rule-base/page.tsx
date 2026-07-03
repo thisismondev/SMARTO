@@ -12,7 +12,12 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from "@/components/ui/input-group"
 import { DataTable } from "./data-table"
 import { useRuleBase } from "../../_hooks/use-sensor-rule-base"
 import {
@@ -23,6 +28,20 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import PageLoading from "@/app/loading"
+
+function onlyNumber(value: string) {
+  return value.replace(/[^0-9]/g, "")
+}
+
+function buildKodeRule(value: string) {
+  const numberOnly = onlyNumber(value)
+
+  return numberOnly ? `R${numberOnly}` : ""
+}
+
+function removePrefixR(value: string) {
+  return value.replace(/^R/i, "").replace(/[^0-9]/g, "")
+}
 
 export default function RuleBasePage() {
   const {
@@ -35,6 +54,7 @@ export default function RuleBasePage() {
     kelembapanOptions,
     suhuOptions,
     nitrogenOptions,
+    outputOptions,
 
     open,
     setOpen,
@@ -55,8 +75,8 @@ export default function RuleBasePage() {
   } = useRuleBase()
 
   if (loading) {
-        return <PageLoading />
-      }
+    return <PageLoading />
+  }
 
   return (
     <div className="space-y-2">
@@ -81,6 +101,31 @@ export default function RuleBasePage() {
               <form className="space-y-4" onSubmit={handleSubmitRuleBase}>
                 <FieldGroup>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <Field>
+                      <FieldLabel>Kode Rule</FieldLabel>
+                      <InputGroup>
+                        <InputGroupInput
+                          id="kode-rule"
+                          value={form.kodeRule.replace(/^R/, "")} // Menampilkan angkanya saja di kolom input agar user tidak bingung
+                          onChange={(e) => {
+                            const rawValue = e.target.value
+                            // Hapus semua karakter yang BUKAN angka
+                            const numericValue = rawValue.replace(/\D/g, "")
+
+                            // Jika kosong, set string kosong, jika ada angkanya otomatis tambahkan "R"
+                            setForm((prev) => ({
+                              ...prev,
+                              kodeRule: numericValue ? `R${numericValue}` : "",
+                            }))
+                          }}
+                          placeholder="Contoh: 1"
+                          inputMode="numeric"
+                        />
+                        <InputGroupAddon>
+                          <InputGroupText>R</InputGroupText>
+                        </InputGroupAddon>
+                      </InputGroup>
+                    </Field>
                     <Field>
                       <FieldLabel>pH</FieldLabel>
                       <Select
@@ -169,9 +214,9 @@ export default function RuleBasePage() {
                   </div>
 
                   <Field>
-                    <FieldLabel htmlFor="output">Output</FieldLabel>
+                    <FieldLabel>Output</FieldLabel>
                     <Select
-                      value={form.output}
+                      value={form.output ? String(form.output) : ""}
                       onValueChange={(value) =>
                         handleFormChange("output", value)
                       }
@@ -182,15 +227,11 @@ export default function RuleBasePage() {
                       </SelectTrigger>
 
                       <SelectContent>
-                        <SelectItem value="Sangat Rendah">
-                          Sangat Rendah
-                        </SelectItem>
-                        <SelectItem value="Rendah">Rendah</SelectItem>
-                        <SelectItem value="Sedang">Sedang</SelectItem>
-                        <SelectItem value="Tinggi">Tinggi</SelectItem>
-                        <SelectItem value="Sangat Tinggi">
-                          Sangat Tinggi
-                        </SelectItem>
+                        {outputOptions.map((item) => (
+                          <SelectItem key={item.id} value={String(item.id)}>
+                            {item.setName}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </Field>
@@ -236,13 +277,25 @@ export default function RuleBasePage() {
             <FieldGroup>
               <Field>
                 <FieldLabel>Kode Rule</FieldLabel>
-                <Input
-                  value={selectedRule?.kode_rule ?? ""}
-                  readOnly
-                  disabled
-                />
-              </Field>
+                <InputGroup>
+                  <InputGroupInput
+                    id="edit-kode-rule"
+                    value={editForm.kodeRule.replace(/^R/, "")}
+                    onChange={(e) => {
 
+                      // 3. Gabungkan kembali karakter "R" dengan angka yang diketik
+                      const digitsOnly = e.target.value.replace(/\D/g, "")
+                      handleEditFormChange("kodeRule", `R${digitsOnly}`)
+                    }}
+                    placeholder="Contoh: R1"
+                    inputMode="numeric"
+                    // Memunculkannumpad/keyboard angka di HP demi UX yang baik
+                  />
+                  <InputGroupAddon>
+                    <InputGroupText>R</InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+              </Field>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field>
                   <FieldLabel>pH</FieldLabel>
@@ -338,31 +391,27 @@ export default function RuleBasePage() {
               </div>
 
               <Field>
-                    <FieldLabel htmlFor="edit_output">Output</FieldLabel>
-                    <Select
-                      value={editForm.output}
-                      onValueChange={(value) =>
-                        handleEditFormChange("output", value)
-                      }
-                      disabled={editLoading}
-                    >
-                      <SelectTrigger id="edit_output" className="w-full">
-                        <SelectValue placeholder="Pilih output" />
-                      </SelectTrigger>
+                <FieldLabel htmlFor="edit_output">Output</FieldLabel>
+                <Select
+                  value={editForm.output ? String(editForm.output) : ""}
+                  onValueChange={(value) =>
+                    handleEditFormChange("output", value)
+                  }
+                  disabled={editLoading}
+                >
+                  <SelectTrigger id="edit_output" className="w-full">
+                    <SelectValue placeholder="Pilih output" />
+                  </SelectTrigger>
 
-                      <SelectContent>
-                        <SelectItem value="Sangat Rendah">
-                          Sangat Rendah
-                        </SelectItem>
-                        <SelectItem value="Rendah">Rendah</SelectItem>
-                        <SelectItem value="Sedang">Sedang</SelectItem>
-                        <SelectItem value="Tinggi">Tinggi</SelectItem>
-                        <SelectItem value="Sangat Tinggi">
-                          Sangat Tinggi
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </Field>
+                  <SelectContent>
+                    {outputOptions.map((item) => (
+                      <SelectItem key={item.id} value={String(item.id)}>
+                        {item.setName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
             </FieldGroup>
 
             <DialogFooter>

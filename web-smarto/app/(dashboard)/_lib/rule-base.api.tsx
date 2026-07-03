@@ -1,7 +1,7 @@
 import { RuleBaseRequest } from "@/types/api/fuzzy"
 
 export async function fetchRuleBase(token: string) {
-  const response = await fetch(`/api/sensor/rule-base`, {
+  const response = await fetch(`/api/fuzzy/rule-base`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -21,18 +21,19 @@ export async function fetchRuleBase(token: string) {
 }
 
 export async function createRuleBase(token: string, body: RuleBaseRequest) {
-  const response = await fetch(`/api/sensor/rule-base/add`, {
+  const response = await fetch(`/api/fuzzy/rule-base/add`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
+      kode_rule: body.kodeRule,
       ph_kategori_id: body.ph,
       kelembapan_kategori_id: body.kelembapan,
       suhu_kategori_id: body.suhu,
       nitrogen_kategori_id: body.nitrogen,
-      output: body.output,
+      set_output_id: body.output,
     }),
   })
 
@@ -52,18 +53,19 @@ export async function updateRuleBase(
   id: number,
   body: RuleBaseRequest
 ) {
-  const response = await fetch(`/api/sensor/rule-base/${id}/update`, {
+  const response = await fetch(`/api/fuzzy/rule-base/${id}/update`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
+      kode_rule: body.kodeRule,
       ph_kategori_id: body.ph,
       kelembapan_kategori_id: body.kelembapan,
       suhu_kategori_id: body.suhu,
       nitrogen_kategori_id: body.nitrogen,
-      output: body.output,
+      set_output_id: body.output,
     }),
   })
 

@@ -13,19 +13,21 @@ import { toast } from "sonner"
 import { BuildColumns } from "../sensors/rule-base/columns"
 
 type RuleBaseForm = {
+  kodeRule: string
   ph: number
   kelembapan: number
   suhu: number
   nitrogen: number
-  output: string
+  output: number
 }
 
 const initialForm: RuleBaseForm = {
+  kodeRule: "",
   ph: 0,
   kelembapan: 0,
   suhu: 0,
   nitrogen: 0,
-  output: "",
+  output: 0
 }
 
 export function useRuleBase() {
@@ -69,6 +71,7 @@ export function useRuleBase() {
         suhu: item.suhu,
         nitrogenKategoriId: item.nitrogen_kategori_id,
         nitrogen: item.nitrogen,
+        outputId: item.set_output_id,
         output: item.output,
       }))
 
@@ -134,6 +137,10 @@ export function useRuleBase() {
   const nitrogenOptions = kategoriOptions.filter(
     (item) => item.name.toLowerCase() === "nitrogen"
   )
+  
+  const outputOptions = kategoriOptions.filter(
+    (item) => item.name.toLowerCase() === "dosis inokulasi rhizobium"
+  )
 
   const handleFormChange = (field: keyof RuleBaseForm, value: string) => {
     setForm((prev) => ({
@@ -145,7 +152,7 @@ export function useRuleBase() {
   const handleEditFormChange = (field: keyof RuleBaseForm, value: string) => {
     setEditForm((prev) => ({
       ...prev,
-      [field]: field === "output" ? value : Number(value),
+      [field]: field === "kodeRule" ? value : Number(value),
     }))
   }
 
@@ -170,7 +177,7 @@ export function useRuleBase() {
       return false
     }
 
-    if (!payload.output.trim()) {
+    if (!payload.output) {
       toast.error("Output wajib diisi")
       return false
     }
@@ -196,6 +203,7 @@ export function useRuleBase() {
 
     try {
       const result = await createRuleBase(token, {
+        kodeRule: form.kodeRule.trim(),
         ph: form.ph,
         kelembapan: form.kelembapan,
         suhu: form.suhu,
@@ -241,11 +249,12 @@ export function useRuleBase() {
       setSelectedRule(rule)
 
       setEditForm({
+        kodeRule: rule.kode_rule.trim(),
         ph: Number(rule.phKategoriId),
         kelembapan: Number(rule.kelembapanKategoriId),
         suhu: Number(rule.suhuKategoriId),
         nitrogen: Number(rule.nitrogenKategoriId),
-        output: rule.output,
+        output: Number(rule.outputId),
       })
 
       setEditOpen(true)
@@ -276,11 +285,12 @@ export function useRuleBase() {
 
     try {
       const result = await updateRuleBase(token, selectedRule.id, {
+        kodeRule: editForm.kodeRule.trim(),
         ph: editForm.ph,
         kelembapan: editForm.kelembapan,
         suhu: editForm.suhu,
         nitrogen: editForm.nitrogen,
-        output: editForm.output.trim(),
+        output: editForm.output,
       })
 
       toast.success(result.message || "Rule base berhasil diperbarui")
@@ -323,6 +333,7 @@ export function useRuleBase() {
     kelembapanOptions,
     suhuOptions,
     nitrogenOptions,
+    outputOptions,
 
     open,
     setOpen,
