@@ -141,12 +141,12 @@ const fuzzyMenuItems: MenuItem[] = [
     icon: KeyRound,
     roles: [1, 2],
   },
-  {
-    title: "Hasil Fuzzy",
-    href: "#",
-    icon: BarChart3,
-    roles: [1, 2],
-  },
+  // {
+  //   title: "Hasil Fuzzy",
+  //   href: "#",
+  //   icon: BarChart3,
+  //   roles: [1, 2],
+  // },
 ]
 const deviceMenuItems: MenuItem[] = [
   {

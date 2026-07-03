@@ -9,12 +9,14 @@ import {
   findNodesByPetani,
   findNodeByUserAndKodeNode,
 } from "../_lib/sensor.api"
+import { runFuzzyEngine } from "../_lib/fuzzy.api"
 import {
   fetchSensorData,
   subscribeSensorDataUpdate,
 } from "../_lib/sensor.supabase"
 import { SensorReading } from "@/types/sensor"
 import { NodeDetailSensorRow } from "@/types/nodes"
+import { DefuzzifikasiResponse } from "@/types/api/fuzzy"
 import { supabase } from "@/lib/supabaseClient"
 
 export function useSensorMonitoring() {
@@ -30,13 +32,17 @@ export function useSensorMonitoring() {
   const [sensorData, setSensorData] = useState<SensorReading | null>(null)
   const [sensorRowId, setSensorRowId] = useState<number | null>(null)
 
+  const [fuzzyLoading, setFuzzyLoading] = useState(false)
+  const [fuzzyDialogOpen, setFuzzyDialogOpen] = useState(false)
+  const [fuzzyResult, setFuzzyResult] = useState<DefuzzifikasiResponse | null>(null)
+
   const [nodeDetail, setNodeDetail] = useState<NodeDetailSensorRow | null>(null)
 
   const [skeleton, setSkeleton] = useState(true)
 
   const fetchPetani = useCallback(async () => {
     try {
-        setLoading(true)
+      setLoading(true)
       setError("")
 
       const token = localStorage.getItem("token")
@@ -200,6 +206,48 @@ export function useSensorMonitoring() {
     }
   }
 
+  async function handleRunFuzzyEngine() {
+    if (!sensorData) {
+      toast.error(
+        "Data sensor belum tersedia. Jalankan pencarian terlebih dahulu."
+      )
+      return
+    }
+
+    try {
+      setFuzzyLoading(true)
+      const token = localStorage.getItem("token")
+
+      if (!token) {
+        toast.error("Token tidak ditemukan. Silakan login kembali.")
+        return
+      }
+
+      const result = await runFuzzyEngine(token, {
+        ph: Number(sensorData.ph),
+        kelembapan: Number(sensorData.kelembapan),
+        suhu: Number(sensorData.suhu),
+        nitrogen: Number(sensorData.nitrogen),
+      })
+
+      console.log("Fuzzy engine result:", result)
+
+      setFuzzyResult(result.data)
+      setFuzzyDialogOpen(true)
+      toast.success("Fuzzy engine berhasil dijalankan")
+    } catch (error: any) {
+      console.error("Error running fuzzy engine:", error)
+
+      if (error instanceof Error) {
+        toast.error(error.message)
+      } else {
+        toast.error("Gagal menjalankan defuzzifikasi")
+      }
+    } finally {
+      setFuzzyLoading(false)
+    }
+  }
+
   useEffect(() => {
     console.log("Node detail updated:", nodeDetail)
   }, [nodeDetail])
@@ -237,5 +285,11 @@ export function useSensorMonitoring() {
     handleSelectNode,
     handleSearch,
     handleReset,
+    handleRunFuzzyEngine,
+
+    fuzzyLoading,
+    fuzzyDialogOpen,
+    setFuzzyDialogOpen,
+    fuzzyResult,
   }
 }

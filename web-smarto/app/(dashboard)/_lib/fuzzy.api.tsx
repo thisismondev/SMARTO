@@ -75,3 +75,35 @@ export async function addFuzzySet(
 
   return result
 }
+
+
+export async function runFuzzyEngine(
+  token: string,
+  body: {
+    ph: number
+    kelembapan: number
+    suhu: number
+    nitrogen: number
+  }
+){
+
+  const response = await fetch("/api/fuzzy/engine", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  })
+
+  const result = await response.json()
+
+  console.log("API Response for run fuzzy engine:", result)
+
+  if (!response.ok) {
+    throw new Error(result.message || "Gagal menjalankan fuzzy engine")
+  }
+
+  return result
+
+}

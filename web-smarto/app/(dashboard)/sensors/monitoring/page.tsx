@@ -1,6 +1,5 @@
 "use client"
 
-import React, { useMemo, useState } from "react"
 import {
   Select,
   SelectContent,
@@ -15,6 +14,14 @@ import { Droplet, Thermometer, Leaf, Search, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useSensorMonitoring } from "../../_hooks/use-monitoring"
 import PageLoading from "@/app/loading"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { DefuzzifikasiPanel } from "./_components/defuzzifikasi-panel"
 
 export default function MonitoringPage() {
   const {
@@ -30,6 +37,12 @@ export default function MonitoringPage() {
     handleSelectNode,
     handleSearch,
     handleReset,
+    handleRunFuzzyEngine,
+
+    fuzzyLoading,
+    fuzzyDialogOpen,
+    setFuzzyDialogOpen,
+    fuzzyResult,
 
     loading,
     error,
@@ -287,23 +300,41 @@ export default function MonitoringPage() {
       </section>
 
       {/* Chart Placeholder */}
-      {/* <section>
-        <Card>
-          <CardHeader>
-            <CardTitle>Grafik Tren Realtime</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex h-64 w-full items-center justify-center rounded bg-muted/30">
-              <div className="w-full max-w-4xl p-6">
-                <Skeleton className="h-48 w-full rounded-md" />
-                <div className="mt-3 text-center text-sm text-muted-foreground">
-                  Grafik Tren Realtime (Placeholder Recharts)
-                </div>
-              </div>
+      <section>
+        <div className="flex w-full items-center justify-end rounded-md p-4">
+          {skeleton ? (
+            <Skeleton className="h-10 w-40 rounded-md" />
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 px-5"
+              type="button"
+              disabled={fuzzyLoading || !sensorData}
+              onClick={handleRunFuzzyEngine}
+            >
+              {fuzzyLoading ? "Memproses..." : "Defuzzifikasi"}
+            </Button>
+          )}
+        </div>
+      </section>
+      <Dialog open={fuzzyDialogOpen} onOpenChange={setFuzzyDialogOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[900px]">
+          <DialogHeader>
+            <DialogTitle>Defuzzifikasi & Output</DialogTitle>
+            <DialogDescription>
+              Hasil agregasi output dan defuzzifikasi menggunakan metode
+              Centroid atau Center of Gravity.
+            </DialogDescription>
+          </DialogHeader>
+
+          {fuzzyResult && (
+            <div className="space-y-4">
+              <DefuzzifikasiPanel result={fuzzyResult} />
             </div>
-          </CardContent>
-        </Card>
-      </section> */}
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
