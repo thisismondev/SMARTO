@@ -3,5 +3,5 @@ export type RuleBaseRequest = {
     kelembapan: number
     suhu: number
     nitrogen: number
-    output: string
+    output: number
 }

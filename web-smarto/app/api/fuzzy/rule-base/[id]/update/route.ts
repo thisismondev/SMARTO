@@ -1,7 +1,7 @@
 import { errorResponse, successResponse } from "@/lib/response"
 import { getAuthUser } from "@/lib/auth"
 import { RouteParams } from "@/types/api"
-import { updateRuleBase, checkRuleBase } from "@/services/fuzzy.service"
+import { updateRuleBase, checkRuleBase, checkKodeRule } from "@/services/fuzzy.service"
 
 export async function PUT(
   request: Request,
@@ -28,19 +28,26 @@ export async function PUT(
 
     const body = await request.json()
     const {
+      kode_rule,
       ph_kategori_id,
       kelembapan_kategori_id,
       suhu_kategori_id,
       nitrogen_kategori_id,
-      output,
+      set_output_id,
     } = body
 
+    const existingKodeRule = await checkKodeRule(kode_rule)
+    if (existingKodeRule.length > 0 && existingKodeRule[0].id !== idParams) {
+      return errorResponse("Kode rule sudah digunakan", 400)
+    }
+
     const result = await updateRuleBase(idParams, {
+      kode_rule,
       ph_kategori_id,
       kelembapan_kategori_id,
       suhu_kategori_id,
       nitrogen_kategori_id,
-      output,
+      set_output_id
     })
 
     console.log("Hasil update rule base:", result)

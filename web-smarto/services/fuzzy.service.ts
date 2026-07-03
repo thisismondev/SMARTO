@@ -8,6 +8,7 @@ type RuleBase = {
   kelembapan_kategori_id: number
   suhu_kategori_id: number
   nitrogen_kategori_id: number
+  set_output_id: number
   ph: string
   kelembapan: string
   suhu: string
@@ -30,16 +31,18 @@ export async function fetchRuleBase() {
             rb.kelembapan_kategori_id,
             rb.suhu_kategori_id,
             rb.nitrogen_kategori_id,
+            rb.set_output_id,
             fs_ph.set_name AS ph,
             fs_kel.set_name AS kelembapan,
             fs_suhu.set_name AS suhu,
             fs_nit.set_name AS nitrogen,
-            rb.output
+            fs_out.set_name AS output
         FROM rule_base rb
         JOIN fuzzy_sets fs_ph on fs_ph.id = rb.ph_kategori_id
         JOIN fuzzy_sets fs_kel on fs_kel.id = rb.kelembapan_kategori_id
         JOIN fuzzy_sets fs_suhu on fs_suhu.id = rb.suhu_kategori_id
         JOIN fuzzy_sets fs_nit on fs_nit.id = rb.nitrogen_kategori_id
+        LEFT JOIN fuzzy_sets fs_out on fs_out.id = rb.set_output_id
         ORDER BY LENGTH(rb.kode_rule) ASC, rb.kode_rule ASC 
     `
   )
@@ -52,11 +55,11 @@ export async function addRuleBaseDetail(
   kelembapan_kategori_id: number,
   suhu_kategori_id: number,
   nitrogen_kategori_id: number,
-  output: string
+  set_output_id: number
 ) {
   const [result] = await db.query<ResultSetHeader>(
     `
-        INSERT INTO rule_base (kode_rule, ph_kategori_id, kelembapan_kategori_id, suhu_kategori_id, nitrogen_kategori_id, output)
+        INSERT INTO rule_base (kode_rule, ph_kategori_id, kelembapan_kategori_id, suhu_kategori_id, nitrogen_kategori_id, set_output_id)
         VALUES (?, ?, ?, ?, ?, ?)
         `,
     [
@@ -65,7 +68,7 @@ export async function addRuleBaseDetail(
       kelembapan_kategori_id,
       suhu_kategori_id,
       nitrogen_kategori_id,
-      output,
+      set_output_id,
     ]
   )
   return result
@@ -74,30 +77,33 @@ export async function addRuleBaseDetail(
 export async function updateRuleBase(
   id: number,
   body: {
+    kode_rule: string
     ph_kategori_id: number
     kelembapan_kategori_id: number
     suhu_kategori_id: number
     nitrogen_kategori_id: number
-    output: string
+    set_output_id: number
   }
 ) {
   const [result] = await db.query<ResultSetHeader>(
     `
         UPDATE rule_base
         SET 
+            kode_rule = ?,
             ph_kategori_id = ?,
             kelembapan_kategori_id = ?,
             suhu_kategori_id = ?,
             nitrogen_kategori_id = ?,
-            output = ?
+            set_output_id = ?
         WHERE id = ?
         `,
     [
+      body.kode_rule,
       body.ph_kategori_id,
       body.kelembapan_kategori_id,
       body.suhu_kategori_id,
       body.nitrogen_kategori_id,
-      body.output,
+      body.set_output_id,
       id,
     ]
   )
@@ -112,6 +118,17 @@ export async function checkRuleBase(id: number) {
         FROM rule_base WHERE id = ?
         `,
     [id]
+  )
+  return rows
+}
+
+export async function checkKodeRule(kodeRule: string) {
+  const [rows] = await db.query<RowDataPacket[]>(
+    `
+        SELECT id, kode_rule 
+        FROM rule_base WHERE kode_rule = ?
+        `,
+    [kodeRule]
   )
   return rows
 }
@@ -154,7 +171,6 @@ export async function fetchFuzzySets() {
   )
   return rows
 }
-
 
 export async function createFuzzySets(
   variableId: number,
