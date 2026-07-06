@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../home/controller/node_controller.dart';
+import '../../home/controller/fuzzy_controller.dart';
 import '../../home/model/node_response_model.dart';
 import '../../home/model/sensor_reading_model.dart';
-
-
+import 'defuzzifikasi_page.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -13,8 +13,12 @@ class HomeTab extends StatefulWidget {
   State<HomeTab> createState() => _HomeTabState();
 }
 
-class _HomeTabState extends State<HomeTab> {
+class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
   final NodeController _controller = NodeController();
+  final FuzzyController _engineController = FuzzyController();
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -26,17 +30,23 @@ class _HomeTabState extends State<HomeTab> {
       }
     });
 
+    _engineController.addListener(() {
+      if (mounted) setState(() {});
+    });
+
     _controller.fetchLahan();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _engineController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (_controller.loadingLahan) {
       return const Center(
         child: CircularProgressIndicator(color: Color(0xFF2E7D32)),
@@ -59,68 +69,154 @@ class _HomeTabState extends State<HomeTab> {
     final selectedLahan = _controller.selectedLahan;
     final sensorData = _controller.sensorData;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _HeaderSection(
-            farmerName: _controller.farmerName,
-            lahanList: _controller.lahanList,
-            selectedLahan: selectedLahan,
-            onChanged: (value) {
-              _controller.changeLahan(value);
-            },
-          ),
+    if (_engineController.loading) {
+      return const Center(
+        child: CircularProgressIndicator(color: Color(0xFF2E7D32)),
+      );
+    }
 
-          const SizedBox(height: 18),
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _HeaderSection(
+                farmerName: _controller.farmerName,
+                lahanList: _controller.lahanList,
+                selectedLahan: selectedLahan,
+                onChanged: (value) {
+                  _controller.changeLahan(value);
+                },
+              ),
 
-          if (selectedLahan == null) ...[
-            const _SelectLahanFirstCard(),
-          ] else ...[
-            _LahanInfoCard(lahan: selectedLahan),
+              const SizedBox(height: 18),
 
-            const SizedBox(height: 20),
+              if (selectedLahan == null) ...[
+                const _SelectLahanFirstCard(),
+              ] else ...[
+                _LahanInfoCard(lahan: selectedLahan),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Sensor Monitor',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                const SizedBox(height: 20),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Sensor Monitor',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    if (sensorData != null)
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time,
+                            size: 15,
+                            color: Colors.grey.shade600,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            sensorData.updatedAtText,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
                 ),
 
-                if (sensorData != null)
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.access_time,
-                        size: 15,
-                        color: Colors.grey.shade600,
+                const SizedBox(height: 10),
+
+                if (_controller.loadingSensor || sensorData == null)
+                  const _SensorLoading()
+                else
+                  _SensorGrid(sensorData: sensorData),
+                const SizedBox(
+                  height: 20,
+                ), // Jarak antara grid sensor dan tombol utama
+                // TOMBOL UTAMA: PROSES DEFUZZIFIKASI
+                SizedBox(
+                  width: double
+                      .infinity, // Membuat tombol full-width (lebar penuh)
+                  height: 54, // Membuat tombol lebih tebal dan mudah ditekan
+                  child: FilledButton.icon(
+                    onPressed: () async {
+                      final success = await _engineController.fetchFuzzyEngine(
+                        ph: sensorData?.ph ?? 0,
+                        kelembapan: sensorData?.kelembapan ?? 0,
+                        suhu: sensorData?.suhu ?? 0,
+                        nitrogen: sensorData?.nitrogen ?? 0,
+                      );
+
+                      if (!context.mounted) return;
+
+                      if (success) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => DefuzzifikasiPage(
+                              data: _engineController.fuzzyData,
+                            ),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              _engineController.error ??
+                                  "Gagal memproses defuzzifikasi",
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(
+                        0xFF2E7D32,
+                      ), // Hijau gelap agar kontras
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          16,
+                        ), // Sesuai tema melengkung di dashboard Anda
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        sensorData.updatedAtText,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      elevation: 2,
+                    ),
+                    icon: const Icon(
+                      Icons.analytics_rounded,
+                      size: 24,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      'PROSES DEFUZZIFIKASI',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2, // Memberikan kesan tegas/utama
+                        color: Colors.white,
                       ),
-                    ],
+                    ),
                   ),
+                ),
               ],
+            ],
+          ),
+        ),
+        if (_engineController.loading)
+          Container(
+            color: Colors.black45,
+            child: const Center(
+              child: CircularProgressIndicator(color: Colors.white),
             ),
-
-            const SizedBox(height: 10),
-
-            if (_controller.loadingSensor || sensorData == null)
-              const _SensorLoading()
-            else
-              _SensorGrid(sensorData: sensorData),
-          ],
-        ],
-      ),
+          ),
+      ],
     );
   }
 }

@@ -11,9 +11,12 @@ class SettingTab extends StatefulWidget {
   State<SettingTab> createState() => _SettingTabState();
 }
 
-class _SettingTabState extends State<SettingTab> {
+class _SettingTabState extends State<SettingTab> with AutomaticKeepAliveClientMixin {
   final LogoutController logoutController = LogoutController();
   final AccountController accountController = AccountController();
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -121,6 +124,7 @@ class _SettingTabState extends State<SettingTab> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(

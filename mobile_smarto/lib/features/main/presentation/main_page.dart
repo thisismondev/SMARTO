@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../../home/presentation/home_tab.dart';
-import '../../sensor/presentation/sensor_tab.dart';
+import '../../analytics/presentation/analytics_tab.dart';
 import '../../setting/presentation/setting_tab.dart';
 
 class MainPage extends StatefulWidget {
@@ -13,18 +12,23 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int selectedIndex = 0;
+  late final PageController _pageController;
 
-  final pages = const [
-    HomeTab(),
-    SensorTab(),
-    SettingTab(),
-  ];
+  final pages = const [HomeTab(), AnalyticsTab(), SettingTab()];
 
-  final titles = const [
-    'Home',
-    'Sensor',
-    'Pengaturan',
-  ];
+  final titles = const ['Home', 'Analytics', 'Pengaturan'];
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: selectedIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +43,11 @@ class _MainPageState extends State<MainPage> {
         foregroundColor: Colors.white,
       ),
 
-      // IndexedStack menjaga state tiap tab
-      body: IndexedStack(
-        index: selectedIndex,
+      // Mengganti IndexedStack dengan PageView
+      body: PageView(
+        controller: _pageController,
+        physics:
+            const NeverScrollableScrollPhysics(), // Kunci geser layar (wajib geser lewat nav bar)
         children: pages,
       ),
 
@@ -53,30 +59,27 @@ class _MainPageState extends State<MainPage> {
           setState(() {
             selectedIndex = index;
           });
+          // Pindah halaman dengan animasi halus atau instan (.jumpToPage)
+          _pageController.animateToPage(
+            index,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+          );
         },
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(
-              Icons.home,
-              color: Color(0xFF2E7D32),
-            ),
+            selectedIcon: Icon(Icons.home, color: Color(0xFF2E7D32)),
             label: 'Home',
           ),
           NavigationDestination(
             icon: Icon(Icons.analytics_outlined),
-            selectedIcon: Icon(
-              Icons.analytics,
-              color: Color(0xFF2E7D32),
-            ),
-            label: 'Sensor',
+            selectedIcon: Icon(Icons.analytics, color: Color(0xFF2E7D32)),
+            label: 'Analytics',
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(
-              Icons.settings,
-              color: Color(0xFF2E7D32),
-            ),
+            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings, color: Color(0xFF2E7D32)),
             label: 'Settings',
           ),
         ],
