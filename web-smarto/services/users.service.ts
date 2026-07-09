@@ -2,19 +2,19 @@ import type { ResultSetHeader, RowDataPacket } from "mysql2"
 import db from "@/lib/db"
 
 type User = {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
-  password: string;
-  role_id: number;
-  role: string;
-  status: number;
-};
+  id: number
+  name: string
+  username: string
+  email: string
+  password: string
+  role_id: number
+  role: string
+  status: number
+}
 
 type Petani = {
-  id: number;
-  name: string;
+  id: number
+  name: string
 } & RowDataPacket
 
 export async function findByIdentifier(identifier: string) {
@@ -33,7 +33,10 @@ export async function findByIdentifier(identifier: string) {
   return users[0] || null
 }
 
-export async function findUserByUsernameOrEmail(email: string, username: string) {
+export async function findUserByUsernameOrEmail(
+  email: string,
+  username: string
+) {
   const [rows] = await db.query(
     `
     SELECT id, name, username, email
@@ -49,20 +52,18 @@ export async function findUserByUsernameOrEmail(email: string, username: string)
   return users[0] || null
 }
 
-// belum fix
 export async function findUserById(id: number) {
-  const [rows] = await db.query(
+  const [row] = await db.query<RowDataPacket[]>(
     `
-    SELECT id, name, username, email, role_id, status
-    FROM users
-    WHERE id = ? AND status = 0
+    SELECT u.id, u.name, u.username, u.email, u.role_id, ur.role, u.status
+    FROM users u
+    JOIN user_role ur ON u.role_id = ur.id
+    WHERE u.id = ?
     LIMIT 1
     `,
     [id]
   )
-
-  const users = rows as Omit<User, "password">[]
-  return users[0] || null
+  return row[0]
 }
 
 export async function createUser(data: {
@@ -88,17 +89,47 @@ export async function updateUserPassword(data: {
   password: string
 }) {
   const [result] = await db.query<ResultSetHeader>(
-     `
+    `
       UPDATE users SET password = ? 
       WHERE id = ? AND status = 0
       `,
-      [data.password, data.userId],
+    [data.password, data.userId]
   )
 
   return result
 }
 
-export async function findUsers(){
+export async function updateUserById(
+  userId: number,
+  data: {
+    name: string
+    username: string
+    email: string
+    roleId: number
+  }
+) {
+  const [result] = await db.query<ResultSetHeader>(
+    `
+      UPDATE users SET name = ?, username = ?, email = ?, role_id = ? 
+      WHERE id = ? AND status = 0
+      `,
+    [data.name, data.username, data.email, data.roleId, userId]
+  )
+
+  return result
+}
+
+export async function checkPasswordUser(userId: number) {
+  const [rows] = await db.query<RowDataPacket[]>(
+    `
+    SELECT password FROM users WHERE id = ? AND status = 0
+    `,
+    [userId]
+  )
+  return rows[0]
+}
+
+export async function findUsers() {
   const [result] = await db.query(
     `
     SELECT u.id, u.name, u.username, u.email, u.role_id, r.role, u.status
@@ -112,7 +143,7 @@ export async function findUsers(){
   return result as Omit<User, "password">[]
 }
 
-export async function adminFindUsers(){
+export async function adminFindUsers() {
   const [result] = await db.query(
     `
     SELECT u.id, u.name, u.username, u.email, u.password, u.role_id, r.role, u.status
@@ -125,7 +156,7 @@ export async function adminFindUsers(){
   return result as User[]
 }
 
-export async function findUserPetani(){
+export async function findUserPetani() {
   const [result] = await db.query<Petani[]>(
     `
     SELECT id, name
@@ -143,7 +174,7 @@ export async function inactiveById(userId: number) {
     UPDATE users SET status = 1 
     WHERE id = ?
     `,
-    [userId],
+    [userId]
   )
   return result
 }
@@ -154,7 +185,7 @@ export async function activeById(userId: number) {
     UPDATE users SET status = 0
     WHERE id = ?
     `,
-    [userId],
+    [userId]
   )
   return result
 }
