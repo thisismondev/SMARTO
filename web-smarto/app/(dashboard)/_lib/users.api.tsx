@@ -20,6 +20,62 @@ export async function findUsers(token: String) {
   }
 }
 
+export async function findUserById(token: String, id: number) {
+  try {
+    const response = await fetch(`/api/user/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    const result = await response.json()
+
+    console.log("API Response for user by Id:", result.data)
+
+    if (!response.ok || !result.status) {
+      throw new Error(result.message || "Gagal mengambil data pengguna")
+    }
+    return result
+  } catch (error: any) {
+    throw new Error(error.message || "Gagal mengambil data pengguna")
+  }
+}
+
+export async function updateUserById(
+  token: String,
+  id: number,
+  data: {
+    name: string
+    username: string
+    email: string
+    roleId: number
+  }
+) {
+  try {
+    const response = await fetch(`/api/user/${id}/update`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    })
+
+    const result = await response.json()
+
+    console.log("API Response for update user by Id:", result)
+
+    if (!response.ok || !result.status) {
+      throw new Error(result.message || "Gagal memperbarui pengguna")
+    }
+
+    return result
+  } catch (error: any) {
+    throw new Error(error.message || "Gagal memperbarui pengguna")
+  }
+}
+
 export async function userActivate(token: String, userId: number) {
   try {
     const response = await fetch(`/api/user/${userId}/activeUser`, {
@@ -95,5 +151,36 @@ export async function registerUser(body: {
     return result
   } catch (error: any) {
     throw new Error(error.message || "Gagal mendaftarkan pengguna")
+  }
+}
+
+export async function changePasswordUser(
+  token: String,
+  userId: number,
+  body: {
+    oldPassword: string
+    newPassword: string
+    confirmPassword: string
+  }
+) {
+  try {
+    const response = await fetch(`/api/auth/${userId}/reset-password`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    })
+    const result = await response.json()
+
+    if (!result.status) {
+      throw new Error(result.message || "Gagal mengubah password pengguna")
+    }
+
+    console.log("API Response for changing user password:", result)
+    return result
+  } catch (error: any) {
+    throw new Error(error.message || "Gagal mengubah password pengguna")
   }
 }

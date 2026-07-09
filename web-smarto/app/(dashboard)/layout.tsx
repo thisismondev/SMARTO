@@ -222,6 +222,7 @@ export default function DashboardLayout({
   const breadcrumbMap: Record<string, string> = {
     "/": "Dashboard",
     "/sensors/monitoring": "Pemantauan Sensor",
+    "/sensors/analytics": "Analytics",
     "/sensors/parameter-sensor": "Parameter Sensor",
     "/sensors/kategori-sensor": "Kategori Sensor",
     "/sensors/rule-base": "Rule Base",

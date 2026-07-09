@@ -12,6 +12,7 @@ import {
   Check,
   Trash2,
   Plus,
+  UserX,
 } from "lucide-react"
 
 import {
@@ -28,7 +29,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import {
   Select,
   SelectContent,
@@ -36,29 +36,79 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { cn } from "@/lib/utils"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useUser } from "../_hooks/use-user"
+import { UpdatePasswordInput, UpdateUserInput } from "@/types/api/user"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
-// Dummy data
-const dummyUser = {
-  name: "Budi Santoso",
-  email: "budi.santoso@tani.id",
-  phone: "+62 812 3456 7890",
-  role: "Petani",
-  location: "Kabupaten Gowa, Sulawesi Selatan",
-  bio: "Petani sayuran organik dengan fokus pada pertanian presisi berbasis IoT.",
-  avatar: "",
+type ProfileSectionProps = {
+  form: UpdateUserInput
+  updating: boolean
+  onSave: () => void
+  onReset: () => void
+  onChange: <K extends keyof UpdateUserInput>(
+    key: K,
+    value: UpdateUserInput[K]
+  ) => void
+}
+
+type ProfileEmptyStateProps = {
+  onRetry?: () => void
+}
+
+type AccountSectionProps = {
+  formPassword: UpdatePasswordInput
+  updatingPassword: boolean
+  inactivatingAccount: boolean
+
+  onPasswordChange: <K extends keyof UpdatePasswordInput>(
+    key: K,
+    value: UpdatePasswordInput[K]
+  ) => void
+
+  onSubmitPassword: () => void
+  onResetPassword: () => void
+  onInactivateAccount: () => void
 }
 
 export default function SettingsPage() {
+  const {
+    loading,
+    error,
+
+    updating,
+    inactivating,
+    updatingPassword,
+
+    userData,
+
+    form,
+    setFormValue,
+    formPassword,
+    setFormPasswordValue,
+
+    fetchUserById,
+
+    resetForm,
+    handleUpdateUser,
+
+    resetPasswordForm,
+    handlePasswordChange,
+
+    handleInactivateAccount,
+  } = useUser()
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -105,30 +155,44 @@ export default function SettingsPage() {
         </TabsList>
 
         <TabsContent value="profil">
-          <ProfileSection />
+          {loading ? (
+            <ProfileSectionSkeleton />
+          ) : userData ? (
+            <ProfileSection
+              form={form}
+              updating={updating}
+              onChange={setFormValue}
+              onSave={handleUpdateUser}
+              onReset={resetForm}
+            />
+          ) : (
+            <ProfileEmptyState onRetry={fetchUserById} />
+          )}
         </TabsContent>
         <TabsContent value="akun">
-          <AccountSection />
+          <AccountSection
+            formPassword={formPassword}
+            updatingPassword={updatingPassword}
+            inactivatingAccount={inactivating}
+            onPasswordChange={setFormPasswordValue}
+            onSubmitPassword={handlePasswordChange}
+            onResetPassword={resetPasswordForm}
+            onInactivateAccount={handleInactivateAccount}
+          />
         </TabsContent>
-        {/* <TabsContent value="notifikasi">
-          <NotificationSection />
-        </TabsContent>
-        <TabsContent value="tampilan">
-          <AppearanceSection />
-        </TabsContent>
-        <TabsContent value="perangkat">
-          <DevicesSection />
-        </TabsContent>
-        <TabsContent value="bahasa">
-          <LanguageSection />
-        </TabsContent> */}
       </Tabs>
     </div>
   )
 }
 
 /* ---------- PROFIL ---------- */
-function ProfileSection() {
+function ProfileSection({
+  form,
+  updating,
+  onChange,
+  onSave,
+  onReset,
+}: ProfileSectionProps) {
   return (
     <Card>
       <CardHeader>
@@ -141,13 +205,16 @@ function ProfileSection() {
         {/* Avatar */}
         <div className="flex items-center gap-4">
           <Avatar className="h-20 w-20">
-            <AvatarImage src={dummyUser.avatar} alt={dummyUser.name} />
+            <AvatarImage />
             <AvatarFallback className="text-lg">
-              {dummyUser.name
+              {form.name
+                ?.trim()
                 .split(" ")
-                .map((n) => n[0])
+                .filter(Boolean)
+                .map((n) => n.charAt(0))
                 .join("")
-                .slice(0, 2)}
+                .slice(0, 2)
+                .toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="space-y-2">
@@ -166,45 +233,126 @@ function ProfileSection() {
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="name">Nama Lengkap</Label>
-            <Input id="name" defaultValue={dummyUser.name} />
+            <Input
+              id="name"
+              value={form.name}
+              onChange={(e) => onChange("name", e.target.value)}
+              disabled={updating}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="username">UserName</Label>
+            <Input
+              id="username"
+              value={form.username}
+              onChange={(e) => onChange("username", e.target.value)}
+              disabled={updating}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" defaultValue={dummyUser.email} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Nomor Telepon</Label>
-            <Input id="phone" defaultValue={dummyUser.phone} />
+            <Input
+              id="email"
+              type="email"
+              value={form.email}
+              onChange={(e) => onChange("email", e.target.value)}
+              disabled={updating}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="role">Peran</Label>
-            <Select defaultValue={dummyUser.role.toLowerCase()}>
-              <SelectTrigger id="role">
-                <SelectValue />
+            <Select
+              value={String(form.roleId)}
+              onValueChange={(value) => onChange("roleId", Number(value))}
+              disabled={updating}
+            >
+              <SelectTrigger className="w-full" id="role">
+                <SelectValue placeholder="Pilih Role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="petani">Petani</SelectItem>
-                <SelectItem value="penyuluh">Penyuluh</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="1">Admin</SelectItem>
+                <SelectItem value="2">Penyuluh</SelectItem>
+                <SelectItem value="3">Petani</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="location">Lokasi</Label>
-            <Input id="location" defaultValue={dummyUser.location} />
-          </div>
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="bio">Bio</Label>
-            <Textarea id="bio" rows={3} defaultValue={dummyUser.bio} />
-            <p className="text-xs text-muted-foreground">
-              Deskripsi singkat, maksimal 200 karakter.
-            </p>
           </div>
         </div>
 
         <div className="flex justify-end gap-2 pt-2">
-          <Button variant="outline">Batal</Button>
-          <Button>Simpan Perubahan</Button>
+          <Button variant="outline" onClick={onReset}>
+            Batal
+          </Button>
+          <Button onClick={onSave} disabled={updating}>
+            {updating ? "Menyimpan..." : "Simpan Perubahan"}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function ProfileEmptyState({ onRetry }: ProfileEmptyStateProps) {
+  return (
+    <Card>
+      <CardContent className="flex flex-col items-center justify-center py-14 text-center">
+        <div className="mb-4 rounded-full bg-muted p-4">
+          <UserX className="h-10 w-10 text-muted-foreground" />
+        </div>
+
+        <h3 className="text-lg font-semibold">Profil tidak ditemukan</h3>
+
+        <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+          Data profil belum tersedia atau gagal dimuat. Silakan coba lagi
+          beberapa saat.
+        </p>
+
+        {onRetry && (
+          <Button className="mt-6" variant="outline" onClick={onRetry}>
+            Muat Ulang
+          </Button>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function ProfileSectionSkeleton() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          <Skeleton className="h-6 w-32" />
+        </CardTitle>
+        <CardDescription>
+          <Skeleton className="mt-2 h-4 w-72" />
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent className="space-y-6">
+        {/* Avatar */}
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-20 w-20 rounded-full" />
+
+          <div className="space-y-2">
+            <Skeleton className="h-9 w-32 rounded-md" />
+            <Skeleton className="h-3 w-44" />
+          </div>
+        </div>
+
+        <Separator />
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="space-y-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-10 w-full rounded-md" />
+            </div>
+          ))}
+        </div>
+
+        <div className="flex justify-end gap-2 pt-2">
+          <Skeleton className="h-10 w-24 rounded-md" />
+          <Skeleton className="h-10 w-40 rounded-md" />
         </div>
       </CardContent>
     </Card>
@@ -212,7 +360,15 @@ function ProfileSection() {
 }
 
 /* ---------- AKUN ---------- */
-function AccountSection() {
+function AccountSection({
+  formPassword,
+  updatingPassword,
+  inactivatingAccount,
+  onPasswordChange,
+  onSubmitPassword,
+  onResetPassword,
+  onInactivateAccount,
+}: AccountSectionProps) {
   return (
     <div className="space-y-6">
       <Card>
@@ -225,25 +381,57 @@ function AccountSection() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="current">Kata Sandi Saat Ini</Label>
-            <Input id="current" type="password" />
+            <Input
+              id="current"
+              type="password"
+              value={formPassword.oldPassword}
+              onChange={(e) => onPasswordChange("oldPassword", e.target.value)}
+              disabled={updatingPassword}
+            />
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="new">Kata Sandi Baru</Label>
-              <Input id="new" type="password" />
+              <Input
+                id="new"
+                type="password"
+                value={formPassword.newPassword}
+                onChange={(e) =>
+                  onPasswordChange("newPassword", e.target.value)
+                }
+                disabled={updatingPassword}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirm">Konfirmasi Kata Sandi</Label>
-              <Input id="confirm" type="password" />
+              <Input
+                id="confirm"
+                type="password"
+                value={formPassword.confirmPassword}
+                onChange={(e) =>
+                  onPasswordChange("confirmPassword", e.target.value)
+                }
+                disabled={updatingPassword}
+              />
             </div>
           </div>
-          <div className="flex justify-end pt-2">
-            <Button>Perbarui Kata Sandi</Button>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              variant="outline"
+              onClick={onResetPassword}
+              disabled={updatingPassword}
+            >
+              Batal
+            </Button>
+
+            <Button onClick={onSubmitPassword} disabled={updatingPassword}>
+              {updatingPassword ? "Memperbarui..." : "Perbarui Kata Sandi"}
+            </Button>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Autentikasi Dua Faktor</CardTitle>
           <CardDescription>
@@ -262,7 +450,7 @@ function AccountSection() {
             description="Gunakan Google Authenticator atau aplikasi serupa."
           />
         </CardContent>
-      </Card>
+      </Card> */}
 
       <Card className="border-destructive/40">
         <CardHeader>
@@ -279,9 +467,36 @@ function AccountSection() {
                 Semua data sensor dan riwayat akan dihapus permanen.
               </p>
             </div>
-            <Button variant="destructive" size="sm">
-              Hapus Akun
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  disabled={inactivatingAccount}
+                >
+                  Nonaktifkan Akun
+                </Button>
+              </AlertDialogTrigger>
+
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Nonaktifkan akun?</AlertDialogTitle>
+
+                  <AlertDialogDescription>
+                    Setelah akun dinonaktifkan Anda akan logout dan tidak dapat
+                    masuk kembali sampai akun diaktifkan oleh administrator.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Batal</AlertDialogCancel>
+
+                  <AlertDialogAction onClick={onInactivateAccount}>
+                    Ya, Nonaktifkan
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </CardContent>
       </Card>

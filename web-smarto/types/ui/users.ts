@@ -8,3 +8,15 @@ export type listUsers = {
   role: string
   status: number
 }
+
+
+
+export type user = {
+  id: number
+  name: string
+  username: string
+  email: string
+  roleId: number
+  role: string
+  status: number
+}
