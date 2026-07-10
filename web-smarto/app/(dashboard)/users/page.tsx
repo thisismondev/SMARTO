@@ -33,14 +33,21 @@ export default function UsersPage() {
 
     data,
     columns,
+    form,
 
     isRegisterOpen,
+    updateOpen,
     registerForm,
     isSubmitting,
+    updating,
 
     setIsRegisterOpen,
+    setUpdateOpen,
     handleRegisterChange,
     handleRegisterSubmit,
+    handleUpdateChange,
+    handleUpdateUser,
+    resetForm,
   } = useUsers()
 
   if (loading) {
@@ -190,6 +197,107 @@ export default function UsersPage() {
           <DataTable columns={columns} data={data} />
         </CardContent>
       </Card>
+      <Sheet
+        open={updateOpen}
+        onOpenChange={(open) => {
+          setUpdateOpen(open)
+          if (!open) resetForm()
+        }}
+      >
+        <SheetContent side="right" className="overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Edit User</SheetTitle>
+            <SheetDescription>Perbarui data pengguna berikut.</SheetDescription>
+          </SheetHeader>
+
+          <form
+            className="flex min-h-full flex-col gap-5 px-8 pb-8"
+            onSubmit={handleUpdateUser}
+          >
+            <div className="space-y-2">
+              <Label htmlFor="update-name">Nama</Label>
+              <Input
+                id="update-name"
+                value={form.name}
+                onChange={(e) => handleUpdateChange("name", e.target.value)}
+                disabled={updating}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="update-username">Username</Label>
+              <Input
+                id="update-username"
+                value={form.username}
+                onChange={(e) => handleUpdateChange("username", e.target.value)}
+                disabled={updating}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="update-email">Email</Label>
+              <Input
+                id="update-email"
+                type="email"
+                value={form.email}
+                onChange={(e) => handleUpdateChange("email", e.target.value)}
+                disabled={updating}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="update-role">Role</Label>
+              <Select
+                value={form.role_id ? String(form.role_id) : undefined}
+                onValueChange={(value) =>
+                  handleUpdateChange("role_id", Number(value))
+                }
+                disabled={updating}
+              >
+                <SelectTrigger id="update-role" className="w-full">
+                  <SelectValue placeholder="Pilih role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Admin</SelectItem>
+                  <SelectItem value="2">Penyuluh</SelectItem>
+                  <SelectItem value="3">Petani</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="update-password">Password</Label>
+              <Input
+                id="update-password"
+                value={form.password}
+                readOnly
+                disabled
+                className="cursor-not-allowed"
+              />
+              <p className="text-xs text-muted-foreground">
+                Password tidak dapat diubah dari sini. Gunakan fitur reset
+                password.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="update-status">Status</Label>
+              <Input
+                id="update-status"
+                value={form.status === 0 ? "Aktif" : "Nonaktif"}
+                readOnly
+                disabled
+                className="cursor-not-allowed"
+              />
+            </div>
+
+            <SheetFooter className="mt-auto px-0">
+              <Button type="submit" disabled={updating}>
+                {updating ? "Menyimpan..." : "Simpan Perubahan"}
+              </Button>
+            </SheetFooter>
+          </form>
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }

@@ -5,11 +5,13 @@ import {
   userActivate,
   userInactivate,
   registerUser,
+  updateUserById,
 } from "../_lib/users.api"
 import { useCallback, useState, useEffect, useMemo } from "react"
 import { buildColumns, UserRow } from "../users/columns"
 import { toast } from "sonner"
 import { listUsers } from "@/types/ui/users"
+import { UpdateUserInput } from "@/types/api/user"
 
 type StoredUser = {
   role_id: number
@@ -41,6 +43,20 @@ export function useUsers() {
     roleId: 2,
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const [form, setForm] = useState<UserRow>({
+    id: 0,
+    name: "",
+    username: "",
+    email: "",
+    role: "",
+    role_id: 0,
+    password: "",
+    status: 0,
+  })
+
+  const [updateOpen, setUpdateOpen] = useState(false)
+  const [updating, setUpdating] = useState(false) // khusus proses submit
 
   useEffect(() => {
     const rawUser = localStorage.getItem("user")
@@ -139,19 +155,80 @@ export function useUsers() {
     [fetchUsers]
   )
 
+  const handleOpenUpdate = useCallback((user: UserRow) => {
+    setForm({
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      password: user.password || "********",
+      role_id: user.role_id,
+      role: user.role,
+      status: user.status,
+    })
+    setUpdateOpen(true)
+  }, [])
+
+  const handleUpdateUser = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    const token = localStorage.getItem("token")
+
+    if (!token) {
+      toast.error("Token tidak ditemukan. Silakan login ulang.")
+      return
+    }
+
+    setUpdating(true)
+    try {
+      const input: UpdateUserInput = {
+        name: form.name,
+        username: form.username,
+        email: form.email,
+        roleId: form.role_id,
+      }
+      const result = await updateUserById(token, form.id, input)
+      
+      toast.success(result.message || "Pengguna berhasil diperbarui")
+      setUpdateOpen(false)
+      resetForm()
+      await fetchUsers()
+    } catch (error: any) {
+      toast.error(error.message || "Gagal memperbarui pengguna")
+    } finally {
+      setUpdating(false)
+    }
+  }
+
+  const resetForm = useCallback(() => {
+    setForm({
+      id: 0,
+      name: "",
+      username: "",
+      email: "",
+      password: "",
+      role: "",
+      role_id: 0,
+      status: 0,
+    })
+  }, [])
+
+  const handleUpdateChange = useCallback(
+    <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
+      setForm((prev) => ({ ...prev, [key]: value }))
+    },
+    []
+  )
+
   const columns = useMemo(
     () =>
       buildColumns({
         onActivate: handleActivate,
         onInactivate: handleInactivate,
-        onEdit: (user) => {
-          toast("Fitur edit belum tersedia", {
-            description: `Anda mencoba mengedit pengguna dengan ID ${user.id}`,
-          })
-        },
+        onEdit: handleOpenUpdate,
         isAdmin,
       }),
-    [handleActivate, handleInactivate, isAdmin]
+    [handleActivate, handleInactivate, handleOpenUpdate, isAdmin]
   )
 
   const handleRegisterChange = (
@@ -210,9 +287,18 @@ export function useUsers() {
     isRegisterOpen,
     registerForm,
     isSubmitting,
+    updating,
+    updateOpen,
+    form,
 
     setIsRegisterOpen,
+    setUpdateOpen,
+
     handleRegisterChange,
     handleRegisterSubmit,
+    handleUpdateChange,
+    handleUpdateUser,
+
+    resetForm,
   }
 }
