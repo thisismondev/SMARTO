@@ -195,15 +195,11 @@ export default function MonitoringPage() {
               {skeleton ? (
                 <div className="space-y-3">
                   <Skeleton className="h-8 flex-1 rounded-md" />
-                  <Skeleton className="h-4 flex-1 rounded-md" />
                 </div>
               ) : (
                 <div className="flex items-baseline justify-between">
-                  <div>
-                    <div className="text-2xl font-semibold">
-                      {sensorData ? sensorData.ph : "-"}
-                    </div>
-                    <div className="mt-1 text-sm text-muted-foreground">-</div>
+                  <div className="text-2xl font-semibold">
+                    {sensorData ? sensorData.ph : "-"}
                   </div>
                 </div>
               )}
@@ -224,15 +220,11 @@ export default function MonitoringPage() {
               {skeleton ? (
                 <div className="space-y-3">
                   <Skeleton className="h-8 flex-1 rounded-md" />
-                  <Skeleton className="h-4 flex-1 rounded-md" />
                 </div>
               ) : (
                 <div className="flex items-baseline justify-between">
-                  <div>
-                    <div className="text-2xl font-semibold">
-                      {sensorData ? `${sensorData.kelembapan} %` : "-"}
-                    </div>
-                    <div className="mt-1 text-sm text-muted-foreground">-</div>
+                  <div className="text-2xl font-semibold">
+                    {sensorData ? `${sensorData.kelembapan} %` : "-"}
                   </div>
                 </div>
               )}
@@ -253,15 +245,11 @@ export default function MonitoringPage() {
               {skeleton ? (
                 <div className="space-y-3">
                   <Skeleton className="h-8 flex-1 rounded-md" />
-                  <Skeleton className="h-4 flex-1 rounded-md" />
                 </div>
               ) : (
                 <div className="flex items-baseline justify-between">
-                  <div>
-                    <div className="text-2xl font-semibold">
-                      {sensorData ? `${sensorData.suhu} °C` : "-"}
-                    </div>
-                    <div className="mt-1 text-sm text-muted-foreground">-</div>
+                  <div className="text-2xl font-semibold">
+                    {sensorData ? `${sensorData.suhu} °C` : "-"}
                   </div>
                 </div>
               )}
@@ -282,15 +270,11 @@ export default function MonitoringPage() {
               {skeleton ? (
                 <div className="space-y-3">
                   <Skeleton className="h-8 flex-1 rounded-md" />
-                  <Skeleton className="h-4 flex-1 rounded-md" />
                 </div>
               ) : (
                 <div className="flex items-baseline justify-between">
-                  <div>
-                    <div className="text-2xl font-semibold">
-                      {sensorData ? `${sensorData.nitrogen} mg/kg` : "-"}
-                    </div>
-                    <div className="mt-1 text-sm text-muted-foreground">-</div>
+                  <div className="text-2xl font-semibold">
+                    {sensorData ? `${sensorData.nitrogen} mg/kg` : "-"}
                   </div>
                 </div>
               )}
