@@ -320,13 +320,42 @@ class _HeaderSection extends StatelessWidget {
 
                   ...lahanList.map((lahan) {
                     return DropdownMenuItem<NodeResponseModel?>(
-                      value: lahan,
-                      child: Text(
-                        lahan.dropdownLabel,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                    );
+                    value: lahan,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            lahan.label,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: lahan.isActive
+                                ? Colors.green[700]
+                                : Colors.grey,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            lahan.kodeNode,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
                   }),
                 ],
                 onChanged: onChanged,
