@@ -52,7 +52,7 @@ function getMembershipValue(set: FuzzySet, x: number) {
   }
 
   if (set.mf_type === "trimf") {
-    return trimf(x, set.param_a, set.param_b, set.param_c)
+    return trimf(x, set.param_a, set.param_b, set.param_d)
   }
 
   return 0
@@ -235,6 +235,14 @@ async function runFuzzyEngine(
     (set) => set.variable_id !== VARIABLE_ID.OUTPUT_DOSIS
   )
 
+  console.log("=== FUZZY SETS DEBUG ===")
+  inputSets.forEach((set) => {
+    console.log(
+      `Var ${set.variable_id} (${getVariableLabel(set.variable_id)}) - ${set.set_name}: ` +
+        `type=${set.mf_type}, a=${set.param_a}, b=${set.param_b}, c=${set.param_c}, d=${set.param_d}`
+    )
+  })
+
   const outputSets = allSets.filter(
     (set) => set.variable_id === VARIABLE_ID.OUTPUT_DOSIS
   )
@@ -247,7 +255,27 @@ async function runFuzzyEngine(
 
     if (x === null) return
 
-    const mu = getMembershipValue(set, x)
+    const mu = getMembershipValue(
+      {
+        ...set,
+        param_a: Number(set.param_a),
+        param_b: Number(set.param_b),
+        param_c: Number(set.param_c),
+        param_d: Number(set.param_d),
+      },
+      x
+    )
+    console.log({
+      id: set.id,
+      variable_id: set.variable_id,
+      set_name: set.set_name,
+      x,
+      a: set.param_a,
+      b: set.param_b,
+      c: set.param_c,
+      d: set.param_d,
+      mu,
+    })
 
     muMap[set.id] = mu
   })
@@ -336,7 +364,12 @@ async function runFuzzyEngine(
       },
     },
 
-    memberships: buildMembershipResponse(inputSets, muMap, outputSets, aggregatedOutput),
+    memberships: buildMembershipResponse(
+      inputSets,
+      muMap,
+      outputSets,
+      aggregatedOutput
+    ),
 
     output: {
       rule: {
