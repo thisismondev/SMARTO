@@ -47,13 +47,13 @@ function roundNumber(value: number, digit = 2) {
 }
 
 function getMembershipValue(set: FuzzySet, x: number) {
-  if (set.mf_type === "trapmf") {
-    return trapmf(x, set.param_a, set.param_b, set.param_c, set.param_d)
-  }
+  // if (set.mf_type === "trapmf") {
+  return trapmf(x, set.param_a, set.param_b, set.param_c, set.param_d)
+  // }
 
-  if (set.mf_type === "trimf") {
-    return trimf(x, set.param_a, set.param_b, set.param_d)
-  }
+  // if (set.mf_type === "trimf") {
+  //   return trimf(x, set.param_a, set.param_b, set.param_d)
+  // }
 
   return 0
 }
