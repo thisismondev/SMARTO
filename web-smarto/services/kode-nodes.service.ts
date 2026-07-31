@@ -42,7 +42,7 @@ export async function checkingKodeNode(kodeNode: string) {
     `
     SELECT kn.id, n.user_id, kn.kode_node, kn.status as kn_status, n.status as n_status
     FROM kode_node kn
-    JOIN nodes n ON kn.id = n.kode_node_id
+    LEFT JOIN nodes n ON kn.id = n.kode_node_id
     WHERE kn.kode_node = ?
     LIMIT 1
     `,
@@ -56,7 +56,7 @@ export async function checkingKodeNodeById(id: number){
     `
     SELECT kn.id, n.user_id, kn.kode_node, kn.status as kn_status, n.status as n_status
     FROM kode_node kn
-    JOIN nodes n ON kn.id = n.kode_node_id
+    LEFT JOIN nodes n ON kn.id = n.kode_node_id
     WHERE kn.id = ?
     LIMIT 1
     `,
