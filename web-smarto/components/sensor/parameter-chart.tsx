@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { TrendingUp } from "lucide-react"
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -193,6 +193,38 @@ function SensorParameterChartCard({
     }))
   }, [data, dataKey])
 
+  const yDomain = React.useMemo(() => {
+    if (!chartData.length) return [0, 10]
+
+    const values = chartData.map((d) => d.value)
+
+    const min = Math.min(...values)
+    const max = Math.max(...values)
+
+    switch (dataKey) {
+      case "ph":
+        return [Math.max(0, Math.floor(min) - 1), Math.ceil(max) + 1]
+
+      case "suhu":
+        return [Math.floor(min) - 2, Math.ceil(max) + 2]
+
+      case "kelembapan":
+        return [
+          Math.max(0, Math.floor(min / 10) * 10),
+          Math.min(100, Math.ceil(max / 10) * 10),
+        ]
+
+      case "nitrogen":
+        return [
+          Math.max(0, Math.floor(min / 10) * 10),
+          Math.ceil(max / 10) * 10,
+        ]
+
+      default:
+        return [Math.floor(min), Math.ceil(max)]
+    }
+  }, [chartData, dataKey])
+
   const hasData = chartData.length > 0
 
   const average = React.useMemo(() => {
@@ -222,49 +254,50 @@ function SensorParameterChartCard({
             className="aspect-auto h-[250px] w-full"
           >
             <LineChart
-              accessibilityLayer
               data={chartData}
               margin={{
-                top: 12,
-                left: 12,
-                right: 12,
+                top: 16,
+                // left: 20,
+                right: 20,
+                bottom: 8,
               }}
             >
               <CartesianGrid vertical={false} />
 
               <XAxis
                 dataKey="periode"
+                interval="preserveStartEnd"
+                minTickGap={40}
                 tickLine={false}
                 axisLine={false}
-                tickMargin={8}
-                minTickGap={32}
+                padding={{ left: 12, right: 12 }}
                 tickFormatter={(value) =>
-                  formatXAxis(String(value), filterType)
+                  formatXAxis(String(value), filterType).replace(/\.00$/, "")
+                }
+              />
+
+              <YAxis
+                domain={yDomain}
+                tickCount={6}
+                width={45}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) =>
+                  Number.isInteger(value) ? value : value.toFixed(1)
                 }
               />
 
               <ChartTooltip
-                
-                content={
-                  <ChartTooltipContent
-                     indicator="line"
-                  />
-                }
+                content={<ChartTooltipContent indicator="line" />}
               />
 
               <Line
-                dataKey="value"
                 type="monotone"
+                dataKey="value"
                 stroke="var(--color-value)"
                 strokeWidth={2}
-                dot={{
-                  r: 4,
-                  fill: "var(--color-value)",
-                  stroke: "var(--color-value)",
-                }}
-                activeDot={{
-                  r: 6,
-                }}
+                dot={{ r: 4 }}
+                activeDot={{ r: 6 }}
               />
             </LineChart>
           </ChartContainer>
