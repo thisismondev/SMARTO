@@ -51,14 +51,9 @@ export async function processSensorBufferHourly() {
         ROUND(AVG(sb.suhu), 2) AS suhu,
         ROUND(AVG(sb.nitrogen), 0) AS nitrogen,
         COUNT(*) AS total_data,
-
-        DATE_ADD(
-          DATE_FORMAT(sb.created_at, '%Y-%m-%d %H:00:00'),
-          INTERVAL 1 HOUR
-        ) AS created_at
-
+        DATE_FORMAT(sb.created_at, '%Y-%m-%d %H:00:00') AS created_at
       FROM sensor_buffer sb
-      WHERE sb.created_at < ?
+      WHERE sb.created_at < DATE_SUB(?, INTERVAL 1 HOUR)
         AND sb.user_id IS NOT NULL
       GROUP BY 
         sb.user_id,
@@ -78,7 +73,7 @@ export async function processSensorBufferHourly() {
     const [deleteResult] = await connection.query<ResultSetHeader>(
       `
       DELETE FROM sensor_buffer
-      WHERE created_at < ?
+      WHERE created_at < DATE_SUB(?, INTERVAL 1 HOUR)
       `,
       [currentHourStart]
     )
@@ -105,7 +100,6 @@ export async function getSensorLog(
   kodeNodeId: number,
   filterType: FilterType
 ) {
-  
   const config = PERIOD_CONFIG[filterType]
   const [rows] = await db.query<RowDataPacket[]>(
     `
