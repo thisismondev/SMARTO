@@ -16,7 +16,6 @@ export type KodeNode = {
   status: string
 }
 
-
 export type FormUserNode = {
   kodeNode: string
   userId: number
@@ -26,10 +25,10 @@ export type FormUserNode = {
 }
 
 export type SelectNode = {
-  id: number,
-  kode_node_id: number,
-  kode_node: string,
-  user_id: number,
+  id: number
+  kode_node_id: number
+  kode_node: string
+  user_id: number
 }
 
 export type NodeDetailSensorRow = {

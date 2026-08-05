@@ -36,8 +36,8 @@ export default function KodeNodesPage() {
   } = useKodeNode()
 
   if (loading) {
-        return <PageLoading />
-      }
+    return <PageLoading />
+  }
 
   return (
     <div className="space-y-2">
@@ -100,10 +100,7 @@ export default function KodeNodesPage() {
             </div>
           ) : (
             <div className="overflow-auto">
-              <DataTable
-                columns={columns}
-                data={data}
-              />
+              <DataTable columns={columns} data={data} />
             </div>
           )}
         </CardContent>

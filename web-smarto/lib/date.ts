@@ -15,8 +15,7 @@ export function getMakassarDateTime() {
 
   const parts = formatter.formatToParts(now)
 
-  const get = (type: string) =>
-    parts.find((part) => part.type === type)?.value
+  const get = (type: string) => parts.find((part) => part.type === type)?.value
 
   const year = get("year")
   const month = get("month")

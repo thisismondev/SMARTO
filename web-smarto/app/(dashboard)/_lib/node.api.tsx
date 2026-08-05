@@ -26,8 +26,9 @@ export async function fetchNodes(token: string) {
     }
 
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal mengambil data node")
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Gagal mengambil data node"
+    throw new Error(message)
   }
 }
 
@@ -48,8 +49,9 @@ export async function fetchPetani(token: string) {
     }
 
     return result.data
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal mengambil data petani")
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Gagal mengambil data petani"
+    throw new Error(message)
   }
 }
 
@@ -70,8 +72,9 @@ export async function checkKodeNode(token: string, kodeNode: string) {
     }
 
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Kode node tidak valid")
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Kode node tidak valid"
+    throw new Error(message)
   }
 }
 
@@ -93,8 +96,9 @@ export async function addNode(token: string, data: FormUserNode) {
     }
 
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal menambahkan node")
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Gagal menambahkan node"
+    throw new Error(message)
   }
 }
 
@@ -115,8 +119,9 @@ export async function useNode(token: string, id: number) {
     }
 
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal menggunakan node")
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Gagal menggunakan node"
+    throw new Error(message)
   }
 }
 
@@ -137,8 +142,9 @@ export async function releaseNode(token: string, id: number) {
     }
 
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal melepaskan node")
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Gagal melepaskan node"
+    throw new Error(message)
   }
 }
 
@@ -164,7 +170,8 @@ export async function updateNode(
     }
 
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal memperbarui node")
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Gagal memperbarui node"
+    throw new Error(message)
   }
 }

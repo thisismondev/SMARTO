@@ -1,4 +1,4 @@
-export async function findKodeNodes(token: String) {
+export async function findKodeNodes(token: string) {
   try {
     const response = await fetch("/api/kode-node", {
       method: "GET",
@@ -17,12 +17,12 @@ export async function findKodeNodes(token: String) {
     }
 
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal mengambil data kode-node")
+  } catch (error: unknown) {
+    throw new Error(error instanceof Error ? error.message : "Gagal mengambil data kode-node")
   }
 }
 
-export async function generateKodeNode(token: String) {
+export async function generateKodeNode(token: string) {
   try {
     const response = await fetch("/api/kode-node/add", {
       method: "POST",
@@ -41,12 +41,12 @@ export async function generateKodeNode(token: String) {
     }
 
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal menghasilkan kode-node")
+  } catch (error: unknown) {
+    throw new Error(error instanceof Error ? error.message : "Gagal menghasilkan kode-node")
   }
 }
 
-export async function kodeNodeActivate(token: String, id: number) {
+export async function kodeNodeActivate(token: string, id: number) {
   try {
     const response = await fetch(`/api/kode-node/${id}/activeCode`, {
       method: "PATCH",
@@ -65,12 +65,12 @@ export async function kodeNodeActivate(token: String, id: number) {
     }
 
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal mengaktifkan kode-node")
+  } catch (error: unknown) {
+    throw new Error(error instanceof Error ? error.message : "Gagal mengaktifkan kode-node")
   }
 }
 
-export async function kodeNodeInactivate(token: String, id: number) {
+export async function kodeNodeInactivate(token: string, id: number) {
   try {
     const response = await fetch(`/api/kode-node/${id}/inactiveCode`, {
       method: "PATCH",
@@ -89,7 +89,7 @@ export async function kodeNodeInactivate(token: String, id: number) {
     }
 
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal menonaktifkan kode-node")
+  } catch (error: unknown) {
+    throw new Error(error instanceof Error ? error.message : "Gagal menonaktifkan kode-node")
   }
 }

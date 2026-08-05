@@ -3,15 +3,8 @@
 import * as React from "react"
 import {
   User,
-  Bell,
   Shield,
-  Palette,
-  Cpu,
-  Globe,
   Camera,
-  Check,
-  Trash2,
-  Plus,
   UserX,
 } from "lucide-react"
 
@@ -25,8 +18,6 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -85,8 +76,6 @@ type AccountSectionProps = {
 export default function SettingsPage() {
   const {
     loading,
-    error,
-
     updating,
     inactivating,
     updatingPassword,
@@ -702,31 +691,4 @@ function AccountSection({
 //   )
 // }
 
-/* ---------- Helpers ---------- */
-function ToggleRow({
-  title,
-  description,
-  defaultChecked,
-}: {
-  title: string
-  description: string
-  defaultChecked?: boolean
-}) {
-  return (
-    <div className="flex items-center justify-between gap-4 py-2">
-      <div className="space-y-0.5">
-        <p className="text-sm font-medium">{title}</p>
-        <p className="text-sm text-muted-foreground">{description}</p>
-      </div>
-      <Switch defaultChecked={defaultChecked} />
-    </div>
-  )
-}
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="pt-2 pb-1 text-xs font-medium tracking-wide text-muted-foreground uppercase">
-      {children}
-    </p>
-  )
-}

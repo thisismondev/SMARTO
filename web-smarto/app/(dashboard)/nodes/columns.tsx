@@ -14,7 +14,6 @@ import { Nodes } from "@/types/nodes"
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
-
 type ColumnNodesProps = {
   onUse: (node: Nodes) => void
   onRelease: (node: Nodes) => void

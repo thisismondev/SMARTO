@@ -7,7 +7,6 @@ export type SensorReading = {
   nitrogen: number
 }
 
-
 export type FilterType = "day" | "month" | "year"
 
 export const PERIOD_CONFIG = {

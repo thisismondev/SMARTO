@@ -89,7 +89,7 @@ export function LoginForm() {
 
       router.push("/")
       router.refresh()
-    } catch (error) {
+    } catch {
       setError("Tidak bisa terhubung ke server")
       toast.error("Tidak bisa terhubung ke server")
     } finally {

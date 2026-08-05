@@ -16,7 +16,7 @@ export const DefuzzifikasiPanel: React.FC<{
   const markerX = Math.min(760, Math.max(40, 40 + (dosisValue / 200) * 720))
 
   const traceRows = [
-    ...Object.entries(input).map(([key, item]) => ({
+    ...Object.entries(input).map(([, item]) => ({
       label: `${item.label} (input)`,
       value: `${item.value} ${item.unit}`,
     })),

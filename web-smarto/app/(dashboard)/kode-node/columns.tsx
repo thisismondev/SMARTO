@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table"
-import { CircleCheck, CircleX, MoreHorizontal, Trash2 } from "lucide-react"
+import { CircleCheck, CircleX, MoreHorizontal } from "lucide-react"
 
 export type KodeNodes = {
   id: number

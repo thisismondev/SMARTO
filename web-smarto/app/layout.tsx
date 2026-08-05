@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono, Instrument_Sans } from "next/font/google"
+import { Geist_Mono, Instrument_Sans } from "next/font/google"
 
 import { Toaster } from "@/components/ui/sonner"
 import "leaflet/dist/leaflet.css"

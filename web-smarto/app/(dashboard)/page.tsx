@@ -38,7 +38,8 @@ export default function Page() {
           <p className="text-sm text-muted-foreground">{today}</p>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">
-            Selamat datang di Smart Inokulasi. Berikut ringkasan sistem hari ini.
+            Selamat datang di Smart Inokulasi. Berikut ringkasan sistem hari
+            ini.
           </p>
         </div>
         <Button
@@ -179,7 +180,7 @@ export default function Page() {
 
       {/* ===== Ringkasan pengguna ===== */}
       <section className="space-y-3">
-        <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
+        <h2 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
           Pengguna
         </h2>
         <div className="grid gap-4 sm:grid-cols-3">

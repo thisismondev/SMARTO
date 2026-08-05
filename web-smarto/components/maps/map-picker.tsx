@@ -2,7 +2,13 @@
 
 import { useEffect } from "react"
 import L from "leaflet"
-import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet"
+import {
+  MapContainer,
+  Marker,
+  TileLayer,
+  useMap,
+  useMapEvents,
+} from "react-leaflet"
 
 type MapPickerProps = {
   lat: string
@@ -57,7 +63,7 @@ export function MapPicker({ lat, lng, onChange }: MapPickerProps) {
         className="h-full w-full"
       >
         <TileLayer
-          attribution='&copy; OpenStreetMap contributors'
+          attribution="&copy; OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 

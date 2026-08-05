@@ -1,4 +1,3 @@
-
 export async function fetchFuzzyVariables(token: string) {
   try {
     const response = await fetch("/api/fuzzy/variables", {
@@ -13,12 +12,11 @@ export async function fetchFuzzyVariables(token: string) {
       throw new Error(result.message || "Gagal mengambil data parameter sensor")
     }
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal mengambil data parameter sensor")
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Gagal mengambil data parameter sensor"
+    throw new Error(message)
   }
 }
-
-
 
 export async function fetchFuzzySets(token: string) {
   try {
@@ -37,8 +35,9 @@ export async function fetchFuzzySets(token: string) {
       throw new Error(result.message || "Gagal mengambil data kategori sensor")
     }
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal mengambil data kategori sensor")
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Gagal mengambil data kategori sensor"
+    throw new Error(message)
   }
 }
 
@@ -76,7 +75,6 @@ export async function addFuzzySet(
   return result
 }
 
-
 export async function runFuzzyEngine(
   token: string,
   body: {
@@ -85,8 +83,7 @@ export async function runFuzzyEngine(
     suhu: number
     nitrogen: number
   }
-){
-
+) {
   const response = await fetch("/api/fuzzy/engine", {
     method: "POST",
     headers: {
@@ -105,5 +102,4 @@ export async function runFuzzyEngine(
   }
 
   return result
-
 }

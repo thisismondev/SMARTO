@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { ColumnDef } from "@tanstack/react-table"
-import { CheckCircle, MoreHorizontal, Pencil, Unlink } from "lucide-react"
+import { MoreHorizontal, Pencil, Unlink } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,

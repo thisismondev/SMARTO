@@ -102,8 +102,8 @@ export default function NodesPage() {
   } = useNodes()
 
   if (loading) {
-        return <PageLoading />
-      }
+    return <PageLoading />
+  }
 
   return (
     <div className="space-y-2">
@@ -495,10 +495,7 @@ export default function NodesPage() {
                   </Button>
                 </SheetClose>
 
-                <Button
-                  type="submit"
-                  disabled={editLoading || !selectedNode}
-                >
+                <Button type="submit" disabled={editLoading || !selectedNode}>
                   {editLoading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />

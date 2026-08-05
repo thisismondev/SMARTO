@@ -123,12 +123,12 @@ export default function MatriksFuzzyPage() {
                       </SelectTrigger>
 
                       <SelectContent>
-                          <SelectItem key="trimf" value="trimf">
-                            Trimf
-                          </SelectItem>
-                          <SelectItem key="trapmf" value="trapmf">
-                            Trapmf
-                          </SelectItem>
+                        <SelectItem key="trimf" value="trimf">
+                          Trimf
+                        </SelectItem>
+                        <SelectItem key="trapmf" value="trapmf">
+                          Trapmf
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </Field>

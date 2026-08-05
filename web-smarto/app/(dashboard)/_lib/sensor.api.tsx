@@ -17,7 +17,7 @@ export async function findFarmerUser(token: string) {
     }
 
     return result
-  } catch (error) {
+  } catch {
     throw new Error("Gagal mengambil data petani")
   }
 }
@@ -40,7 +40,7 @@ export async function findNodesByPetani(token: string, kodeNodeId: number) {
     }
 
     return result
-  } catch (error) {
+  } catch {
     throw new Error("Gagal mengambil data kode node")
   }
 }

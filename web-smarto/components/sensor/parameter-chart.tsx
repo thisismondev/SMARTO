@@ -15,8 +15,6 @@ import {
 
 import {
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
@@ -100,50 +98,6 @@ function formatXAxis(value: string, filterType: FilterType) {
     month: "short",
     year: "numeric",
   })
-}
-
-function formatTooltipDate(value: string) {
-  const date = parseDate(value)
-
-  if (!date) {
-    return {
-      periode: value,
-      tanggal: value,
-      waktu: "-",
-      bulan: "-",
-      tahun: "-",
-    }
-  }
-
-  return {
-    periode: date.toLocaleString("id-ID", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-
-    tanggal: date.toLocaleDateString("id-ID", {
-      weekday: "long",
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    }),
-
-    waktu: date.toLocaleTimeString("id-ID", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-
-    bulan: date.toLocaleDateString("id-ID", {
-      month: "long",
-    }),
-
-    tahun: date.toLocaleDateString("id-ID", {
-      year: "numeric",
-    }),
-  }
 }
 
 function formatValue(value: number, dataKey: SensorChartKey) {

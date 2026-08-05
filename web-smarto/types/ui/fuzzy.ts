@@ -15,7 +15,6 @@ export type RuleBase = {
   output: string
 }
 
-
 export type FuzzyVariable = {
   id: number
   name: string
@@ -36,5 +35,3 @@ export type FuzzySet = {
   d: number
   createdAt: string
 }
-
-

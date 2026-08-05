@@ -51,7 +51,7 @@ export async function checkingKodeNode(kodeNode: string) {
   return rows[0] || null
 }
 
-export async function checkingKodeNodeById(id: number){
+export async function checkingKodeNodeById(id: number) {
   const [rows] = await db.query<CheckKodeNodeRow[]>(
     `
     SELECT kn.id, n.user_id, kn.kode_node, kn.status as kn_status, n.status as n_status

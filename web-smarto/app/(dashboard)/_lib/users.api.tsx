@@ -1,4 +1,4 @@
-export async function findUsers(token: String) {
+export async function findUsers(token: string) {
   try {
     const response = await fetch("/api/user", {
       headers: {
@@ -15,12 +15,12 @@ export async function findUsers(token: String) {
       throw new Error(result.message || "Gagal mengambil data pengguna")
     }
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal mengambil data pengguna")
+  } catch (error: unknown) {
+    throw new Error(error instanceof Error ? error.message : "Gagal mengambil data pengguna")
   }
 }
 
-export async function findUserById(token: String, id: number) {
+export async function findUserById(token: string, id: number) {
   try {
     const response = await fetch(`/api/user/${id}`, {
       headers: {
@@ -37,13 +37,13 @@ export async function findUserById(token: String, id: number) {
       throw new Error(result.message || "Gagal mengambil data pengguna")
     }
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal mengambil data pengguna")
+  } catch (error: unknown) {
+    throw new Error(error instanceof Error ? error.message : "Gagal mengambil data pengguna")
   }
 }
 
 export async function updateUserById(
-  token: String,
+  token: string,
   id: number,
   data: {
     name: string
@@ -71,12 +71,12 @@ export async function updateUserById(
     }
 
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal memperbarui pengguna")
+  } catch (error: unknown) {
+    throw new Error(error instanceof Error ? error.message : "Gagal memperbarui pengguna")
   }
 }
 
-export async function userActivate(token: String, userId: number) {
+export async function userActivate(token: string, userId: number) {
   try {
     const response = await fetch(`/api/user/${userId}/activeUser`, {
       method: "PATCH",
@@ -95,12 +95,12 @@ export async function userActivate(token: String, userId: number) {
     }
 
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal mengaktifkan pengguna")
+  } catch (error: unknown) {
+    throw new Error(error instanceof Error ? error.message : "Gagal mengaktifkan pengguna")
   }
 }
 
-export async function userInactivate(token: String, userId: number) {
+export async function userInactivate(token: string, userId: number) {
   try {
     const response = await fetch(`/api/user/${userId}/inactiveUser`, {
       method: "PATCH",
@@ -119,8 +119,8 @@ export async function userInactivate(token: String, userId: number) {
     }
 
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal menonaktifkan pengguna")
+  } catch (error: unknown) {
+    throw new Error(error instanceof Error ? error.message : "Gagal menonaktifkan pengguna")
   }
 }
 
@@ -149,13 +149,13 @@ export async function registerUser(body: {
       throw new Error(result.message || "Gagal mendaftarkan pengguna")
     }
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal mendaftarkan pengguna")
+  } catch (error: unknown) {
+    throw new Error(error instanceof Error ? error.message : "Gagal mendaftarkan pengguna")
   }
 }
 
 export async function changePasswordUser(
-  token: String,
+  token: string,
   userId: number,
   body: {
     oldPassword: string
@@ -180,7 +180,7 @@ export async function changePasswordUser(
 
     console.log("API Response for changing user password:", result)
     return result
-  } catch (error: any) {
-    throw new Error(error.message || "Gagal mengubah password pengguna")
+  } catch (error: unknown) {
+    throw new Error(error instanceof Error ? error.message : "Gagal mengubah password pengguna")
   }
 }

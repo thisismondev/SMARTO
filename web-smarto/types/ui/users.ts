@@ -9,8 +9,6 @@ export type listUsers = {
   status: number
 }
 
-
-
 export type user = {
   id: number
   name: string

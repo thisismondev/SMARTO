@@ -29,20 +29,6 @@ import {
 } from "@/components/ui/select"
 import PageLoading from "@/app/loading"
 
-function onlyNumber(value: string) {
-  return value.replace(/[^0-9]/g, "")
-}
-
-function buildKodeRule(value: string) {
-  const numberOnly = onlyNumber(value)
-
-  return numberOnly ? `R${numberOnly}` : ""
-}
-
-function removePrefixR(value: string) {
-  return value.replace(/^R/i, "").replace(/[^0-9]/g, "")
-}
-
 export default function RuleBasePage() {
   const {
     error,
@@ -67,7 +53,6 @@ export default function RuleBasePage() {
 
     editOpen,
     setEditOpen,
-    selectedRule,
     editForm,
     editLoading,
     handleEditFormChange,
@@ -282,7 +267,6 @@ export default function RuleBasePage() {
                     id="edit-kode-rule"
                     value={editForm.kodeRule.replace(/^R/, "")}
                     onChange={(e) => {
-
                       // 3. Gabungkan kembali karakter "R" dengan angka yang diketik
                       const digitsOnly = e.target.value.replace(/\D/g, "")
                       handleEditFormChange("kodeRule", `R${digitsOnly}`)
