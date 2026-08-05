@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react"
 import { getDashboardData } from "../_lib/dashboard.api"
 import { DashboardData } from "@/types/ui/dashboard"
-import { toast } from "sonner"
 
 export function useDashboard() {
   const [data, setData] = useState<DashboardData | null>(null)
@@ -15,7 +14,7 @@ export function useDashboard() {
     setError(null)
     try {
       const result = await getDashboardData()
-      
+
       const dashboardData: DashboardData = {
         totalUser: result.data.total_user,
         totalPenyuluh: result.data.total_penyuluh,
@@ -36,7 +35,8 @@ export function useDashboard() {
   }, [])
 
   useEffect(() => {
-    fetchDashboard()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchDashboard()
   }, [fetchDashboard])
 
   return { data, isLoading, error, refetch: fetchDashboard }

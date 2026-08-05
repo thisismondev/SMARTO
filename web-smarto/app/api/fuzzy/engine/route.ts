@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { fetchFuzzySets, fetchRuleBase } from "@/services/fuzzy.service"
-import { trapmf, trimf } from "@/lib/fuzzyHelpers"
+import { trapmf } from "@/lib/fuzzyHelpers"
 import { errorResponse, successResponse } from "@/lib/response"
 import { MfType } from "@/types/ui/fuzzy"
 import { getAuthUser } from "@/lib/auth"
@@ -426,8 +426,9 @@ export async function POST(request: Request) {
 
     // Kirimkan respon balik ke ESP32 / Perangkat IoT Anda
     return successResponse("Fuzzy engine executed successfully", result, 200)
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Fuzzy API Error: ", error)
-    return errorResponse("Terjadi kesalahan pada server", 500, error.message)
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Terjadi kesalahan pada server", 500, message)
   }
 }

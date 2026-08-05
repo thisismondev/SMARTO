@@ -34,7 +34,9 @@ export function useSensorMonitoring() {
 
   const [fuzzyLoading, setFuzzyLoading] = useState(false)
   const [fuzzyDialogOpen, setFuzzyDialogOpen] = useState(false)
-  const [fuzzyResult, setFuzzyResult] = useState<DefuzzifikasiResponse | null>(null)
+  const [fuzzyResult, setFuzzyResult] = useState<DefuzzifikasiResponse | null>(
+    null
+  )
 
   const [nodeDetail, setNodeDetail] = useState<NodeDetailSensorRow | null>(null)
 
@@ -55,14 +57,16 @@ export function useSensorMonitoring() {
 
       const result = await findFarmerUser(token)
 
-      const petaniData: SelectPetani[] = result.data.map((item: any) => ({
+      const petaniData: SelectPetani[] = result.data.map((item: Record<string, unknown>) => ({
         id: item.id,
         name: item.name,
       }))
 
       setPetani(petaniData)
-    } catch (error: any) {
-      setError(error.message || "Gagal mengambil data petani")
+    } catch (error: unknown) {
+      setError(
+        error instanceof Error ? error.message : "Gagal mengambil data petani"
+      )
     } finally {
       setLoading(false)
     }
@@ -94,8 +98,10 @@ export function useSensorMonitoring() {
       console.log("Fetched nodes:", nodeData)
 
       setNodes(nodeData)
-    } catch (error: any) {
-      setError(error.message || "Gagal mengambil data kode node")
+    } catch (error: unknown) {
+      setError(
+        error instanceof Error ? error.message : "Gagal mengambil data kode node"
+      )
     }
   }, [])
 
@@ -201,8 +207,10 @@ export function useSensorMonitoring() {
       setSensorRowId(data.id)
       toast.success("Data sensor berhasil dimuat")
       setSkeleton(false)
-    } catch (error: any) {
-      toast.error(error.message || "Gagal mengambil data sensor")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal mengambil data sensor"
+      )
     }
   }
 
@@ -235,7 +243,7 @@ export function useSensorMonitoring() {
       setFuzzyResult(result.data)
       setFuzzyDialogOpen(true)
       toast.success("Fuzzy engine berhasil dijalankan")
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error running fuzzy engine:", error)
 
       if (error instanceof Error) {
@@ -253,7 +261,8 @@ export function useSensorMonitoring() {
   }, [nodeDetail])
 
   useEffect(() => {
-    fetchPetani()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchPetani()
   }, [fetchPetani])
 
   useEffect(() => {

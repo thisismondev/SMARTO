@@ -48,11 +48,11 @@ export async function PUT(
       roleId: roleId,
     })
 
-
     console.log("UPDATE RESULT:", result)
 
     return successResponse("User berhasil diperbarui", result, 200)
-  } catch (error: any) {
-    return errorResponse("Gagal memperbarui user", 500, error.message)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Gagal memperbarui user", 500, message)
   }
 }

@@ -48,7 +48,8 @@ export async function POST(request: Request) {
     })
 
     return successResponse("Register berhasil", null, 201)
-  } catch (error: any) {
-    return errorResponse("Gagal register", 500, error.message)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Gagal register", 500, message)
   }
 }

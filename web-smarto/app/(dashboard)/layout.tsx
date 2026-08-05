@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 import Link from "next/link" // 🌟 Tambahan untuk navigasi SPA tanpa reload
@@ -60,12 +60,6 @@ import {
 } from "@/components/ui/alert-dialog"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable"
 
 import {
   Breadcrumb,
@@ -215,7 +209,15 @@ export default function DashboardLayout({
   const router = useRouter()
   const { resolvedTheme, setTheme } = useTheme()
 
-  const [user, setUser] = useState<UserData | null>(null)
+  const [user] = useState<UserData | null>(() => {
+    try {
+      const storedUser = localStorage.getItem("user")
+      if (!storedUser) return null
+      return JSON.parse(storedUser) as UserData
+    } catch {
+      return null
+    }
+  })
   const [openLogoutDialog, setOpenLogoutDialog] = useState(false)
   const [logoutLoading, setLogoutLoading] = useState(false)
 
@@ -231,18 +233,6 @@ export default function DashboardLayout({
     "/users": "Manajemen User",
     "/settings": "Settings",
   }
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user")
-
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser) as UserData)
-      } catch {
-        setUser(null)
-      }
-    }
-  }, [])
 
   const filteredMenuGroups = useMemo(() => {
     const roleId = user?.role_id
@@ -292,7 +282,7 @@ export default function DashboardLayout({
 
       router.push("/login")
       router.refresh()
-    } catch (error) {
+    } catch {
       toast.error("Tidak bisa terhubung ke server")
     } finally {
       setLogoutLoading(false)

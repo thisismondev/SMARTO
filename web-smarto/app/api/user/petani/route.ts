@@ -12,7 +12,8 @@ export async function GET(request: Request) {
 
     const petani = await findUserPetani()
     return successResponse("Berhasil mengambil data petani", petani, 200)
-  } catch (error: any) {
-    return errorResponse("Gagal mengambil data petani", 500, error.message)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Gagal mengambil data petani", 500, message)
   }
 }

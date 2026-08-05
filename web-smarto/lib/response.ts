@@ -1,6 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server"
 
-export function successResponse(message: string, data: any = null, status = 200) {
+export function successResponse(
+  message: string,
+  data: unknown = null,
+  status = 200
+) {
   return NextResponse.json(
     {
       status: true,
@@ -8,10 +12,14 @@ export function successResponse(message: string, data: any = null, status = 200)
       data,
     },
     { status }
-  );
+  )
 }
 
-export function errorResponse(message: string, status = 500, error: any = null) {
+export function errorResponse(
+  message: string,
+  status = 500,
+  error: unknown = null
+) {
   return NextResponse.json(
     {
       status: false,
@@ -19,5 +27,5 @@ export function errorResponse(message: string, status = 500, error: any = null) 
       error,
     },
     { status }
-  );
+  )
 }

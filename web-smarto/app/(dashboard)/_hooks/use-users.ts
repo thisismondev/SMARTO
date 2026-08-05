@@ -31,7 +31,16 @@ export function useUsers() {
   const [error, setError] = useState("")
 
   const [data, setData] = useState<UserRow[]>([])
-  const [isAdmin, setIsAdmin] = useState(false)
+  const [isAdmin] = useState(() => {
+    try {
+      const rawUser = localStorage.getItem("user")
+      if (!rawUser) return false
+      const storedUser = JSON.parse(rawUser) as StoredUser
+      return storedUser.role_id === 1
+    } catch {
+      return false
+    }
+  })
 
   const [isRegisterOpen, setIsRegisterOpen] = useState(false)
   const [registerForm, setRegisterForm] = useState<RegisterPayload>({
@@ -57,23 +66,6 @@ export function useUsers() {
 
   const [updateOpen, setUpdateOpen] = useState(false)
   const [updating, setUpdating] = useState(false) // khusus proses submit
-
-  useEffect(() => {
-    const rawUser = localStorage.getItem("user")
-
-    if (!rawUser) {
-      setIsAdmin(false)
-      return
-    }
-
-    try {
-      const storedUser = JSON.parse(rawUser) as StoredUser
-
-      setIsAdmin(storedUser.role_id === 1)
-    } catch {
-      setIsAdmin(false)
-    }
-  }, [])
 
   const fetchUsers = useCallback(async () => {
     setError("")
@@ -102,15 +94,18 @@ export function useUsers() {
       }))
 
       setData(userData)
-    } catch (error: any) {
-      setError(error.message)
+    } catch (error: unknown) {
+      setError(
+        error instanceof Error ? error.message : "Gagal mengambil data pengguna"
+      )
     } finally {
       setLoading(false)
     }
   }, [])
 
   useEffect(() => {
-    fetchUsers()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchUsers()
   }, [fetchUsers])
 
   const handleActivate = useCallback(
@@ -127,8 +122,12 @@ export function useUsers() {
         toast.success(result.message || "Pengguna berhasil diaktifkan")
 
         await fetchUsers()
-      } catch (error: any) {
-        toast.error(error.message || "Gagal mengaktifkan pengguna")
+      } catch (error: unknown) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Gagal mengaktifkan pengguna"
+        )
       }
     },
     [fetchUsers]
@@ -148,8 +147,12 @@ export function useUsers() {
         toast.success(result.message || "Pengguna berhasil dinonaktifkan")
 
         await fetchUsers()
-      } catch (error: any) {
-        toast.error(error.message || "Gagal menonaktifkan pengguna")
+      } catch (error: unknown) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Gagal menonaktifkan pengguna"
+        )
       }
     },
     [fetchUsers]
@@ -188,13 +191,15 @@ export function useUsers() {
         roleId: form.role_id,
       }
       const result = await updateUserById(token, form.id, input)
-      
+
       toast.success(result.message || "Pengguna berhasil diperbarui")
       setUpdateOpen(false)
       resetForm()
       await fetchUsers()
-    } catch (error: any) {
-      toast.error(error.message || "Gagal memperbarui pengguna")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal memperbarui pengguna"
+      )
     } finally {
       setUpdating(false)
     }
@@ -269,8 +274,10 @@ export function useUsers() {
 
       setIsRegisterOpen(false)
       await fetchUsers()
-    } catch (error: any) {
-      toast.error(error.message || "Gagal mendaftarkan pengguna")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal mendaftarkan pengguna"
+      )
     } finally {
       setIsSubmitting(false)
     }

@@ -63,7 +63,8 @@ export async function PUT(
     }
 
     return successResponse("Password berhasil diubah", null, 200)
-  } catch (error: any) {
-    return errorResponse("Gagal mengubah password", 400, error.message)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Gagal mengubah password", 400, message)
   }
 }

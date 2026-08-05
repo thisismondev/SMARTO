@@ -17,7 +17,8 @@ export async function GET(request: Request) {
     console.log("Hasil fetch fuzzy sets:", fuzzySets)
 
     return successResponse("Fuzzy sets fetched successfully", fuzzySets, 200)
-  } catch (error: any) {
-    return errorResponse("Terjadi kesalahan", 500, error.message)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Terjadi kesalahan", 500, message)
   }
 }

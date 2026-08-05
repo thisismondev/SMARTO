@@ -83,7 +83,7 @@ export async function PATCH(
       },
       200
     )
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Unexpected error:", error)
     return errorResponse("Terjadi kesalahan tidak terduga", 500)
   }

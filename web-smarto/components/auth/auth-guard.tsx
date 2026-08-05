@@ -16,6 +16,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       return
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsReady(true)
   }, [router, pathname])
 

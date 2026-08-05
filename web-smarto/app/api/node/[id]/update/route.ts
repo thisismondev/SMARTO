@@ -42,8 +42,9 @@ export async function PUT(
     }
 
     return successResponse("Node berhasil diperbarui", result, 200)
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error memperbarui node:", error)
-    return errorResponse("Gagal memperbarui node", 500, error.message)
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Gagal memperbarui node", 500, message)
   }
 }

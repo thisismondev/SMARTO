@@ -10,7 +10,8 @@ export async function POST(request: Request) {
     }
 
     return successResponse("Logout berhasil", null, 200)
-  } catch (error: any) {
-    return errorResponse("Logout gagal", 500, error.message)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Logout gagal", 500, message)
   }
 }

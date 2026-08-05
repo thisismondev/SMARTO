@@ -42,7 +42,8 @@ export async function POST(request: Request) {
         role: user.role,
       },
     })
-  } catch (error: any) {
-    return errorResponse("Gagal login", 500, error.message)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Gagal login", 500, message)
   }
 }

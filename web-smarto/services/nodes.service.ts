@@ -22,7 +22,6 @@ type RowNodeSensor = {
   kode_node_status: string
 } & RowDataPacket
 
-
 type CheckingNodeByKodeNodeRow = {
   id: number
   kode_node: string
@@ -122,7 +121,7 @@ export async function checkingNodeById(kodeNodeId: number) {
     `,
     [kodeNodeId]
   )
-  return rows [0] || null
+  return rows[0] || null
 }
 
 export async function setUpNodeByCode(data: {
@@ -141,7 +140,7 @@ export async function setUpNodeByCode(data: {
   return result
 }
 
-export async function useNodeUser(id: number) {
+export async function assignNodeToUser(id: number) {
   const [result] = await db.query<ResultSetHeader>(
     `
     UPDATE nodes

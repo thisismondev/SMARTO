@@ -2,7 +2,7 @@ import { errorResponse, successResponse } from "@/lib/response"
 import { getAuthUser } from "@/lib/auth"
 import {
   findNodeById,
-  useNodeUser,
+  assignNodeToUser,
   checkingNodeById,
 } from "@/services/nodes.service"
 import { RouteParams } from "@/types/api"
@@ -36,18 +36,19 @@ export async function PATCH(
       )
     }
 
-    const result = await useNodeUser(idParams)
+    const result = await assignNodeToUser(idParams)
 
     if (result.affectedRows === 0) {
       return errorResponse("Gagal menggunakan node", 400)
     }
 
     return successResponse("Node berhasil digunakan", result, 200)
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse(
-      "Terjadi kesalahan: " + error.error,
+      "Terjadi kesalahan: " + message,
       500,
-      error.message
+      message
     )
   }
 }

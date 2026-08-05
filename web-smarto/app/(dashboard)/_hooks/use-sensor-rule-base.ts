@@ -27,7 +27,7 @@ const initialForm: RuleBaseForm = {
   kelembapan: 0,
   suhu: 0,
   nitrogen: 0,
-  output: 0
+  output: 0,
 }
 
 export function useRuleBase() {
@@ -60,7 +60,7 @@ export function useRuleBase() {
     try {
       const result = await fetchRuleBase(token)
 
-      const data = result.data.map((item: any) => ({
+      const data = result.data.map((item: Record<string, unknown>) => ({
         id: item.id,
         kode_rule: item.kode_rule,
         phKategoriId: item.ph_kategori_id,
@@ -78,8 +78,12 @@ export function useRuleBase() {
       console.log("Hasil fetch rule base:", data)
 
       setRuleBase(data)
-    } catch (error: any) {
-      setError(error.message || "Gagal mengambil data rule base")
+    } catch (error: unknown) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Gagal mengambil data rule base"
+      )
     } finally {
       setLoading(false)
     }
@@ -96,7 +100,7 @@ export function useRuleBase() {
     try {
       const result = await fetchFuzzySets(token)
 
-      const setData: FuzzySet[] = result.data.map((item: any) => ({
+      const setData: FuzzySet[] = result.data.map((item: Record<string, unknown>) => ({
         id: item.id,
         variableId: item.variable_id,
         name: item.name,
@@ -112,14 +116,19 @@ export function useRuleBase() {
       console.log("Hasil fetch kategori options:", setData)
 
       setKategoriOptions(setData)
-    } catch (error: any) {
-      toast.error(error.message || "Gagal mengambil kategori sensor")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Gagal mengambil kategori sensor"
+      )
     }
   }, [])
 
   useEffect(() => {
-    fetchData()
-    KategoriOptionsData()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchData()
+    void KategoriOptionsData()
   }, [fetchData, KategoriOptionsData])
 
   const phOptions = kategoriOptions.filter(
@@ -137,7 +146,7 @@ export function useRuleBase() {
   const nitrogenOptions = kategoriOptions.filter(
     (item) => item.name.toLowerCase() === "nitrogen"
   )
-  
+
   const outputOptions = kategoriOptions.filter(
     (item) => item.name.toLowerCase() === "dosis inokulasi rhizobium"
   )
@@ -219,8 +228,10 @@ export function useRuleBase() {
       setOpen(false)
 
       await fetchData()
-    } catch (error: any) {
-      toast.error(error.message || "Gagal membuat rule base")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal membuat rule base"
+      )
     } finally {
       setSubmitLoading(false)
     }
@@ -300,8 +311,10 @@ export function useRuleBase() {
       setEditForm(initialForm)
 
       await fetchData()
-    } catch (error: any) {
-      toast.error(error.message || "Gagal memperbarui rule base")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal memperbarui rule base"
+      )
     } finally {
       setEditLoading(false)
     }

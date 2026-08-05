@@ -21,9 +21,9 @@ export function useSensorLogAnalytics() {
   const [selectedNodeId, setSelectedNodeId] = useState("")
   const [filterType, setFilterType] = useState<FilterType>("day")
 
-  const [dataAnalytics, setDataAnalytics] = useState<TrendSensorAnalytics[] | null>(
-    null
-  )
+  const [dataAnalytics, setDataAnalytics] = useState<
+    TrendSensorAnalytics[] | null
+  >(null)
 
   const fetchPetani = useCallback(async () => {
     try {
@@ -40,21 +40,24 @@ export function useSensorLogAnalytics() {
 
       const result = await findFarmerUser(token)
 
-      const petaniData: SelectPetani[] = result.data.map((item: any) => ({
+      const petaniData: SelectPetani[] = result.data.map((item: Record<string, unknown>) => ({
         id: item.id,
         name: item.name,
       }))
 
       setPetani(petaniData)
-    } catch (error: any) {
-      setError(error.message || "Gagal mengambil data petani")
+    } catch (error: unknown) {
+      setError(
+        error instanceof Error ? error.message : "Gagal mengambil data petani"
+      )
     } finally {
       setLoading(false)
     }
   }, [])
 
   useEffect(() => {
-    fetchPetani()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchPetani()
   }, [fetchPetani])
 
   const fetchNodesByPetani = useCallback(async (petaniId: number) => {
@@ -79,8 +82,10 @@ export function useSensorLogAnalytics() {
       console.log("Fetched nodes:", nodeData)
 
       setNodes(nodeData)
-    } catch (error: any) {
-      setError(error.message || "Gagal mengambil data kode node")
+    } catch (error: unknown) {
+      setError(
+        error instanceof Error ? error.message : "Gagal mengambil data kode node"
+      )
     }
   }, [])
 
@@ -149,7 +154,7 @@ export function useSensorLogAnalytics() {
 
       // perbaikan: backend mengembalikan periode + avg_*
       const mappedData: TrendSensorAnalytics[] = (result.data ?? []).map(
-        (item: any) => ({
+        (item: Record<string, unknown>) => ({
           periode: item.periode,
           ph: Number(item.avg_ph ?? 0),
           kelembapan: Number(item.avg_kelembapan ?? 0),
@@ -165,8 +170,10 @@ export function useSensorLogAnalytics() {
       } else {
         toast.success("Data statistik berhasil diambil")
       }
-    } catch (error: any) {
-      toast.error(error.message || "Gagal mengambil data statistik")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal mengambil data statistik"
+      )
     } finally {
       setSearchLoading(false)
     }

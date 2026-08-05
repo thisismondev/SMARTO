@@ -1,9 +1,5 @@
-import {
-  setUpNodeByCode,
-  findNodeByKodeNodeId,
-  
-} from "@/services/nodes.service"
-import {findByKodeNode} from "@/services/kode-nodes.service"
+import { setUpNodeByCode, findNodeByKodeNodeId } from "@/services/nodes.service"
+import { findByKodeNode } from "@/services/kode-nodes.service"
 import { getAuthUser } from "@/lib/auth"
 import { errorResponse, successResponse } from "@/lib/response"
 
@@ -44,7 +40,8 @@ export async function POST(request: Request) {
     }
 
     return successResponse("User Node berhasil disimpan", 200)
-  } catch (error: any) {
-    return errorResponse("Gagal menyimpan user node", 500, error.message)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Gagal menyimpan user node", 500, message)
   }
 }

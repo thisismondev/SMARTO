@@ -14,7 +14,16 @@ import { toast } from "sonner"
 export function useKodeNode() {
   const [data, setData] = useState<KodeNode[]>([])
 
-  const [isAdmin, setIsAdmin] = useState(false)
+  const [isAdmin] = useState(() => {
+    try {
+      const user = localStorage.getItem("user")
+      if (!user) return false
+      const parsedUser = JSON.parse(user)
+      return parsedUser.role_id === 1
+    } catch {
+      return false
+    }
+  })
 
   const [loading, setLoading] = useState(false)
   const [generateLoading, setGenerateLoading] = useState(false)
@@ -23,22 +32,7 @@ export function useKodeNode() {
   // untuk kontrol dialog
   const [open, setOpen] = useState(false)
 
-  useEffect(() => {
-    const user = localStorage.getItem("user")
 
-    if (!user) {
-      setIsAdmin(false)
-      return
-    }
-
-    try {
-      const parsedUser = JSON.parse(user)
-
-      setIsAdmin(parsedUser.role_id === 1)
-    } catch {
-      setIsAdmin(false)
-    }
-  }, [])
 
   const fetchKodeNodes = useCallback(async () => {
     setLoading(true)
@@ -55,22 +49,25 @@ export function useKodeNode() {
     try {
       const result = await findKodeNodes(token)
 
-      const mappedData = result.data.map((node: any) => ({
+      const mappedData = result.data.map((node: Record<string, unknown>) => ({
         id: node.id,
         kode_node: node.kode_node,
         status: node.status === 0 ? "Aktif" : "Tidak Aktif",
       }))
 
       setData(mappedData)
-    } catch (error: any) {
-      setError(error.message)
+    } catch (error: unknown) {
+      setError(
+        error instanceof Error ? error.message : "Gagal mengambil data kode node"
+      )
     } finally {
       setLoading(false)
     }
   }, [])
 
   useEffect(() => {
-    fetchKodeNodes()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchKodeNodes()
   }, [fetchKodeNodes])
 
   const handleGenerateKodeNode = useCallback(async () => {

@@ -22,8 +22,7 @@ export async function PATCH(
         403
       )
 
-      const idParams = Number(id)
-    
+    const idParams = Number(id)
 
     const existingKode = await checkingKodeNodeById(idParams)
 
@@ -40,7 +39,8 @@ export async function PATCH(
     }
 
     return successResponse("Node berhasil diaktifkan", { id: idParams }, 200)
-  } catch (error: any) {
-    return errorResponse("Gagal mengaktifkan node", 500, error.message)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Gagal mengaktifkan node", 500, message)
   }
 }

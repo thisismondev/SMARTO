@@ -28,7 +28,7 @@ export function useFuzzyVariable() {
       const result = await fetchFuzzyVariables(token)
       console.log("Fetched fuzzy variables:", result)
 
-      const VariableData: FuzzyVariable[] = result.data.map((item: any) => ({
+      const VariableData: FuzzyVariable[] = result.data.map((item: Record<string, unknown>) => ({
         id: item.id,
         name: item.name,
         unit: item.unit,
@@ -37,7 +37,7 @@ export function useFuzzyVariable() {
       }))
 
       setVariable(VariableData)
-    } catch (error: any) {
+    } catch (error: unknown) {
       setError("Gagal mengambil data fuzzy variable.")
       console.error("Error fetching fuzzy variables:", error)
     } finally {
@@ -46,7 +46,8 @@ export function useFuzzyVariable() {
   }, [])
 
   useEffect(() => {
-    fetchVariable()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchVariable()
   }, [fetchVariable])
 
   const columns = useMemo(
@@ -61,7 +62,7 @@ export function useFuzzyVariable() {
           toast.info("Fitur edit belum tersedia", {
             description: `Anda mencoba mengedit variable dengan ID ${id}`,
           })
-        }
+        },
       }),
     []
   )
@@ -72,7 +73,7 @@ export function useFuzzyVariable() {
 
     columns,
     variable,
-    
+
     fetchVariable,
   }
 }

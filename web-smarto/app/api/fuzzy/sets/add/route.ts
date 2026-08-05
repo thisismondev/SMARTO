@@ -2,7 +2,6 @@ import { createFuzzySets } from "@/services/fuzzy.service"
 import { getAuthUser } from "@/lib/auth"
 import { errorResponse, successResponse } from "@/lib/response"
 
-
 export async function POST(request: Request) {
   try {
     const user = await getAuthUser(request)
@@ -24,9 +23,9 @@ export async function POST(request: Request) {
       a,
       b,
       c,
-      d
+      d,
     })
-      
+
     if (
       !variableId ||
       !setName ||
@@ -54,11 +53,8 @@ export async function POST(request: Request) {
     )
 
     return successResponse("Fuzzy set berhasil ditambahkan", result, 201)
-  } catch (error: any) {
-    return errorResponse(
-      "Gagal menambahkan fuzzy set",
-      500,
-      error.message
-    )
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Gagal menambahkan fuzzy set", 500, message)
   }
 }

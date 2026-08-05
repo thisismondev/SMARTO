@@ -22,14 +22,18 @@ export async function GET(request: NextRequest) {
       return errorResponse("userId dan kodeNodeId wajib diisi", 400)
     }
 
-    const node = await findNodesByUserAndKodeNode(Number(userId), Number(kodeNodeId))
+    const node = await findNodesByUserAndKodeNode(
+      Number(userId),
+      Number(kodeNodeId)
+    )
 
     if (!node) {
       return errorResponse("Data node tidak ditemukan", 404)
     }
 
     return successResponse("Node fetched successfully", node, 200)
-  } catch (error: any) {
-    return errorResponse("Terjadi kesalahan", 500, error.message)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Terjadi kesalahan", 500, message)
   }
 }

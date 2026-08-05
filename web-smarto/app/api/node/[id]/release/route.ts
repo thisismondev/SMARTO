@@ -17,10 +17,14 @@ export async function PATCH(
 
     const node = await findNodeById(idParams)
     if (!node) return errorResponse("Node tidak ditemukan", 404)
-    if (node.status === 1) return errorResponse("Node ini sudah dilepaskan", 400)
+    if (node.status === 1)
+      return errorResponse("Node ini sudah dilepaskan", 400)
 
-    if(user.roleId === 3 && node.user_id !== user.id){
-        return errorResponse("Anda tidak memiliki izin untuk melepaskan node ini", 403)
+    if (user.roleId === 3 && node.user_id !== user.id) {
+      return errorResponse(
+        "Anda tidak memiliki izin untuk melepaskan node ini",
+        403
+      )
     }
 
     const result = await releaseNodeUser(idParams)
@@ -30,7 +34,8 @@ export async function PATCH(
     }
 
     return successResponse("User berhasil dilepaskan", result, 200)
-  } catch (error: any) {
-    return errorResponse("Terjadi kesalahan", 500, error.message)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Terjadi kesalahan", 500, message)
   }
 }

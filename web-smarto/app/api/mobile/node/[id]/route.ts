@@ -30,7 +30,8 @@ export async function GET(
     const nodes = await findNodeUserById(idParams)
 
     return successResponse("Nodes fetched successfully", nodes, 200)
-  } catch (error: any) {
-    return errorResponse("Terjadi kesalahan", 500, error.message)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Terjadi kesalahan", 500, message)
   }
 }

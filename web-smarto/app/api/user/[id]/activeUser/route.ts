@@ -3,7 +3,10 @@ import { errorResponse, successResponse } from "@/lib/response"
 import { RouteParams } from "@/types/api"
 import { activeById } from "@/services/users.service"
 
-export async function PATCH(request: Request, { params }: { params: RouteParams }) {
+export async function PATCH(
+  request: Request,
+  { params }: { params: RouteParams }
+) {
   try {
     const user = await getAuthUser(request)
 
@@ -30,7 +33,8 @@ export async function PATCH(request: Request, { params }: { params: RouteParams 
     }
 
     return successResponse("User berhasil diaktifkan", null, 200)
-  } catch (error: any) {
-    return errorResponse("Gagal mengaktifkan user", 500, error.message)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Gagal mengaktifkan user", 500, message)
   }
 }

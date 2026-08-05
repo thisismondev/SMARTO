@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState, useEffect, useMemo } from "react"
+import { useCallback, useState, useEffect } from "react"
 import { toast } from "sonner"
 import {
   findUserById,
@@ -73,8 +73,12 @@ export function useUser() {
         email: data.email,
         roleId: data.role_id,
       })
-    } catch (error: any) {
-      setError(error.message || "Gagal mengambil data pengguna")
+    } catch (error: unknown) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Gagal mengambil data pengguna"
+      )
       //   toast.error(error.message || "Gagal mengambil data pengguna")
     } finally {
       setLoading(false)
@@ -82,7 +86,8 @@ export function useUser() {
   }, [])
 
   useEffect(() => {
-    fetchUserById()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchUserById()
   }, [fetchUserById])
 
   const setFormValue = useCallback(
@@ -119,8 +124,10 @@ export function useUser() {
 
       toast.success("Profil berhasil diperbarui")
       await fetchUserById()
-    } catch (error: any) {
-      toast.error(error.message || "Gagal memperbarui profil")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal memperbarui profil"
+      )
       console.error("Error updating user:", error)
     } finally {
       setUpdating(false)
@@ -195,8 +202,10 @@ export function useUser() {
         newPassword: "",
         confirmPassword: "",
       })
-    } catch (error: any) {
-      toast.error(error.message || "Gagal mengubah password")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal mengubah password"
+      )
     } finally {
       setUpdatingPassword(false)
     }
@@ -231,8 +240,10 @@ export function useUser() {
       localStorage.removeItem("user")
 
       window.location.href = "/login"
-    } catch (error: any) {
-      toast.error(error.message || "Gagal menonaktifkan akun")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal menonaktifkan akun"
+      )
     } finally {
       setInactivating(false)
     }

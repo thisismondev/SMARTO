@@ -97,7 +97,7 @@ export function useNodes() {
 
       console.log("Raw node data:", result.data)
 
-      const nodeData = result.data.map((item: any) => ({
+      const nodeData = result.data.map((item: Record<string, unknown>) => ({
         id: item.id,
         kode_node: item.kode_node,
         user_id: item.user_id,
@@ -112,8 +112,10 @@ export function useNodes() {
       console.log("Fetched nodes:", nodeData)
 
       setData(nodeData)
-    } catch (error: any) {
-      setError(error.message || "Gagal mengambil data node")
+    } catch (error: unknown) {
+      setError(
+        error instanceof Error ? error.message : "Gagal mengambil data node"
+      )
     } finally {
       setLoading(false)
     }
@@ -132,22 +134,25 @@ export function useNodes() {
     try {
       const result = await fetchPetani(token)
 
-      const userData = result.map((item: any) => ({
+      const userData = result.map((item: Record<string, unknown>) => ({
         id: item.id,
         name: item.name,
       }))
 
       setUsers(userData)
-    } catch (error: any) {
-      toast.error(error.message || "Gagal mengambil data petani")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal mengambil data petani"
+      )
     } finally {
       setUsersLoading(false)
     }
   }, [])
 
   useEffect(() => {
-    loadNodes()
-    loadUsers()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void loadNodes()
+    void loadUsers()
   }, [loadNodes, loadUsers])
 
   const handleFormChange = (field: keyof FormUserNode, value: string) => {
@@ -202,8 +207,10 @@ export function useNodes() {
       }))
 
       setIsKodeNodeValid(true)
-    } catch (error: any) {
-      toast.error(error.message || "Kode node tidak valid")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Kode node tidak valid"
+      )
       setIsKodeNodeValid(false)
     } finally {
       setCheckLoading(false)
@@ -251,8 +258,10 @@ export function useNodes() {
       setOpen(false)
 
       await loadNodes()
-    } catch (error: any) {
-      toast.error(error.message || "Gagal menambahkan node")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal menambahkan node"
+      )
     } finally {
       setSubmitLoading(false)
     }
@@ -266,6 +275,7 @@ export function useNodes() {
     if (!token) return
 
     try {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       const result = await useNode(token, selectedNode.id)
 
       toast.success(result.message || "Node berhasil digunakan")
@@ -274,8 +284,10 @@ export function useNodes() {
       setSelectedNode(null)
 
       await loadNodes()
-    } catch (error: any) {
-      toast.error(error.message || "Gagal menggunakan node")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal menggunakan node"
+      )
     }
   }, [selectedNode, loadNodes])
 
@@ -295,8 +307,10 @@ export function useNodes() {
       setSelectedNode(null)
 
       await loadNodes()
-    } catch (error: any) {
-      toast.error(error.message || "Gagal melepaskan node")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal melepaskan node"
+      )
     }
   }, [selectedNode, loadNodes])
 
@@ -351,8 +365,10 @@ export function useNodes() {
       setEditForm(initialEditForm)
 
       await loadNodes()
-    } catch (error: any) {
-      toast.error(error.message || "Gagal memperbarui node")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal memperbarui node"
+      )
     } finally {
       setEditLoading(false)
     }

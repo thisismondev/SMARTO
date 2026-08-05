@@ -53,7 +53,7 @@ export function useFuzzySets() {
     try {
       const result = await fetchFuzzySets(token)
 
-      const setData: FuzzySet[] = result.data.map((item: any) => ({
+      const setData: FuzzySet[] = result.data.map((item: Record<string, unknown>) => ({
         id: item.id,
         variableId: item.variable_id,
         name: item.name,
@@ -69,8 +69,10 @@ export function useFuzzySets() {
       console.log("Fetched fuzzy sets:", setData)
 
       setFuzzySet(setData)
-    } catch (error: any) {
-      setError(error.message || "Gagal mengambil data kategori sensor.")
+    } catch (error: unknown) {
+      setError(
+        error instanceof Error ? error.message : "Gagal mengambil data kategori sensor."
+      )
     } finally {
       setLoading(false)
     }
@@ -89,7 +91,7 @@ export function useFuzzySets() {
     try {
       const result = await fetchFuzzyVariables(token)
 
-      const variableData: FuzzyVariable[] = result.data.map((item: any) => ({
+      const variableData: FuzzyVariable[] = result.data.map((item: Record<string, unknown>) => ({
         id: item.id,
         name: item.name,
         unit: item.unit,
@@ -98,20 +100,30 @@ export function useFuzzySets() {
       }))
 
       setVariable(variableData)
-    } catch (error: any) {
-      setError(error.message || "Gagal mengambil data parameter sensor.")
+    } catch (error: unknown) {
+      setError(
+        error instanceof Error ? error.message : "Gagal mengambil data parameter sensor."
+      )
     }
   }, [])
 
   useEffect(() => {
-    getFuzzySets()
-    getFuzzyVariables()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void getFuzzySets()
+    void getFuzzyVariables()
   }, [getFuzzySets, getFuzzyVariables])
 
   const handleFormChange = (field: keyof FuzzySetForm, value: string) => {
     setForm((prev) => ({
       ...prev,
-      [field]: field === "variableId" || field === "a" || field === "b" || field === "c" || field === "d" ? Number(value) : value,
+      [field]:
+        field === "variableId" ||
+        field === "a" ||
+        field === "b" ||
+        field === "c" ||
+        field === "d"
+          ? Number(value)
+          : value,
     }))
   }
 
@@ -137,7 +149,12 @@ export function useFuzzySets() {
       return
     }
 
-    if (form.a === null || form.b === null || form.c === null || form.d === null) {
+    if (
+      form.a === null ||
+      form.b === null ||
+      form.c === null ||
+      form.d === null
+    ) {
       toast.error("Semua parameter fungsi keanggotaan wajib diisi.")
       return
     }
@@ -161,8 +178,10 @@ export function useFuzzySets() {
       setOpen(false)
 
       await getFuzzySets()
-    } catch (error: any) {
-      toast.error(error.message || "Gagal menambahkan kategori sensor")
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal menambahkan kategori sensor"
+      )
       console.error("Error creating kategori sensor:", error)
     } finally {
       setSubmitLoading(false)

@@ -1,7 +1,11 @@
 import { errorResponse, successResponse } from "@/lib/response"
 import { getAuthUser } from "@/lib/auth"
 import { RouteParams } from "@/types/api"
-import { updateRuleBase, checkRuleBase, checkKodeRule } from "@/services/fuzzy.service"
+import {
+  updateRuleBase,
+  checkRuleBase,
+  checkKodeRule,
+} from "@/services/fuzzy.service"
 
 export async function PUT(
   request: Request,
@@ -47,7 +51,7 @@ export async function PUT(
       kelembapan_kategori_id,
       suhu_kategori_id,
       nitrogen_kategori_id,
-      set_output_id
+      set_output_id,
     })
 
     console.log("Hasil update rule base:", result)
@@ -57,8 +61,9 @@ export async function PUT(
     }
 
     return successResponse("Rule base berhasil diperbarui", result, 200)
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error memperbarui rule base:", error)
-    return errorResponse("Gagal memperbarui rule base", 500, error.message)
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Gagal memperbarui rule base", 500, message)
   }
 }

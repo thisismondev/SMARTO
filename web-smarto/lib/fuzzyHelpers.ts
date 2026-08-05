@@ -1,7 +1,5 @@
 // utils/fuzzyHelpers.ts
 
-import { FuzzySet } from "@/app/api/fuzzy/engine/route"
-
 // Rumus Kurva Trapesium
 export function trapmf(
   x: number,
@@ -25,18 +23,3 @@ export function trimf(x: number, a: number, b: number, d: number): number {
   if (x > b && x < d) return (d - x) / (d - b)
   return 0
 }
-
-function getMembershipValue(set: FuzzySet, x: number) {
-  if (set.mf_type === "trapmf") {
-    return trapmf(x, set.param_a, set.param_b, set.param_c, set.param_d)
-  }
-
-  if (set.mf_type === "trimf") {
-    return trimf(x, set.param_a, set.param_b, set.param_d)  // ✅ param_d, bukan param_c
-  }
-
-  return 0
-}
-
-
-

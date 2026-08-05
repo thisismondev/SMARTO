@@ -14,8 +14,13 @@ export async function GET(request: Request) {
 
     const fuzzyVariables = await fetchFuzzyVariables()
 
-    return successResponse("Fuzzy variables fetched successfully", fuzzyVariables, 200)
-  } catch (error: any) {
-    return errorResponse("Terjadi kesalahan", 500, error.message)
+    return successResponse(
+      "Fuzzy variables fetched successfully",
+      fuzzyVariables,
+      200
+    )
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Terjadi kesalahan", 500, message)
   }
 }

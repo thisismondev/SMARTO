@@ -4,7 +4,10 @@ import { inactiveById } from "@/services/users.service"
 import { deleteUserNode } from "@/services/nodes.service"
 import { RouteParams } from "@/types/api"
 
-export async function PATCH(request: Request, { params }: { params: RouteParams }) {
+export async function PATCH(
+  request: Request,
+  { params }: { params: RouteParams }
+) {
   try {
     const user = await getAuthUser(request)
 
@@ -22,7 +25,6 @@ export async function PATCH(request: Request, { params }: { params: RouteParams 
       return errorResponse("Invalid user ID", 400)
     }
 
-
     const result = await inactiveById(idParams)
 
     if (result.affectedRows === 0) {
@@ -36,7 +38,8 @@ export async function PATCH(request: Request, { params }: { params: RouteParams 
     await deleteUserNode(idParams)
 
     return successResponse("User berhasil dinonaktifkan", null, 200)
-  } catch (error: any) {
-    return errorResponse("Gagal menonaktifkan user", 500, error.message)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Gagal menonaktifkan user", 500, message)
   }
-} 
+}

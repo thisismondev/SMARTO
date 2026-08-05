@@ -14,11 +14,11 @@ import { Button } from "@/components/ui/button"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { DataTable } from "./data-table"
-import { useFuzzyVariable, } from "../../_hooks/use-fuzzy-variable"
+import { useFuzzyVariable } from "../../_hooks/use-fuzzy-variable"
 import { toast } from "sonner"
 import PageLoading from "@/app/loading"
 
-export default function fuzzyVariablePage() {
+export default function FuzzyVariablePage() {
   const {
     error,
     loading,
@@ -30,7 +30,7 @@ export default function fuzzyVariablePage() {
   if (loading) {
     return <PageLoading />
   }
-  
+
   return (
     <div className="space-y-2">
       <Card>

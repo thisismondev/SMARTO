@@ -1,9 +1,7 @@
 import { NextRequest } from "next/server"
 import { getAuthUser } from "@/lib/auth"
 import { errorResponse, successResponse } from "@/lib/response"
-import {
-  getSensorLog
-} from "@/services/sensor.service"
+import { getSensorLog } from "@/services/sensor.service"
 import { FilterType } from "@/types/sensor"
 
 export async function GET(request: NextRequest) {
@@ -37,16 +35,13 @@ export async function GET(request: NextRequest) {
       return errorResponse("Parameter tidak lengkap", 400)
     }
 
-    const result = await getSensorLog(
-        targetUserId,
-        kodeNodeId,
-        periode
-    )
+    const result = await getSensorLog(targetUserId, kodeNodeId, periode)
 
     return successResponse("Berhasil mengambil statistik sensor log", result)
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse(
-      error.message || "Gagal mengambil statistik sensor log",
+      message || "Gagal mengambil statistik sensor log",
       500
     )
   }
