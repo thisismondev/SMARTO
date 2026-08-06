@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../app/router.dart';
+import '../../../app/router.dart';
+import '../../../core/widgets/card_decoration.dart';
 import '../controller/logout_controller.dart';
 import '../controller/account_controller.dart';
 
@@ -287,7 +288,7 @@ class _SettingSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: _cardDecoration(),
+      decoration: cardDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -365,18 +366,4 @@ class _InfoTile extends StatelessWidget {
       ),
     );
   }
-}
-
-BoxDecoration _cardDecoration() {
-  return BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(18),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black.withOpacity(0.06),
-        blurRadius: 16,
-        offset: const Offset(0, 8),
-      ),
-    ],
-  );
 }

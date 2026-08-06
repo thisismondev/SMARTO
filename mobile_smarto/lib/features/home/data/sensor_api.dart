@@ -17,17 +17,14 @@ class SensorApi {
         .order('created_at', ascending: false)
         .limit(1);
 
+    if (response.isEmpty) {
+      return null;
+    }
+
     log(
       'Latest sensor response: $response',
       name: 'SensorApi.fetchLatestSensor',
     );
-
-    print('Latest sensor response: $response');
-    print('Kode Node ID: ${response.first['kode_node_id']}');
-
-    if (response.isEmpty) {
-      return null;
-    }
 
     return SensorReadingModel.fromJson(response.first);
   }
@@ -54,8 +51,6 @@ class SensorApi {
           'Realtime payload: $newRecord',
           name: 'SensorApi.subscribeSensor',
         );
-
-        print('Realtime payload: $newRecord');
 
         if (newRecord.isEmpty) return;
 
