@@ -1,3 +1,4 @@
+import '../../../core/config/api_endpoints.dart';
 import '../../../core/network/api_client.dart';
 import '../model/fuzzy_response_model.dart';
 
@@ -10,7 +11,7 @@ class FuzzyApi {
       required double suhu,
       required int nitrogen,
   }) async {
-    final response = await ApiClient.post('/api/fuzzy/engine', {
+    final response = await ApiClient.post(ApiEndpoints.fuzzyEngine, {
       'ph': ph,
       'kelembapan': kelembapan,
       'suhu': suhu,

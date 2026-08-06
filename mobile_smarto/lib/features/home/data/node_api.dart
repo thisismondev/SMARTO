@@ -1,3 +1,4 @@
+import '../../../core/config/api_endpoints.dart';
 import '../../../core/network/api_client.dart';
 import '../model/node_response_model.dart';
 
@@ -7,7 +8,7 @@ class NodeApi {
   static Future<List<NodeResponseModel>> getMyNodes({
     required int userId,
   }) async {
-    final response = await ApiClient.get('/api/mobile/node/$userId');
+    final response = await ApiClient.get(ApiEndpoints.nodes(userId));
 
     final data = response['data'];
 

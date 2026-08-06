@@ -1,3 +1,4 @@
+import '../../../core/config/api_endpoints.dart';
 import '../../../core/network/api_client.dart';
 import '../model/login_response_model.dart';
 
@@ -7,7 +8,7 @@ class AuthApi {
     required String password,
   }) async {
     final response = await ApiClient.post(
-      '/api/mobile/auth/login',
+      ApiEndpoints.login,
       {
         'identifier': identifier,
         'password': password,
@@ -19,7 +20,7 @@ class AuthApi {
 
   static Future<void> logout() async {
     await ApiClient.post(
-      '/api/auth/logout',
+      ApiEndpoints.logout,
       {},
     );
   }
