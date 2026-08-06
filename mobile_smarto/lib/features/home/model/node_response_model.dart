@@ -1,3 +1,5 @@
+import '../../../core/utils/type_converter.dart';
+
 class NodeResponseModel {
   final int id;
   final int kodeNodeId;
@@ -29,8 +31,8 @@ class NodeResponseModel {
       userId: json['user_id'],
       name: json['name']?.toString() ?? '',
       label: json['label']?.toString() ?? '',
-      latitude: _toDouble(json['latitude']),
-      longitude: _toDouble(json['longitude']),
+      latitude: toDouble(json['latitude']),
+      longitude: toDouble(json['longitude']),
       status: json['status'],
     );
   }
@@ -53,12 +55,5 @@ class NodeResponseModel {
 
   String get statusText {
     return isActive ? 'Aktif' : 'Nonaktif';
-  }
-
-  static double _toDouble(dynamic value) {
-    if (value == null) return 0;
-    if (value is double) return value;
-    if (value is int) return value.toDouble();
-    return double.tryParse(value.toString()) ?? 0;
   }
 }

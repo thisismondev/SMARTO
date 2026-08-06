@@ -4,7 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../controller/analytics_controller.dart';
-import '../model/node_response_model.dart';
+import '../../home/model/node_response_model.dart';
 
 class AnalyticsTab extends StatefulWidget {
   const AnalyticsTab({super.key});

@@ -1,3 +1,5 @@
+import '../../../core/utils/type_converter.dart';
+
 class SensorReadingModel {
   final int id;
   final int kodeNodeId;
@@ -21,19 +23,12 @@ class SensorReadingModel {
     return SensorReadingModel(
       id: json['id'],
       kodeNodeId: json['kode_node_id'],
-      ph: _toDouble(json['ph']),
-      kelembapan: _toDouble(json['kelembapan']),
-      suhu: _toDouble(json['suhu']),
+      ph: toDouble(json['ph']),
+      kelembapan: toDouble(json['kelembapan']),
+      suhu: toDouble(json['suhu']),
       nitrogen: json['nitrogen'],
       updatedAt: json['update_at']?.toString() ?? '-',
     );
-  }
-
-  static double _toDouble(dynamic value) {
-    if (value == null) return 0;
-    if (value is double) return value;
-    if (value is int) return value.toDouble();
-    return double.tryParse(value.toString()) ?? 0;
   }
 
   String get updatedAtText {

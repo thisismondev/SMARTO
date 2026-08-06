@@ -1,7 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-import '../../home/model/fuzzy_response_model.dart'; // sesuaikan dengan path model Anda
+import '../../../core/widgets/card_decoration.dart';
+import '../../home/model/fuzzy_response_model.dart';
 
 const _green = Color(0xFF2E7D32);
 const _greenLight = Color(0xFF66BB6A);
@@ -336,7 +337,7 @@ class _InputGrid extends StatelessWidget {
         final entry = items[index];
         return Container(
           padding: const EdgeInsets.all(14),
-          decoration: _cardDecoration(),
+          decoration: cardDecoration(),
           child: Row(
             children: [
               Container(
@@ -407,7 +408,7 @@ class _OutputMembershipChartCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(14, 16, 14, 12),
-      decoration: _cardDecoration(),
+      decoration: cardDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -623,7 +624,7 @@ class _MembershipListCard extends StatelessWidget {
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.all(22),
-        decoration: _cardDecoration(),
+        decoration: cardDecoration(),
         child: const Text(
           'Tidak ada data keanggotaan.',
           textAlign: TextAlign.center,
@@ -635,7 +636,7 @@ class _MembershipListCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: _cardDecoration(),
+      decoration: cardDecoration(),
       child: Column(
         children: List.generate(memberships.length, (index) {
           final item = memberships[index];
@@ -701,7 +702,7 @@ class _VolumeCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
-      decoration: _cardDecoration(),
+      decoration: cardDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -818,18 +819,4 @@ class _EmptyResult extends StatelessWidget {
       ),
     );
   }
-}
-
-BoxDecoration _cardDecoration() {
-  return BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(18),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black.withOpacity(0.06),
-        blurRadius: 16,
-        offset: const Offset(0, 8),
-      ),
-    ],
-  );
 }

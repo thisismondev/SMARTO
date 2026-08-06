@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/widgets/card_decoration.dart';
 import '../../home/controller/node_controller.dart';
 import '../../home/controller/fuzzy_controller.dart';
 import '../../home/model/node_response_model.dart';
@@ -376,7 +377,7 @@ class _SelectLahanFirstCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(22),
-      decoration: _cardDecoration(),
+      decoration: cardDecoration(),
       child: Column(
         children: [
           Icon(
@@ -409,7 +410,7 @@ class _LahanInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: _cardDecoration(),
+      decoration: cardDecoration(),
       child: Column(
         children: [
           _InfoTile(
@@ -628,7 +629,7 @@ class _SensorLoading extends StatelessWidget {
     return Container(
       height: 180,
       width: double.infinity,
-      decoration: _cardDecoration(),
+      decoration: cardDecoration(),
       child: const Center(
         child: CircularProgressIndicator(color: Color(0xFF2E7D32)),
       ),
@@ -701,16 +702,4 @@ class _ErrorState extends StatelessWidget {
   }
 }
 
-BoxDecoration _cardDecoration() {
-  return BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(18),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black.withOpacity(0.06),
-        blurRadius: 16,
-        offset: const Offset(0, 8),
-      ),
-    ],
-  );
-}
+

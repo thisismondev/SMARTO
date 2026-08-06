@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/storage/token_storage.dart';
+import '../../../core/utils/error_parser.dart';
 
 class AccountController extends ChangeNotifier {
   bool loading = false;
@@ -26,7 +27,7 @@ class AccountController extends ChangeNotifier {
       role = await TokenStorage.getRole();
       name = await TokenStorage.getName();
     } catch (e) {
-      error = e.toString().replaceAll('Exception: ', '');
+      error = parseError(e);
     } finally {
       loading = false;
       notifyListeners();
@@ -52,7 +53,7 @@ class AccountController extends ChangeNotifier {
       roleId = null;
       role = null;
     } catch (e) {
-      error = e.toString().replaceAll('Exception: ', '');
+      error = parseError(e);
     } finally {
       loading = false;
       notifyListeners();
