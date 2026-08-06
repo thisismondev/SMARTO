@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../data/fuzzy_api.dart';
-import '../model/fuzzy_response_model.dart'; // Sesuaikan dengan path model Anda
+import '../model/fuzzy_response_model.dart';
+import '../../../core/errors/app_exception.dart';
 import 'dart:developer';
 
 class FuzzyController extends ChangeNotifier {
   bool loading = false;
+  bool sessionExpired = false;
   String? error;
   FuzzyData? fuzzyData;
 
@@ -30,6 +32,10 @@ class FuzzyController extends ChangeNotifier {
 
       return true;
     } catch (e) {
+      if (e is TokenExpiredException) {
+        sessionExpired = true;
+        notifyListeners();
+      }
       error = e.toString();
       log("Error fetching fuzzy engine: $error", name: "FuzzyController");
       return false;

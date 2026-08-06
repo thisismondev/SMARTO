@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/errors/app_exception.dart';
 import '../../../core/storage/token_storage.dart';
+import '../../../core/utils/error_parser.dart';
 import '../../auth/data/auth_api.dart';
 
 class LogoutController extends ChangeNotifier {
   bool loading = false;
+  bool sessionExpired = false;
   String? error;
 
   Future<bool> logout() async {
@@ -24,7 +27,11 @@ class LogoutController extends ChangeNotifier {
 
       return true;
     } catch (e) {
-      error = e.toString().replaceAll('Exception: ', '');
+      if (e is TokenExpiredException) {
+        sessionExpired = true;
+        notifyListeners();
+      }
+      error = parseError(e);
       return false;
     } finally {
       loading = false;

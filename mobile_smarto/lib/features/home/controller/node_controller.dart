@@ -7,13 +7,16 @@ import '../data/sensor_api.dart';
 import '../model/sensor_reading_model.dart';
 import '../model/node_response_model.dart';
 
+import '../../../core/errors/app_exception.dart';
 import '../../../core/storage/token_storage.dart';
+import '../../../core/utils/error_parser.dart';
 
 import 'dart:developer';
 
 class NodeController extends ChangeNotifier {
   bool loadingLahan = false;
   bool loadingSensor = false;
+  bool sessionExpired = false;
   String? error;
 
   List<NodeResponseModel> lahanList = [];
@@ -41,7 +44,11 @@ class NodeController extends ChangeNotifier {
         name: "NodeController.fetchLahan",
       );
     } catch (e) {
-      error = e.toString().replaceAll('Exception: ', '');
+      if (e is TokenExpiredException) {
+        sessionExpired = true;
+        notifyListeners();
+      }
+      error = parseError(e);
       log("Error fetching lahan: $error", name: "NodeController.fetchLahan");
     } finally {
       farmer = name ?? 'PETANI';
@@ -80,8 +87,6 @@ class NodeController extends ChangeNotifier {
         kodeNodeId: selectedLahan!.kodeNodeId,
       );
 
-      print('Fetched latest sensor data: $sensor');
-
       sensorData = sensor;
 
       log(
@@ -89,10 +94,15 @@ class NodeController extends ChangeNotifier {
         name: 'NodeController.fetchSensorBySelectedNode',
       );
     } catch (e) {
-      error = e.toString().replaceAll('Exception: ', '');
+      if (e is TokenExpiredException) {
+        sessionExpired = true;
+        notifyListeners();
+      }
+      error = parseError(e);
 
-      print(
-        'Error fetching sensor: $error - NodeController.fetchSensorBySelectedNode',
+      log(
+        'Error fetching sensor: $error',
+        name: 'NodeController.fetchSensorBySelectedNode',
       );
     } finally {
       loadingSensor = false;
@@ -132,6 +142,7 @@ class NodeController extends ChangeNotifier {
   @override
   void dispose() {
     if (_sensorChannel != null) {
+      // Fire-and-forget: channel cleanup runs asynchronously
       SensorApi.removeChannel(_sensorChannel!);
       _sensorChannel = null;
     }

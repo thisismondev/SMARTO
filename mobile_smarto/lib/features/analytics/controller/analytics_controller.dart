@@ -1,11 +1,12 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import '../model/node_response_model.dart';
+import '../../home/model/node_response_model.dart';
 import '../model/statistic_response_model.dart';
-import '../data/node_api.dart';
+import '../../home/data/node_api.dart';
 import '../data/statistic_api.dart';
 
+import '../../../core/errors/app_exception.dart';
 import '../../../core/storage/token_storage.dart';
 
 class AnalyticsController extends ChangeNotifier {
@@ -21,6 +22,7 @@ class AnalyticsController extends ChangeNotifier {
   // State UI
   bool _isLoading = false;
   bool _isAnalyticsLoading = false;
+  bool _sessionExpired = false;
 
   String? _errorMessage;
   String? _analyticsErrorMessage;
@@ -34,6 +36,7 @@ class AnalyticsController extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
   bool get isAnalyticsLoading => _isAnalyticsLoading;
+  bool get sessionExpired => _sessionExpired;
 
   String? get errorMessage => _errorMessage;
   String? get analyticsErrorMessage => _analyticsErrorMessage;
@@ -57,15 +60,15 @@ class AnalyticsController extends ChangeNotifier {
 
       _selectedNode = null;
     } catch (e) {
+      if (e is TokenExpiredException) {
+        _sessionExpired = true;
+        notifyListeners();
+      }
       _errorMessage = 'Gagal memuat data perangkat: $e';
       log("Error fetching nodes: $_errorMessage");
     } finally {
       _isLoading = false;
-      notifyListeners(); // Beritahu UI untuk memperbarui tampilan (selesai loading / error)
-    }
-
-    if (_selectedNode != null) {
-      await fetchAnalytics();
+      notifyListeners();
     }
   }
 
@@ -121,6 +124,10 @@ class AnalyticsController extends ChangeNotifier {
         "Fetched ${_analytics.length} analytics data for kodeNodeId: ${node.kodeNodeId}, period: $_selectedPeriod",
       );
     } catch (e) {
+      if (e is TokenExpiredException) {
+        _sessionExpired = true;
+        notifyListeners();
+      }
       _analyticsErrorMessage = 'Gagal memuat data analytics: $e';
       log("Error fetching analytics: $_analyticsErrorMessage");
     } finally {
