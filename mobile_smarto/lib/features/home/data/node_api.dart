@@ -23,4 +23,31 @@ class NodeApi {
       return NodeResponseModel.fromJson(item);
     }).toList();
   }
+
+  static Future<bool> checkKodeNode(String kodeNode) async {
+    await ApiClient.get(ApiEndpoints.checkKodeNode(kodeNode));
+
+    log("Kode node $kodeNode tersedia", name: "NodeApi.checkKodeNode");
+
+    return true;
+  }
+
+  static Future<void> addNode({
+    required String kodeNode,
+    required String label,
+    required String lat,
+    required String lng,
+  }) async {
+    await ApiClient.post(ApiEndpoints.addNode, {
+      'kodeNode': kodeNode,
+      'label': label,
+      'lat': lat,
+      'lng': lng,
+    });
+
+    log(
+      "Node $kodeNode berhasil ditambahkan",
+      name: "NodeApi.addNode",
+    );
+  }
 }

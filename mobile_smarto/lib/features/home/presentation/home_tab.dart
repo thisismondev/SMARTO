@@ -5,6 +5,7 @@ import '../../home/controller/node_controller.dart';
 import '../../home/controller/fuzzy_controller.dart';
 import '../../home/model/node_response_model.dart';
 import '../../home/model/sensor_reading_model.dart';
+import 'add_node_page.dart';
 import 'defuzzifikasi_page.dart';
 
 class HomeTab extends StatefulWidget {
@@ -17,6 +18,8 @@ class HomeTab extends StatefulWidget {
 class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
   final NodeController _controller = NodeController();
   final FuzzyController _engineController = FuzzyController();
+
+  bool _fabOpen = false;
 
   @override
   bool get wantKeepAlive => true;
@@ -48,6 +51,144 @@ class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    return Scaffold(
+      body: Stack(
+        children: [
+          _buildBody(),
+          if (_fabOpen)
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: _closeFabMenu,
+                child: const ColoredBox(color: Colors.black45),
+              ),
+            ),
+        ],
+      ),
+      floatingActionButton: _buildFabMenu(),
+    );
+  }
+
+  void _toggleFabMenu() {
+    setState(() => _fabOpen = !_fabOpen);
+  }
+
+  void _closeFabMenu() {
+    if (_fabOpen) {
+      setState(() => _fabOpen = false);
+    }
+  }
+
+  Widget _buildFabMenu() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        _buildFabAction(
+          icon: Icons.analytics_rounded,
+          label: 'Proses Defuzzifikasi',
+          onTap: () {
+            _closeFabMenu();
+            _handleDefuzzifikasi();
+          },
+        ),
+        const SizedBox(height: 12),
+        _buildFabAction(
+          icon: Icons.add_rounded,
+          label: 'Tambah Node',
+          onTap: () {
+            _closeFabMenu();
+            _openAddNodePage();
+          },
+        ),
+        const SizedBox(height: 12),
+        FloatingActionButton(
+          onPressed: _toggleFabMenu,
+          backgroundColor: const Color(0xFF2E7D32),
+          foregroundColor: Colors.white,
+          elevation: 4,
+          child: AnimatedRotation(
+            turns: _fabOpen ? 0.125 : 0,
+            duration: const Duration(milliseconds: 250),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 150),
+              child: Icon(
+                _fabOpen ? Icons.close : Icons.add,
+                key: ValueKey(_fabOpen),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFabAction({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+      child: _fabOpen
+          ? FloatingActionButton.extended(
+              onPressed: onTap,
+              backgroundColor: Colors.white,
+              foregroundColor: const Color(0xFF2E7D32),
+              elevation: 3,
+              icon: Icon(icon, size: 20),
+              label: Text(
+                label,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2E7D32),
+                ),
+              ),
+            )
+          : const SizedBox(width: 0, height: 0),
+    );
+  }
+
+  Future<void> _handleDefuzzifikasi() async {
+    final sensorData = _controller.sensorData;
+
+    if (!_controller.hasSelectedLahan) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pilih lahan terlebih dahulu')),
+      );
+      return;
+    }
+
+    final success = await _engineController.fetchFuzzyEngine(
+      ph: sensorData?.ph ?? 0,
+      kelembapan: sensorData?.kelembapan ?? 0,
+      suhu: sensorData?.suhu ?? 0,
+      nitrogen: sensorData?.nitrogen ?? 0,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => DefuzzifikasiPage(
+            data: _engineController.fuzzyData,
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _engineController.error ?? "Gagal memproses defuzzifikasi",
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget _buildBody() {
     if (_controller.loadingLahan) {
       return const Center(
         child: CircularProgressIndicator(color: Color(0xFF2E7D32)),
@@ -144,68 +285,39 @@ class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
                   height: 20,
                 ), // Jarak antara grid sensor dan tombol utama
                 // TOMBOL UTAMA: PROSES DEFUZZIFIKASI
-                SizedBox(
-                  width: double
-                      .infinity, // Membuat tombol full-width (lebar penuh)
-                  height: 54, // Membuat tombol lebih tebal dan mudah ditekan
-                  child: FilledButton.icon(
-                    onPressed: () async {
-                      final success = await _engineController.fetchFuzzyEngine(
-                        ph: sensorData?.ph ?? 0,
-                        kelembapan: sensorData?.kelembapan ?? 0,
-                        suhu: sensorData?.suhu ?? 0,
-                        nitrogen: sensorData?.nitrogen ?? 0,
-                      );
-
-                      if (!context.mounted) return;
-
-                      if (success) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DefuzzifikasiPage(
-                              data: _engineController.fuzzyData,
-                            ),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              _engineController.error ??
-                                  "Gagal memproses defuzzifikasi",
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                    style: FilledButton.styleFrom(
-                      backgroundColor: const Color(
-                        0xFF2E7D32,
-                      ), // Hijau gelap agar kontras
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          16,
-                        ), // Sesuai tema melengkung di dashboard Anda
-                      ),
-                      elevation: 2,
-                    ),
-                    icon: const Icon(
-                      Icons.analytics_rounded,
-                      size: 24,
-                      color: Colors.white,
-                    ),
-                    label: const Text(
-                      'PROSES DEFUZZIFIKASI',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2, // Memberikan kesan tegas/utama
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
+                // SizedBox(
+                //   width: double
+                //       .infinity, // Membuat tombol full-width (lebar penuh)
+                //   height: 54, // Membuat tombol lebih tebal dan mudah ditekan
+                //   child: FilledButton.icon(
+                //     onPressed: _handleDefuzzifikasi,
+                //     style: FilledButton.styleFrom(
+                //       backgroundColor: const Color(
+                //         0xFF2E7D32,
+                //       ), // Hijau gelap agar kontras
+                //       shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(
+                //           16,
+                //         ), // Sesuai tema melengkung di dashboard Anda
+                //       ),
+                //       elevation: 2,
+                //     ),
+                //     icon: const Icon(
+                //       Icons.analytics_rounded,
+                //       size: 24,
+                //       color: Colors.white,
+                //     ),
+                //     label: const Text(
+                //       'PROSES DEFUZZIFIKASI',
+                //       style: TextStyle(
+                //         fontSize: 14,
+                //         fontWeight: FontWeight.bold,
+                //         letterSpacing: 1.2, // Memberikan kesan tegas/utama
+                //         color: Colors.white,
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ],
           ),
@@ -219,6 +331,17 @@ class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
           ),
       ],
     );
+  }
+
+  Future<void> _openAddNodePage() async {
+    final added = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => const AddNodePage()),
+    );
+
+    if (added == true) {
+      _controller.fetchLahan();
+    }
   }
 }
 

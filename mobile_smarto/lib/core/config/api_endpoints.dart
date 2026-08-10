@@ -3,6 +3,9 @@ class ApiEndpoints {
 
   static const String login = '/api/mobile/auth/login';
   static const String logout = '/api/auth/logout';
+  static const String addNode = '/api/mobile/node';
+  static String checkKodeNode(String kodeNode) =>
+      '/api/mobile/kode-node?kodeNode=$kodeNode';
   static String nodes(int userId) => '/api/mobile/node/$userId';
   static const String fuzzyEngine = '/api/fuzzy/engine';
   static String statistics({required int kodeNodeId, required String periode}) =>
