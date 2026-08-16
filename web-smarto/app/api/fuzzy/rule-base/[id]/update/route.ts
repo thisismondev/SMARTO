@@ -63,7 +63,10 @@ export async function PUT(
     return successResponse("Rule base berhasil diperbarui", result, 200)
   } catch (error: unknown) {
     console.error("Error memperbarui rule base:", error)
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Gagal memperbarui rule base", 500, message)
   }
 }

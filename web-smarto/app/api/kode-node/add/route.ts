@@ -77,7 +77,10 @@ export async function POST(request: Request) {
       sensor_reading: sensorReading,
     })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Gagal menambahkan node", 500, message)
   }
 }

@@ -32,8 +32,6 @@ export function useKodeNode() {
   // untuk kontrol dialog
   const [open, setOpen] = useState(false)
 
-
-
   const fetchKodeNodes = useCallback(async () => {
     setLoading(true)
     setError("")
@@ -58,7 +56,9 @@ export function useKodeNode() {
       setData(mappedData)
     } catch (error: unknown) {
       setError(
-        error instanceof Error ? error.message : "Gagal mengambil data kode node"
+        error instanceof Error
+          ? error.message
+          : "Gagal mengambil data kode node"
       )
     } finally {
       setLoading(false)

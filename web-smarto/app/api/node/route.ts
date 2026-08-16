@@ -16,7 +16,10 @@ export async function GET(request: Request) {
 
     return successResponse("Nodes fetched successfully", nodes, 200)
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Terjadi kesalahan", 500, message)
   }
 }

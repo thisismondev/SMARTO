@@ -54,7 +54,10 @@ export async function POST(request: Request) {
 
     return successResponse("Fuzzy set berhasil ditambahkan", result, 201)
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Gagal menambahkan fuzzy set", 500, message)
   }
 }

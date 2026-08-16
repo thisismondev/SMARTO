@@ -18,7 +18,10 @@ export async function GET(request: Request) {
       return successResponse("Berhasil mengambil data pengguna", users, 200)
     }
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Gagal mengambil data pengguna", 500, message)
   }
 }

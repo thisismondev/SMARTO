@@ -47,7 +47,10 @@ export async function POST(request: Request) {
       },
     })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Gagal login", 500, message)
   }
 }

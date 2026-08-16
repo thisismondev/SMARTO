@@ -1,12 +1,7 @@
 "use client"
 
 import * as React from "react"
-import {
-  User,
-  Shield,
-  Camera,
-  UserX,
-} from "lucide-react"
+import { User, Shield, Camera, UserX } from "lucide-react"
 
 import {
   Card,
@@ -690,5 +685,3 @@ function AccountSection({
 //     </Card>
 //   )
 // }
-
-

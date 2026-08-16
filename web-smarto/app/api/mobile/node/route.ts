@@ -9,7 +9,10 @@ export async function POST(request: Request) {
     if (!user) return errorResponse("Unauthorized", 401)
 
     if (user.roleId !== 3) {
-      return errorResponse("Anda tidak memiliki izin untuk menambahkan node", 403)
+      return errorResponse(
+        "Anda tidak memiliki izin untuk menambahkan node",
+        403
+      )
     }
 
     const body = await request.json()
@@ -46,7 +49,10 @@ export async function POST(request: Request) {
       nodeId: result.insertId,
     })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Gagal menambahkan node", 500, message)
   }
 }

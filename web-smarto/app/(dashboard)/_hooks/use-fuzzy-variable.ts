@@ -28,13 +28,15 @@ export function useFuzzyVariable() {
       const result = await fetchFuzzyVariables(token)
       console.log("Fetched fuzzy variables:", result)
 
-      const VariableData: FuzzyVariable[] = result.data.map((item: Record<string, unknown>) => ({
-        id: item.id,
-        name: item.name,
-        unit: item.unit,
-        type: item.type,
-        createdAt: item.created_at,
-      }))
+      const VariableData: FuzzyVariable[] = result.data.map(
+        (item: Record<string, unknown>) => ({
+          id: item.id,
+          name: item.name,
+          unit: item.unit,
+          type: item.type,
+          createdAt: item.created_at,
+        })
+      )
 
       setVariable(VariableData)
     } catch (error: unknown) {

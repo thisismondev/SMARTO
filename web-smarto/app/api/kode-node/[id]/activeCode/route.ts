@@ -40,7 +40,10 @@ export async function PATCH(
 
     return successResponse("Node berhasil diaktifkan", { id: idParams }, 200)
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Gagal mengaktifkan node", 500, message)
   }
 }

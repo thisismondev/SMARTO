@@ -40,10 +40,12 @@ export function useSensorLogAnalytics() {
 
       const result = await findFarmerUser(token)
 
-      const petaniData: SelectPetani[] = result.data.map((item: Record<string, unknown>) => ({
-        id: item.id,
-        name: item.name,
-      }))
+      const petaniData: SelectPetani[] = result.data.map(
+        (item: Record<string, unknown>) => ({
+          id: item.id,
+          name: item.name,
+        })
+      )
 
       setPetani(petaniData)
     } catch (error: unknown) {
@@ -84,7 +86,9 @@ export function useSensorLogAnalytics() {
       setNodes(nodeData)
     } catch (error: unknown) {
       setError(
-        error instanceof Error ? error.message : "Gagal mengambil data kode node"
+        error instanceof Error
+          ? error.message
+          : "Gagal mengambil data kode node"
       )
     }
   }, [])
@@ -172,7 +176,9 @@ export function useSensorLogAnalytics() {
       }
     } catch (error: unknown) {
       toast.error(
-        error instanceof Error ? error.message : "Gagal mengambil data statistik"
+        error instanceof Error
+          ? error.message
+          : "Gagal mengambil data statistik"
       )
     } finally {
       setSearchLoading(false)

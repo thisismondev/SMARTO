@@ -51,7 +51,10 @@ export async function POST(request: Request) {
 
     return successResponse("Rule base berhasil ditambahkan", result, 201)
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Gagal menambahkan rule base", 500, message)
   }
 }

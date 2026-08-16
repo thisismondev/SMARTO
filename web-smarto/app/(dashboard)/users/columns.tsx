@@ -1,12 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import {
-  Pencil,
-  CheckCircle,
-  MoreHorizontal,
-  Unlink,
-} from "lucide-react"
+import { Pencil, CheckCircle, MoreHorizontal, Unlink } from "lucide-react"
 
 import {
   AlertDialog,

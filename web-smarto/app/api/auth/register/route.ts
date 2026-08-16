@@ -49,7 +49,10 @@ export async function POST(request: Request) {
 
     return successResponse("Register berhasil", null, 201)
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Gagal register", 500, message)
   }
 }

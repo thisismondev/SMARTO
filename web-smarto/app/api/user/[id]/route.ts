@@ -32,7 +32,10 @@ export async function GET(
 
     return successResponse("User berhasil ditemukan", result, 200)
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Gagal mencari user", 500, message)
   }
 }

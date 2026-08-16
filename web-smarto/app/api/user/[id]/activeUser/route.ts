@@ -34,7 +34,10 @@ export async function PATCH(
 
     return successResponse("User berhasil diaktifkan", null, 200)
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Gagal mengaktifkan user", 500, message)
   }
 }

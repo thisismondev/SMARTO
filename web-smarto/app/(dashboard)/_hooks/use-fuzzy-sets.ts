@@ -53,25 +53,29 @@ export function useFuzzySets() {
     try {
       const result = await fetchFuzzySets(token)
 
-      const setData: FuzzySet[] = result.data.map((item: Record<string, unknown>) => ({
-        id: item.id,
-        variableId: item.variable_id,
-        name: item.name,
-        setName: item.set_name,
-        mfType: item.mf_type,
-        a: Number(item.param_a),
-        b: Number(item.param_b),
-        c: Number(item.param_c),
-        d: Number(item.param_d),
-        createdAt: item.created_at,
-      }))
+      const setData: FuzzySet[] = result.data.map(
+        (item: Record<string, unknown>) => ({
+          id: item.id,
+          variableId: item.variable_id,
+          name: item.name,
+          setName: item.set_name,
+          mfType: item.mf_type,
+          a: Number(item.param_a),
+          b: Number(item.param_b),
+          c: Number(item.param_c),
+          d: Number(item.param_d),
+          createdAt: item.created_at,
+        })
+      )
 
       console.log("Fetched fuzzy sets:", setData)
 
       setFuzzySet(setData)
     } catch (error: unknown) {
       setError(
-        error instanceof Error ? error.message : "Gagal mengambil data kategori sensor."
+        error instanceof Error
+          ? error.message
+          : "Gagal mengambil data kategori sensor."
       )
     } finally {
       setLoading(false)
@@ -91,18 +95,22 @@ export function useFuzzySets() {
     try {
       const result = await fetchFuzzyVariables(token)
 
-      const variableData: FuzzyVariable[] = result.data.map((item: Record<string, unknown>) => ({
-        id: item.id,
-        name: item.name,
-        unit: item.unit,
-        type: item.type,
-        createdAt: item.created_at,
-      }))
+      const variableData: FuzzyVariable[] = result.data.map(
+        (item: Record<string, unknown>) => ({
+          id: item.id,
+          name: item.name,
+          unit: item.unit,
+          type: item.type,
+          createdAt: item.created_at,
+        })
+      )
 
       setVariable(variableData)
     } catch (error: unknown) {
       setError(
-        error instanceof Error ? error.message : "Gagal mengambil data parameter sensor."
+        error instanceof Error
+          ? error.message
+          : "Gagal mengambil data parameter sensor."
       )
     }
   }, [])
@@ -180,7 +188,9 @@ export function useFuzzySets() {
       await getFuzzySets()
     } catch (error: unknown) {
       toast.error(
-        error instanceof Error ? error.message : "Gagal menambahkan kategori sensor"
+        error instanceof Error
+          ? error.message
+          : "Gagal menambahkan kategori sensor"
       )
       console.error("Error creating kategori sensor:", error)
     } finally {

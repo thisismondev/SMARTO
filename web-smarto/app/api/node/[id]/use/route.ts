@@ -44,11 +44,10 @@ export async function PATCH(
 
     return successResponse("Node berhasil digunakan", result, 200)
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
-    return errorResponse(
-      "Terjadi kesalahan: " + message,
-      500,
-      message
-    )
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse("Terjadi kesalahan: " + message, 500, message)
   }
 }

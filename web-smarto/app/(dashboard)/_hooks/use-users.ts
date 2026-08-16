@@ -124,9 +124,7 @@ export function useUsers() {
         await fetchUsers()
       } catch (error: unknown) {
         toast.error(
-          error instanceof Error
-            ? error.message
-            : "Gagal mengaktifkan pengguna"
+          error instanceof Error ? error.message : "Gagal mengaktifkan pengguna"
         )
       }
     },

@@ -33,7 +33,10 @@ export async function GET(
 
     return successResponse("Kode node tersedia", { kodeNode }, 200)
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Gagal memeriksa kode node", 500, message)
   }
 }

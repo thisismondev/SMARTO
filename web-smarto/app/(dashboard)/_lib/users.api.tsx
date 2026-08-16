@@ -16,7 +16,9 @@ export async function findUsers(token: string) {
     }
     return result
   } catch (error: unknown) {
-    throw new Error(error instanceof Error ? error.message : "Gagal mengambil data pengguna")
+    throw new Error(
+      error instanceof Error ? error.message : "Gagal mengambil data pengguna"
+    )
   }
 }
 
@@ -38,7 +40,9 @@ export async function findUserById(token: string, id: number) {
     }
     return result
   } catch (error: unknown) {
-    throw new Error(error instanceof Error ? error.message : "Gagal mengambil data pengguna")
+    throw new Error(
+      error instanceof Error ? error.message : "Gagal mengambil data pengguna"
+    )
   }
 }
 
@@ -72,7 +76,9 @@ export async function updateUserById(
 
     return result
   } catch (error: unknown) {
-    throw new Error(error instanceof Error ? error.message : "Gagal memperbarui pengguna")
+    throw new Error(
+      error instanceof Error ? error.message : "Gagal memperbarui pengguna"
+    )
   }
 }
 
@@ -96,7 +102,9 @@ export async function userActivate(token: string, userId: number) {
 
     return result
   } catch (error: unknown) {
-    throw new Error(error instanceof Error ? error.message : "Gagal mengaktifkan pengguna")
+    throw new Error(
+      error instanceof Error ? error.message : "Gagal mengaktifkan pengguna"
+    )
   }
 }
 
@@ -120,7 +128,9 @@ export async function userInactivate(token: string, userId: number) {
 
     return result
   } catch (error: unknown) {
-    throw new Error(error instanceof Error ? error.message : "Gagal menonaktifkan pengguna")
+    throw new Error(
+      error instanceof Error ? error.message : "Gagal menonaktifkan pengguna"
+    )
   }
 }
 
@@ -150,7 +160,9 @@ export async function registerUser(body: {
     }
     return result
   } catch (error: unknown) {
-    throw new Error(error instanceof Error ? error.message : "Gagal mendaftarkan pengguna")
+    throw new Error(
+      error instanceof Error ? error.message : "Gagal mendaftarkan pengguna"
+    )
   }
 }
 
@@ -181,6 +193,10 @@ export async function changePasswordUser(
     console.log("API Response for changing user password:", result)
     return result
   } catch (error: unknown) {
-    throw new Error(error instanceof Error ? error.message : "Gagal mengubah password pengguna")
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Gagal mengubah password pengguna"
+    )
   }
 }

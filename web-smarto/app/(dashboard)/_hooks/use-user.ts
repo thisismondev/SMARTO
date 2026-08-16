@@ -75,9 +75,7 @@ export function useUser() {
       })
     } catch (error: unknown) {
       setError(
-        error instanceof Error
-          ? error.message
-          : "Gagal mengambil data pengguna"
+        error instanceof Error ? error.message : "Gagal mengambil data pengguna"
       )
       //   toast.error(error.message || "Gagal mengambil data pengguna")
     } finally {

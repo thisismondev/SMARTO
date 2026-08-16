@@ -35,7 +35,10 @@ export async function PATCH(
 
     return successResponse("User berhasil dilepaskan", result, 200)
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Terjadi kesalahan", 500, message)
   }
 }

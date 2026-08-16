@@ -18,7 +18,9 @@ export async function findKodeNodes(token: string) {
 
     return result
   } catch (error: unknown) {
-    throw new Error(error instanceof Error ? error.message : "Gagal mengambil data kode-node")
+    throw new Error(
+      error instanceof Error ? error.message : "Gagal mengambil data kode-node"
+    )
   }
 }
 
@@ -42,7 +44,9 @@ export async function generateKodeNode(token: string) {
 
     return result
   } catch (error: unknown) {
-    throw new Error(error instanceof Error ? error.message : "Gagal menghasilkan kode-node")
+    throw new Error(
+      error instanceof Error ? error.message : "Gagal menghasilkan kode-node"
+    )
   }
 }
 
@@ -66,7 +70,9 @@ export async function kodeNodeActivate(token: string, id: number) {
 
     return result
   } catch (error: unknown) {
-    throw new Error(error instanceof Error ? error.message : "Gagal mengaktifkan kode-node")
+    throw new Error(
+      error instanceof Error ? error.message : "Gagal mengaktifkan kode-node"
+    )
   }
 }
 
@@ -90,6 +96,8 @@ export async function kodeNodeInactivate(token: string, id: number) {
 
     return result
   } catch (error: unknown) {
-    throw new Error(error instanceof Error ? error.message : "Gagal menonaktifkan kode-node")
+    throw new Error(
+      error instanceof Error ? error.message : "Gagal menonaktifkan kode-node"
+    )
   }
 }

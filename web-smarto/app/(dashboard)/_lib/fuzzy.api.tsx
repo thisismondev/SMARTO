@@ -13,7 +13,10 @@ export async function fetchFuzzyVariables(token: string) {
     }
     return result
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Gagal mengambil data parameter sensor"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Gagal mengambil data parameter sensor"
     throw new Error(message)
   }
 }
@@ -36,7 +39,10 @@ export async function fetchFuzzySets(token: string) {
     }
     return result
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Gagal mengambil data kategori sensor"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Gagal mengambil data kategori sensor"
     throw new Error(message)
   }
 }

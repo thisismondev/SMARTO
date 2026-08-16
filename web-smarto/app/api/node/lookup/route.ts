@@ -33,7 +33,10 @@ export async function GET(request: NextRequest) {
 
     return successResponse("Node fetched successfully", node, 200)
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Terjadi kesalahan", 500, message)
   }
 }

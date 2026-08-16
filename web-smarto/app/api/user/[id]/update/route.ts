@@ -52,7 +52,10 @@ export async function PUT(
 
     return successResponse("User berhasil diperbarui", result, 200)
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Gagal memperbarui user", 500, message)
   }
 }

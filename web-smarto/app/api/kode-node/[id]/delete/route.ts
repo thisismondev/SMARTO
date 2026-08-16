@@ -48,7 +48,10 @@ export async function DELETE(
 
     return successResponse("Node berhasil dihapus", { id: idParams }, 200)
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
     return errorResponse("Gagal menghapus Kode Node", 500, message)
   }
 }

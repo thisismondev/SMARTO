@@ -100,18 +100,20 @@ export function useRuleBase() {
     try {
       const result = await fetchFuzzySets(token)
 
-      const setData: FuzzySet[] = result.data.map((item: Record<string, unknown>) => ({
-        id: item.id,
-        variableId: item.variable_id,
-        name: item.name,
-        setName: item.set_name,
-        mfType: item.mf_type,
-        a: Number(item.a),
-        b: Number(item.b),
-        c: Number(item.c),
-        d: Number(item.d),
-        createdAt: item.created_at,
-      }))
+      const setData: FuzzySet[] = result.data.map(
+        (item: Record<string, unknown>) => ({
+          id: item.id,
+          variableId: item.variable_id,
+          name: item.name,
+          setName: item.set_name,
+          mfType: item.mf_type,
+          a: Number(item.a),
+          b: Number(item.b),
+          c: Number(item.c),
+          d: Number(item.d),
+          createdAt: item.created_at,
+        })
+      )
 
       console.log("Hasil fetch kategori options:", setData)
 

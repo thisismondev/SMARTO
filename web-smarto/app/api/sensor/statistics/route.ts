@@ -39,10 +39,10 @@ export async function GET(request: NextRequest) {
 
     return successResponse("Berhasil mengambil statistik sensor log", result)
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui"
-    return errorResponse(
-      message || "Gagal mengambil statistik sensor log",
-      500
-    )
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Terjadi kesalahan yang tidak diketahui"
+    return errorResponse(message || "Gagal mengambil statistik sensor log", 500)
   }
 }
