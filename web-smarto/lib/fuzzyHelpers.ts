@@ -8,7 +8,8 @@ export function trapmf(
   c: number,
   d: number
 ): number {
-  if (x <= a || x >= d) return 0
+  if (x <= a) return a === b ? 1 : 0
+  if (x >= d) return c === d ? 1 : 0
   if (x >= b && x <= c) return 1
   if (x > a && x < b) return (x - a) / (b - a)
   if (x > c && x < d) return (d - x) / (d - c)

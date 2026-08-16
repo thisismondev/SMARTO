@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { fetchFuzzySets, fetchRuleBase } from "@/services/fuzzy.service"
-import { trapmf } from "@/lib/fuzzyHelpers"
+import { trapmf, trimf } from "@/lib/fuzzyHelpers"
 import { errorResponse, successResponse } from "@/lib/response"
 import { MfType } from "@/types/ui/fuzzy"
 import { getAuthUser } from "@/lib/auth"
@@ -47,15 +47,11 @@ function roundNumber(value: number, digit = 2) {
 }
 
 function getMembershipValue(set: FuzzySet, x: number) {
-  // if (set.mf_type === "trapmf") {
+  if (set.mf_type === "trimf") {
+    return trimf(x, set.param_a, set.param_b, set.param_d)
+  }
+
   return trapmf(x, set.param_a, set.param_b, set.param_c, set.param_d)
-  // }
-
-  // if (set.mf_type === "trimf") {
-  //   return trimf(x, set.param_a, set.param_b, set.param_d)
-  // }
-
-  return 0
 }
 
 function getInputValueByVariableId(
@@ -327,8 +323,12 @@ async function runFuzzyEngine(
   console.log(aggregatedOutput)
 
   // 4. DEFUZZIFIKASI
+  const hasActiveRule = activeRules.length > 0
   const crispDose = defuzzifyCOG(aggregatedOutput, outputSets)
   const finalCategory = getFinalCategoryByCrispDose(crispDose, outputSets)
+  const kategoriDisplay = hasActiveRule
+    ? finalCategory
+    : "Tidak Ada Rule Terpicu"
   const pumpVolume = calculatePumpVolume(crispDose)
 
   console.log("=== HASIL DEFUZZIFIKASI ===")
@@ -382,7 +382,7 @@ async function runFuzzyEngine(
       },
       kategori: {
         label: "Kategori Akhir",
-        value: finalCategory,
+        value: kategoriDisplay,
       },
       volume: {
         label: "Volume Pompa",
